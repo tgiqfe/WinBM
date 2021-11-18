@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<Reference Include="WinBM">
+			<HintPath>..\..\src\WinBM\bin\Debug\net6.0\WinBM.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+	
+</Project>

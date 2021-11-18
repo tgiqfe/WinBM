@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyVersion>0.8.0.1</AssemblyVersion>
+    <FileVersion>0.8.0.1</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Management.Automation" Version="7.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WinBM\WinBM.csproj" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /y &quot;$(SolutionDir)WinBM.Cmd\bin\$(ConfigurationName)\net6.0\YamlDotNet.dll&quot; &quot;$(TargetDir)YamlDotNet.dll&quot;&#xD;&#xA;copy /y &quot;$(SolutionDir)WinBM.Cmd\bin\$(ConfigurationName)\net6.0\LiteDB.dll&quot; &quot;$(TargetDir)LiteDB.dll&quot;&#xD;&#xA;copy /y &quot;$(ProjectDir)Format\WinBM.PowerShell.ps1xml&quot; &quot;$(TargetDir)WinBM.PowerShell.ps1xml&quot;" />
+  </Target>
+
+</Project>
