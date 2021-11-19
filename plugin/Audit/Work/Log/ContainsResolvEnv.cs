@@ -31,14 +31,6 @@ namespace Audit.Work.Log
         protected string _ContainsText { get; set; }
 
         /// <summary>
-        /// 前回読み込んだ位置を記録。
-        /// 無指定の場合は最初から読み込み
-        /// </summary>
-        [TaskParameter(ResolvEnv = true)]
-        [Keys("sincedb", "since")]
-        protected string _SinceDB { get; set; }
-
-        /// <summary>
         /// 大文字/小文字を無視
         /// </summary>
         [TaskParameter]

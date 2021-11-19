@@ -18,6 +18,10 @@ namespace Audit.Config.Prepare
         [Keys("sincedbfile", "sincedb")]
         protected string _SinceDBFile { get; set; }
 
+        [TaskParameter(ResolvEnv = true)]
+        [Keys("watchdbfile", "watchdb")]
+        protected string _WatchDBFile { get;set; }
+
         [TaskParameter]
         [Keys("persistent", "persist")]
         protected bool _Persistent { get; set; }
@@ -33,6 +37,10 @@ namespace Audit.Config.Prepare
             if (!string.IsNullOrEmpty(_SinceDBFile))
             {
                 Manager.Setting.PluginParam[Item.AUDIT_SINCEDBFILE] = this._SinceDBFile;
+            }
+            if (!string.IsNullOrEmpty(_WatchDBFile))
+            {
+                Manager.Setting.PluginParam[Item.AUDIT_WATCHDBFILE] = this._WatchDBFile;
             }
 
             if (_Persistent)

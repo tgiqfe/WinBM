@@ -8,6 +8,7 @@ using WinBM;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
+using Audit.Lib;
 
 namespace Audit.Work
 {
@@ -16,6 +17,8 @@ namespace Audit.Work
         private static string _AuditMonitorFile = null;
 
         private string _SinceDBFile = null;
+
+        private string _WatchDBFile = null;
 
         /// <summary>
         /// PreProcessのタイミングでAuditMonitorの準備
@@ -108,6 +111,46 @@ namespace Audit.Work
         }
 
         /// <summary>
+        /// WatchDBファイルを読み込んでWatchデータを取得
+        /// </summary>
+        /// <param name="serial"></param>
+        /// <returns></returns>
+        protected WatchDataCollection LoadWatchDB(string serial)
+        {
+            if (_WatchDBFile == null)
+            {
+                if ((Manager.Setting.PluginParam?.ContainsKey(Item.AUDIT_WATCHDBFILE) ?? false) &&
+                    !string.IsNullOrEmpty(Manager.Setting.PluginParam[Item.AUDIT_WATCHDBFILE]))
+                {
+                    _WatchDBFile = Manager.Setting.PluginParam[Item.AUDIT_WATCHDBFILE];
+                }
+                else
+                {
+                    _SinceDBFile = Path.Combine(
+                        Environment.GetEnvironmentVariable("ProgramData"), "WinBM", "Audit", "WatchDB.json");
+                }
+            }
+
+            try
+            {
+                using (var sr = new StreamReader(_WatchDBFile, Encoding.UTF8))
+                {
+                    var db = JsonSerializer.Deserialize<Dictionary<string, WatchDataCollection>>(sr.ReadToEnd());
+                    if (db.ContainsKey(serial))
+                    {
+                        return db[serial];
+                    }
+                }
+            }
+            catch
+            {
+                Manager.WriteLog(LogLevel.Debug, "WatchDB read error.");
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// 現在読み込みしたポジションを保存
         /// </summary>
         /// <param name="count"></param>
@@ -160,6 +203,63 @@ namespace Audit.Work
             catch
             {
                 Manager.WriteLog(LogLevel.Debug, "SinceDB write error.");
+            }
+        }
+
+        /// <summary>
+        /// Watchデータを保存
+        /// </summary>
+        /// <param name="serial"></param>
+        /// <param name="watchData"></param>
+        protected void SaveWatchDB(string serial, WatchDataCollection watchData)
+        {
+            if (_WatchDBFile == null)
+            {
+                if ((Manager.Setting.PluginParam?.ContainsKey(Item.AUDIT_WATCHDBFILE) ?? false) &&
+                    !string.IsNullOrEmpty(Manager.Setting.PluginParam[Item.AUDIT_WATCHDBFILE]))
+                {
+                    _WatchDBFile = Manager.Setting.PluginParam[Item.AUDIT_WATCHDBFILE];
+                }
+                else
+                {
+                    _SinceDBFile = Path.Combine(
+                        Environment.GetEnvironmentVariable("ProgramData"), "WinBM", "Audit", "WatchDB.json");
+                }
+            }
+
+            Dictionary<string, WatchDataCollection> db = null;
+            try
+            {
+                using (var sr = new StreamReader(_WatchDBFile, Encoding.UTF8))
+                {
+                    db = JsonSerializer.Deserialize<Dictionary<string, WatchDataCollection>>(sr.ReadToEnd());
+                }
+            }
+            catch
+            {
+                Manager.WriteLog(LogLevel.Debug, "WatchDB read error.");
+            }
+
+            db ??= new Dictionary<string, WatchDataCollection>();
+            db[serial] = watchData;
+
+            try
+            {
+                string parent = Path.GetDirectoryName(_WatchDBFile);
+                if (!System.IO.Directory.Exists(parent))
+                {
+                    System.IO.Directory.CreateDirectory(parent);
+                }
+                using (var sw = new StreamWriter(_WatchDBFile, false, Encoding.UTF8))
+                {
+                    sw.WriteLine(JsonSerializer.Serialize(
+                        db,
+                        new JsonSerializerOptions() { WriteIndented = true }));
+                }
+            }
+            catch
+            {
+                Manager.WriteLog(LogLevel.Debug, "WatchDB write error.");
             }
         }
     }
