@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using WinBM;
 using WinBM.Task;
+using Audit.Lib;
 
 namespace Audit.Work.File
 {
@@ -94,6 +95,7 @@ namespace Audit.Work.File
         protected bool _Invert { get; set; }
 
         private int _serial = 0;
+        private WatchDataCollection _collection = null;
 
         public override void MainProcess()
         {
@@ -102,6 +104,9 @@ namespace Audit.Work.File
 
             //  複数ファイルを指定している場合、どれか1つでも変更した場合はSuccess
             //  WatchDataが無い場合は監視開始
+            _collection = _IsStart ? new WatchDataCollection() : LoadWatchDB(_Serial);
+
+
 
         }
 
@@ -114,24 +119,27 @@ namespace Audit.Work.File
                 case "creation":
                     checkTarget = "CreationTime";
                     path_date = System.IO.File.GetCreationTime(path);
+
+
+
+
+                    _collection.GetParameter(path).CreationTime = path_date;
                     break;
                 case "lastwrite":
                     checkTarget = "LastWriteTime";
                     path_date = System.IO.File.GetLastWriteTime(path);
+                    _collection.GetParameter(path).LastWriteTime = path_date;
                     break;
                 case "lastaccess":
                     checkTarget = "LastAccessTime";
                     path_date = System.IO.File.GetLastAccessTime(path);
+                    _collection.GetParameter(path).LastAccessTime = path_date;
                     break;
             }
-
-
-            //  ここにwatch開始とWatchの処理を
 
 
 
 
         }
-
     }
 }

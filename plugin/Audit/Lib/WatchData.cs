@@ -8,7 +8,6 @@ namespace Audit.Lib
 {
     public class WatchData
     {
-        public string Path { get; set; }
         public DateTime? CreationTime { get; set; }
         public DateTime? LastWriteTime { get; set; }
         public DateTime? LastAccessTime { get; set; }
@@ -23,7 +22,22 @@ namespace Audit.Lib
         public bool Exists { get; set; }
     }
 
-    public class WatchDataCollection : List<WatchData>
+    public class WatchDataCollection : Dictionary<string, WatchData>
     {
+        //  key⇒ファイル/ディレクトリ/レジストリのパス
+        //  Value ⇒WatchData
+
+        public WatchData GetParameter(string key)
+        {
+            string matchKey = this.Keys.FirstOrDefault(x => x.Equals(key, StringComparison.OrdinalIgnoreCase));
+            return matchKey == null ? 
+                new WatchData() : 
+                this[matchKey];
+        }
+
+        public void SetCreationTime(string key, DateTime creationTime)
+        {
+            GetParameter(key).CreationTime = creationTime;
+        }
     }
 }
