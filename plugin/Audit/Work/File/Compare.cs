@@ -202,6 +202,7 @@ namespace Audit.Work.File
         /// <returns></returns>
         private bool CompareAccess(string fileA, string fileB, Dictionary<string, string> dictionary)
         {
+            /*
             FileSecurity securityA = new System.IO.FileInfo(fileA).GetAccessControl();
             FileSecurity securityB = new System.IO.FileInfo(fileB).GetAccessControl();
 
@@ -209,6 +210,9 @@ namespace Audit.Work.File
                 securityA.GetAccessRules(true, false, typeof(NTAccount)));
             string ret_fileB = FileControl.AccessRulesToString(
                 securityB.GetAccessRules(true, false, typeof(NTAccount)));
+            */
+            string ret_fileA = AccessRuleSummary.FileToAccessString(fileA);
+            string ret_fileB = AccessRuleSummary.FileToAccessString(fileB);
 
             string checkTarget = "Access";
             dictionary[$"fileA_{checkTarget}_{_serial}"] = ret_fileA;

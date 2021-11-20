@@ -234,6 +234,7 @@ namespace Audit.Work.Registry
         /// <returns></returns>
         private bool CompareAccess(RegistryKey regKeyA, RegistryKey regKeyB, Dictionary<string, string> dictionary)
         {
+            /*
             RegistrySecurity securityA = regKeyA.GetAccessControl();
             RegistrySecurity securityB = regKeyB.GetAccessControl();
 
@@ -241,6 +242,10 @@ namespace Audit.Work.Registry
                 securityA.GetAccessRules(true, false, typeof(NTAccount)));
             string ret_keyB = RegistryControl.AccessRulesToString(
                 securityB.GetAccessRules(true, false, typeof(NTAccount)));
+            */
+
+            string ret_keyA = AccessRuleSummary.RegistryKeyToAccessString(regKeyA);
+            string ret_keyB = AccessRuleSummary.RegistryKeyToAccessString(regKeyB);
 
             string checkTarget = "Access";
             dictionary[$"keyA_{checkTarget}_{_serial}"] = ret_keyA.ToString();

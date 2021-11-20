@@ -321,6 +321,7 @@ namespace Audit.Work.Directory
         /// <returns></returns>
         private bool CompareAccess_dir(string dirA, string dirB, Dictionary<string, string> dictionary)
         {
+            /*
             DirectorySecurity securityA = new System.IO.DirectoryInfo(dirA).GetAccessControl();
             DirectorySecurity securityB = new System.IO.DirectoryInfo(dirB).GetAccessControl();
 
@@ -328,6 +329,9 @@ namespace Audit.Work.Directory
                 securityA.GetAccessRules(true, false, typeof(NTAccount)));
             string ret_dirB = DirectoryControl.AccessRulesToString(
                 securityB.GetAccessRules(true, false, typeof(NTAccount)));
+            */
+            string ret_dirA = AccessRuleSummary.DirectoryToAccessString(dirA);
+            string ret_dirB = AccessRuleSummary.DirectoryToAccessString(dirB);
 
             string checkTarget = "Access";
             dictionary[$"directoryA_{checkTarget}_{_serial}"] = ret_dirA;
@@ -337,6 +341,7 @@ namespace Audit.Work.Directory
 
         private bool CompareAccess(string fileA, string fileB, Dictionary<string, string> dictionary)
         {
+            /*
             FileSecurity securityA = new System.IO.FileInfo(fileA).GetAccessControl();
             FileSecurity securityB = new System.IO.FileInfo(fileB).GetAccessControl();
 
@@ -344,6 +349,9 @@ namespace Audit.Work.Directory
                 securityA.GetAccessRules(true, false, typeof(NTAccount)));
             string ret_fileB = FileControl.AccessRulesToString(
                 securityB.GetAccessRules(true, false, typeof(NTAccount)));
+            */
+            string ret_fileA = AccessRuleSummary.FileToAccessString(fileA);
+            string ret_fileB = AccessRuleSummary.FileToAccessString(fileB);
 
             string checkTarget = "Access";
             dictionary[$"fileA_{checkTarget}_{_serial}"] = ret_fileA;
