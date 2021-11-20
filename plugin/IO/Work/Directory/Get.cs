@@ -42,7 +42,7 @@ namespace IO.Work.Directory
 
             //string access = DirectoryControl.AccessRulesToString(rules);
             string access = string.Join('/',
-                AccessRuleSummary.FromAccessRules(rules, AccessRuleSummary.TargetType.Directory).
+                AccessRuleSummary.FromAccessRules(rules, PathType.Directory).
                     Select(x => x.ToString()));
 
             string owner = security.GetOwner(typeof(NTAccount)).Value;

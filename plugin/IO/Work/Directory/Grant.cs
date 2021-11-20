@@ -58,7 +58,7 @@ namespace IO.Work.Directory
             {
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(
                     string.Join("/", _Access),
-                    AccessRuleSummary.TargetType.Directory);
+                    PathType.Directory);
             }
             if ((_accessRuleSummary == null || _accessRuleSummary.Length == 0) && !string.IsNullOrEmpty(_Account))
             {
@@ -70,7 +70,7 @@ namespace IO.Work.Directory
                         _NoRecurse ? "None" : "ContainerInherit,ObjectInherit",
                         "None",
                         _AccessControl),
-                    AccessRuleSummary.TargetType.Directory);
+                    PathType.Directory);
             }
 
             /*

@@ -90,7 +90,7 @@ namespace IO.Work.Registry
 
             //string access = RegistryControl.AccessRulesToString(rules);
             string access = string.Join('/',
-                AccessRuleSummary.FromAccessRules(rules, AccessRuleSummary.TargetType.Registry).
+                AccessRuleSummary.FromAccessRules(rules, PathType.Registry).
                     Select(x => x.ToString()));
 
             string owner = security.GetOwner(typeof(NTAccount)).Value;

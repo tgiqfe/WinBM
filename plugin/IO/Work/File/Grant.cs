@@ -54,14 +54,14 @@ namespace IO.Work.File
             {
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(
                     string.Join("/", _Access),
-                    AccessRuleSummary.TargetType.File);
+                    PathType.File);
             }
             if ((_accessRuleSummary == null || _accessRuleSummary.Length == 0) && !string.IsNullOrEmpty(_Account))
             {
                 _Account = PredefinedAccount.Resolv(_Account);
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(
                     $"{_Account};{_Rights};{_AccessControl}",
-                    AccessRuleSummary.TargetType.File);
+                    PathType.File);
             }
 
             TargetFileProcess(_Path, GrantFileAction);

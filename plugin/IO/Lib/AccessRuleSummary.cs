@@ -13,15 +13,7 @@ namespace IO.Lib
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class AccessRuleSummary
     {
-        public enum TargetType
-        {
-            None,
-            File,
-            Directory,
-            Registry,
-        }
-
-        public TargetType Type { get; set; }
+        public PathType Type { get; set; }
         public NTAccount Account { get; set; }
         public FileSystemRights? FileSystemRights { get; set; }
         public RegistryRights? RegistryRights { get; set; }
@@ -84,7 +76,7 @@ namespace IO.Lib
         /// <param name="accessControlType">アクセス許可種別</param>
         public AccessRuleSummary(NTAccount account, FileSystemRights rights, AccessControlType accessControlType)
         {
-            this.Type = TargetType.File;
+            this.Type = PathType.File;
             this.Account = account;
             this.FileSystemRights = rights;
             this.AccessControlType = accessControlType;
@@ -100,7 +92,7 @@ namespace IO.Lib
         /// <param name="accessControlType">アクセス許可種別</param>
         public AccessRuleSummary(NTAccount account, FileSystemRights rights, InheritanceFlags inheritanceFlags, PropagationFlags propagationFlags, AccessControlType accessControlType)
         {
-            this.Type = TargetType.Directory;
+            this.Type = PathType.Directory;
             this.Account = account;
             this.FileSystemRights = rights;
             this.InheritanceFlags = inheritanceFlags;
@@ -118,7 +110,7 @@ namespace IO.Lib
         /// <param name="accessControlType">アクセス許可種別</param>
         public AccessRuleSummary(NTAccount account, RegistryRights rights, InheritanceFlags inheritanceFlags, PropagationFlags propagationFlags, AccessControlType accessControlType)
         {
-            this.Type = TargetType.Registry;
+            this.Type = PathType.Registry;
             this.Account = account;
             this.RegistryRights = rights;
             this.InheritanceFlags = inheritanceFlags;
@@ -136,17 +128,17 @@ namespace IO.Lib
         {
             return this.Type switch
             {
-                TargetType.File => string.Format("{0};{1};{2}",
+                PathType.File => string.Format("{0};{1};{2}",
                     this.Account.Value,
                     this.FileSystemRights,
                     this.AccessControlType),
-                TargetType.Directory => string.Format("{0};{1};{2};{3};{4}",
+                PathType.Directory => string.Format("{0};{1};{2};{3};{4}",
                     this.Account.Value,
                     this.FileSystemRights,
                     this.InheritanceFlags,
                     this.PropagationFlags,
                     this.AccessControlType),
-                TargetType.Registry => string.Format("{0};{1};{2};{3};{4}",
+                PathType.Registry => string.Format("{0};{1};{2};{3};{4}",
                     this.Account.Value,
                     this.RegistryRights,
                     this.InheritanceFlags,
@@ -164,17 +156,17 @@ namespace IO.Lib
         {
             return this.Type switch
             {
-                TargetType.File => new FileSystemAccessRule(
+                PathType.File => new FileSystemAccessRule(
                     this.Account,
                     this.FileSystemRights ?? System.Security.AccessControl.FileSystemRights.ReadAndExecute,
                     this.AccessControlType),
-                TargetType.Directory => new FileSystemAccessRule(
+                PathType.Directory => new FileSystemAccessRule(
                     this.Account,
                     this.FileSystemRights ?? System.Security.AccessControl.FileSystemRights.ReadAndExecute,
                     this.InheritanceFlags ?? default(System.Security.AccessControl.InheritanceFlags),
                     this.PropagationFlags ?? default(System.Security.AccessControl.PropagationFlags),
                     this.AccessControlType),
-                TargetType.Registry => new RegistryAccessRule(
+                PathType.Registry => new RegistryAccessRule(
                     this.Account,
                     this.RegistryRights ?? System.Security.AccessControl.RegistryRights.ReadKey,
                     this.InheritanceFlags ?? default(System.Security.AccessControl.InheritanceFlags),
@@ -187,14 +179,14 @@ namespace IO.Lib
         #endregion
         #region From method
 
-        public static AccessRuleSummary[] FromAccessString(string accessString, TargetType targetType)
+        public static AccessRuleSummary[] FromAccessString(string accessString, PathType pathType)
         {
             var list = new List<AccessRuleSummary>();
             string[] accesses = accessString.Split('/');
 
-            switch (targetType)
+            switch (pathType)
             {
-                case TargetType.File:
+                case PathType.File:
                     accesses.ToList().ForEach(x =>
                     {
                         string[] fields = x.Split(';');
@@ -208,7 +200,7 @@ namespace IO.Lib
                         }
                     });
                     return list.ToArray();
-                case TargetType.Directory:
+                case PathType.Directory:
                     accesses.ToList().ForEach(x =>
                     {
                         string[] fields = x.Split(';');
@@ -224,7 +216,7 @@ namespace IO.Lib
                         }
                     });
                     return list.ToArray();
-                case TargetType.Registry:
+                case PathType.Registry:
                     accesses.ToList().ForEach(x =>
                     {
                         string[] fields = x.Split(';');
@@ -245,11 +237,11 @@ namespace IO.Lib
             return null;
         }
 
-        public static AccessRuleSummary[] FromAccessRules(AuthorizationRuleCollection rules, TargetType targetType)
+        public static AccessRuleSummary[] FromAccessRules(AuthorizationRuleCollection rules, PathType pathType)
         {
-            switch (targetType)
+            switch (pathType)
             {
-                case TargetType.File:
+                case PathType.File:
                     return rules.OfType<FileSystemAccessRule>().
                         ToList().
                         Select(x => new AccessRuleSummary(
@@ -259,7 +251,7 @@ namespace IO.Lib
                                 (x.FileSystemRights & (~System.Security.AccessControl.FileSystemRights.Synchronize)),
                             x.AccessControlType)).
                         ToArray();
-                case TargetType.Directory:
+                case PathType.Directory:
                     return rules.OfType<FileSystemAccessRule>().
                         ToList().
                         Select(x => new AccessRuleSummary(
@@ -271,7 +263,7 @@ namespace IO.Lib
                             x.PropagationFlags,
                             x.AccessControlType)).
                         ToArray();
-                case TargetType.Registry:
+                case PathType.Registry:
                     return rules.OfType<RegistryAccessRule>().
                         ToList().
                         Select(x => new AccessRuleSummary(
@@ -295,7 +287,7 @@ namespace IO.Lib
         {
             return File.Exists(path) ?
                 FromAccessRules(
-                    new FileInfo(path).GetAccessControl().GetAccessRules(true, false, typeof(NTAccount)), TargetType.File) :
+                    new FileInfo(path).GetAccessControl().GetAccessRules(true, false, typeof(NTAccount)), PathType.File) :
                 null;
         }
 
@@ -308,7 +300,7 @@ namespace IO.Lib
         {
             return Directory.Exists(path) ?
                 FromAccessRules(
-                    new DirectoryInfo(path).GetAccessControl().GetAccessRules(true, false, typeof(NTAccount)), TargetType.Directory) :
+                    new DirectoryInfo(path).GetAccessControl().GetAccessRules(true, false, typeof(NTAccount)), PathType.Directory) :
                 null;
         }
 
@@ -335,7 +327,7 @@ namespace IO.Lib
             return regKey == null ?
                 null :
                 FromAccessRules(
-                    regKey.GetAccessControl().GetAccessRules(true, false, typeof(NTAccount)), TargetType.Registry);
+                    regKey.GetAccessControl().GetAccessRules(true, false, typeof(NTAccount)), PathType.Registry);
         }
 
         #endregion
@@ -434,19 +426,19 @@ namespace IO.Lib
             {
                 switch (this.Type)
                 {
-                    case TargetType.File:
+                    case PathType.File:
                         return
                             (this.Account == summary.Account) &&
                             (this.FileSystemRights == summary.FileSystemRights) &&
                             (this.AccessControlType == summary.AccessControlType);
-                    case TargetType.Directory:
+                    case PathType.Directory:
                         return
                             (this.Account == summary.Account) &&
                             (this.FileSystemRights == summary.FileSystemRights) &&
                             (this.InheritanceFlags == summary.InheritanceFlags) &&
                             (this.PropagationFlags == summary.PropagationFlags) &&
                             (this.AccessControlType == summary.AccessControlType);
-                    case TargetType.Registry:
+                    case PathType.Registry:
                         return
                             (this.Account == summary.Account) &&
                             (this.RegistryRights == summary.RegistryRights) &&
@@ -468,7 +460,7 @@ namespace IO.Lib
             string[] fields = accessString.Split(';');
             switch (this.Type)
             {
-                case TargetType.File:
+                case PathType.File:
                     if (fields.Length >= 3)
                     {
                         bool ret = true;
@@ -485,7 +477,7 @@ namespace IO.Lib
                         return ret;
                     }
                     break;
-                case TargetType.Directory:
+                case PathType.Directory:
                     if (fields.Length >= 5)
                     {
                         bool ret = true;
@@ -506,7 +498,7 @@ namespace IO.Lib
                         return ret;
                     }
                     break;
-                case TargetType.Registry:
+                case PathType.Registry:
                     if (fields.Length >= 5)
                     {
                         bool ret = true;
@@ -536,7 +528,7 @@ namespace IO.Lib
         {
             switch (this.Type)
             {
-                case TargetType.File:
+                case PathType.File:
                     if (rule is FileSystemAccessRule frule)
                     {
                         bool ret = true;
@@ -555,7 +547,7 @@ namespace IO.Lib
                         return ret;
                     }
                     break;
-                case TargetType.Directory:
+                case PathType.Directory:
                     if (rule is FileSystemAccessRule drule)
                     {
                         bool ret = true;
@@ -576,7 +568,7 @@ namespace IO.Lib
                         return ret;
                     }
                     break;
-                case TargetType.Registry:
+                case PathType.Registry:
                     if (rule is RegistryAccessRule rrule)
                     {
                         bool ret = true;
@@ -602,7 +594,7 @@ namespace IO.Lib
             if (File.Exists(path))
             {
                 var rules = new FileInfo(path).GetAccessControl().GetAccessRules(true, false, typeof(NTAccount));
-                return string.Join("/", FromAccessRules(rules, TargetType.File).Select(x => x.ToString()));
+                return string.Join("/", FromAccessRules(rules, PathType.File).Select(x => x.ToString()));
             }
             return null;
         }
@@ -612,7 +604,7 @@ namespace IO.Lib
             if (Directory.Exists(path))
             {
                 var rules = new DirectoryInfo(path).GetAccessControl().GetAccessRules(true, false, typeof(NTAccount));
-                return string.Join("/", FromAccessRules(rules, TargetType.Directory).Select(x => x.ToString()));
+                return string.Join("/", FromAccessRules(rules, PathType.Directory).Select(x => x.ToString()));
             }
             return null;
         }
@@ -630,7 +622,7 @@ namespace IO.Lib
             if (regKey != null)
             {
                 var rules = regKey.GetAccessControl().GetAccessRules(true, false, typeof(NTAccount));
-                return string.Join("/", FromAccessRules(rules, TargetType.Registry).Select(x => x.ToString()));
+                return string.Join("/", FromAccessRules(rules, PathType.Registry).Select(x => x.ToString()));
             }
             return null;
         }

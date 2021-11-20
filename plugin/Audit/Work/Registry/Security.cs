@@ -72,16 +72,12 @@ namespace Audit.Work.Registry
 
             if (_Access?.Length > 0)
             {
-                _accessRuleSummary = AccessRuleSummary.FromAccessString(
-                    string.Join("/", _Access),
-                    AccessRuleSummary.TargetType.Registry);
+                _accessRuleSummary = AccessRuleSummary.FromAccessString(string.Join("/", _Access), PathType.Registry);
             }
             if ((_accessRuleSummary == null || _accessRuleSummary.Length == 0) && !string.IsNullOrEmpty(_Account))
             {
                 _Account = PredefinedAccount.Resolv(_Account);
-                _accessRuleSummary = AccessRuleSummary.FromAccessString(
-                    $"{_Account};{_Rights};{_AccessControl}",
-                    AccessRuleSummary.TargetType.Registry);
+                _accessRuleSummary = AccessRuleSummary.FromAccessString($"{_Account};{_Rights};{_AccessControl}", PathType.Registry);
             }
 
             /*
@@ -181,7 +177,7 @@ namespace Audit.Work.Registry
                 {
                     AuthorizationRuleCollection rules = security.GetAccessRules(true, false, typeof(NTAccount));
                     string targetAccess =
-                        string.Join("/", AccessRuleSummary.FromAccessRules(rules, AccessRuleSummary.TargetType.Registry).Select(x => x.ToString()));
+                        string.Join("/", AccessRuleSummary.FromAccessRules(rules, PathType.Registry).Select(x => x.ToString()));
                     if (rules.Count == _accessRuleSummary.Length &&
                         rules.OfType<AuthorizationRule>().All(x => _accessRuleSummary.Any(y => y.Compare(x))))
                     {

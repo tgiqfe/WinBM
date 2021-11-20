@@ -72,7 +72,7 @@ namespace Audit.Work.Directory
             {
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(
                     string.Join("/", _Access),
-                    AccessRuleSummary.TargetType.Directory);
+                    PathType.Directory);
             }
             if ((_accessRuleSummary == null || _accessRuleSummary.Length == 0) && !string.IsNullOrEmpty(_Account))
             {
@@ -84,7 +84,7 @@ namespace Audit.Work.Directory
                         _NoRecursive ? "None" : "ContainerInherit,ObjectInherit",
                         "None",
                         _AccessControl),
-                    AccessRuleSummary.TargetType.Directory);
+                    PathType.Directory);
             }
 
             /*
@@ -175,7 +175,7 @@ namespace Audit.Work.Directory
                 {
                     AuthorizationRuleCollection rules = security.GetAccessRules(true, false, typeof(NTAccount));
                     string targetAccess =
-                        string.Join("/", AccessRuleSummary.FromAccessRules(rules, AccessRuleSummary.TargetType.Directory).Select(x => x.ToString()));
+                        string.Join("/", AccessRuleSummary.FromAccessRules(rules, PathType.Directory).Select(x => x.ToString()));
                     if (rules.Count == _accessRuleSummary.Length &&
                         rules.OfType<AuthorizationRule>().All(x => _accessRuleSummary.Any(y => y.Compare(x))))
                     {

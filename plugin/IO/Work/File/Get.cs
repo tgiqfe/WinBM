@@ -42,7 +42,7 @@ namespace IO.Work.File
             //string access = FileControl.AccessRulesToString(rules);
 
             string access = string.Join('/',
-                AccessRuleSummary.FromAccessRules(rules, AccessRuleSummary.TargetType.File).
+                AccessRuleSummary.FromAccessRules(rules, PathType.File).
                     Select(x => x.ToString()));
 
             string owner = security.GetOwner(typeof(NTAccount)).Value;

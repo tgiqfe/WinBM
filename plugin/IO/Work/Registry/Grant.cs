@@ -59,7 +59,7 @@ namespace IO.Work.Registry
             {
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(
                     string.Join("/", _Access),
-                    AccessRuleSummary.TargetType.Registry);
+                    PathType.Registry);
             }
             if ((_accessRuleSummary == null || _accessRuleSummary.Length == 0) && !string.IsNullOrEmpty(_Account))
             {
@@ -71,7 +71,7 @@ namespace IO.Work.Registry
                         _NoRecurse ? "None" : "ContainerInherit",
                         "None",
                         _AccessControl),
-                    AccessRuleSummary.TargetType.Registry);
+                    PathType.Registry);
             }
 
             /*
