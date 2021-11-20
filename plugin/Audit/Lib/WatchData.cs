@@ -8,9 +8,9 @@ namespace Audit.Lib
 {
     public class WatchData
     {
-        public DateTime? CreationTime { get; set; }
-        public DateTime? LastWriteTime { get; set; }
-        public DateTime? LastAccessTime { get; set; }
+        public string CreationTime { get; set; }
+        public string LastWriteTime { get; set; }
+        public string LastAccessTime { get; set; }
         public string Access { get; set; }
         public string Owner { get; set; }
         public bool? Inherited { get; set; }
@@ -19,7 +19,7 @@ namespace Audit.Lib
         public string SHA256Hash { get; set; }
         public string SHA512Hash { get; set; }
         public long? Size { get; set; }
-        public bool Exists { get; set; }
+        public bool? Exists { get; set; }
     }
 
     public class WatchDataCollection : Dictionary<string, WatchData>
@@ -27,17 +27,17 @@ namespace Audit.Lib
         //  key⇒ファイル/ディレクトリ/レジストリのパス
         //  Value ⇒WatchData
 
-        public WatchData GetParameter(string key)
+        public WatchData GetWatchData(string path)
         {
-            string matchKey = this.Keys.FirstOrDefault(x => x.Equals(key, StringComparison.OrdinalIgnoreCase));
+            string matchKey = this.Keys.FirstOrDefault(x => x.Equals(path, StringComparison.OrdinalIgnoreCase));
             return matchKey == null ? 
                 new WatchData() : 
                 this[matchKey];
         }
 
-        public void SetCreationTime(string key, DateTime creationTime)
+        public void SetWatchData(string path, WatchData watchData)
         {
-            GetParameter(key).CreationTime = creationTime;
+            this[path] = watchData;
         }
     }
 }

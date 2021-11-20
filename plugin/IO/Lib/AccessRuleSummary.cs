@@ -479,13 +479,6 @@ namespace IO.Lib
 
                         ret &= (account.Contains("\\") && this.Account.Value.Equals(account, StringComparison.OrdinalIgnoreCase)) ||
                             (!account.Contains("\\") && this.Account.Value.EndsWith("\\" + account, StringComparison.OrdinalIgnoreCase));
-                        /*
-                        if ((account.Contains("\\") && this.Account.Value.Equals(account, StringComparison.OrdinalIgnoreCase)) ||
-                            (!account.Contains("\\") && this.Account.Value.EndsWith("\\" + account, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            ret &= true;
-                        }
-                        */
                         ret &= GetFileSystemRights(rights) == this.FileSystemRights;
                         ret &= GetAccessControlType(accessControlType) != this.AccessControlType;
 
@@ -505,13 +498,6 @@ namespace IO.Lib
 
                         ret &= (account.Contains("\\") && this.Account.Value.Equals(account, StringComparison.OrdinalIgnoreCase)) ||
                             (!account.Contains("\\") && this.Account.Value.EndsWith("\\" + account, StringComparison.OrdinalIgnoreCase));
-                        /*
-                        if ((account.Contains("\\") && this.Account.Value.Equals(account, StringComparison.OrdinalIgnoreCase)) ||
-                            (!account.Contains("\\") && this.Account.Value.EndsWith("\\" + account, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            ret &= true;
-                        }
-                        */
                         ret &= GetFileSystemRights(rights) == this.FileSystemRights;
                         ret &= GetInheritanceFlags(inheritanceFlags) == this.InheritanceFlags;
                         ret &= GetPropagationFlags(propagationFlags) == this.PropagationFlags;
@@ -533,13 +519,6 @@ namespace IO.Lib
 
                         ret &= (account.Contains("\\") && this.Account.Value.Equals(account, StringComparison.OrdinalIgnoreCase)) ||
                             (!account.Contains("\\") && this.Account.Value.EndsWith("\\" + account, StringComparison.OrdinalIgnoreCase));
-                        /*
-                        if ((account.Contains("\\") && this.Account.Value.Equals(account, StringComparison.OrdinalIgnoreCase)) ||
-                            (!account.Contains("\\") && this.Account.Value.EndsWith("\\" + account, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            ret &= true;
-                        }
-                        */
                         ret &= GetRegistryRights(rights) == this.RegistryRights;
                         ret &= GetInheritanceFlags(inheritanceFlags) == this.InheritanceFlags;
                         ret &= GetPropagationFlags(propagationFlags) == this.PropagationFlags;
@@ -613,6 +592,47 @@ namespace IO.Lib
                     break;
             }
             return false;
+        }
+
+        #endregion
+        #region Object to Object
+
+        public static string FileToAccessString(string path)
+        {
+            if (File.Exists(path))
+            {
+                var rules = new FileInfo(path).GetAccessControl().GetAccessRules(true, false, typeof(NTAccount));
+                return string.Join("/", FromAccessRules(rules, TargetType.File).Select(x => x.ToString()));
+            }
+            return null;
+        }
+
+        public static string DirectoryToAccessString(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                var rules = new DirectoryInfo(path).GetAccessControl().GetAccessRules(true, false, typeof(NTAccount));
+                return string.Join("/", FromAccessRules(rules, TargetType.Directory).Select(x => x.ToString()));
+            }
+            return null;
+        }
+
+        public static string RegistryKeyToAccessString(string path)
+        {
+            using (RegistryKey regKey = RegistryControl.GetRegistryKey(path, false, false))
+            {
+                return RegistryKeyToAccessString(regKey);
+            }
+        }
+
+        public static string RegistryKeyToAccessString(RegistryKey regKey)
+        {
+            if (regKey != null)
+            {
+                var rules = regKey.GetAccessControl().GetAccessRules(true, false, typeof(NTAccount));
+                return string.Join("/", FromAccessRules(rules, TargetType.Registry).Select(x => x.ToString()));
+            }
+            return null;
         }
 
         #endregion
