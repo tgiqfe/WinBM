@@ -11,6 +11,7 @@
 		<Compile Include="..\IO\Lib\FileControl.cs" Link="Lib\FileControl.cs" />
 		<Compile Include="..\IO\Lib\FileEncoding.cs" Link="Lib\FileEncoding.cs" />
 		<Compile Include="..\IO\Lib\InheritedAction.cs" Link="Lib\InheritedAction.cs" />
+		<Compile Include="..\IO\Lib\PathType.cs" Link="Lib\PathType.cs" />
 		<Compile Include="..\IO\Lib\PredefinedAccount.cs" Link="Lib\PredefinedAccount.cs" />
 		<Compile Include="..\IO\Lib\RegistryControl.cs" Link="Lib\RegistryControl.cs" />
 		<Compile Include="..\IO\Lib\Wildcard.cs" Link="Lib\Wildcard.cs" />

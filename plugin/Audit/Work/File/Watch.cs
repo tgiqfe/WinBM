@@ -121,7 +121,7 @@ namespace Audit.Work.File
             foreach (string path in _Path)
             {
                 _serial++;
-                WatchData watch = collection.GetWatchData(path);
+                WatchData watch = collection.GetWatchData(path, PathType.File);
                 Success |= WatchExists(path, dictionary, watch);
 
                 if (System.IO.File.Exists(path))
@@ -170,7 +170,7 @@ namespace Audit.Work.File
             //  前回Watch時存在していて、今回存在しない場合はWatchDataをクリア
             if ((bool)watch.Exists && !exists)
             {
-                watch = new WatchData();
+                watch = new WatchData(PathType.File);
                 watch.Exists = exists;
             }
 

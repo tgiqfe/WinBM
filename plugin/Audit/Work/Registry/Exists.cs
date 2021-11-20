@@ -13,7 +13,7 @@ namespace Audit.Work.Registry
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Exists : AuditTaskWork
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
         [Keys("path", "registrypath", "targetpath", "key", "registrykey", "targetkey", "regkey", "target")]
         protected string[] _Path { get; set; }
 

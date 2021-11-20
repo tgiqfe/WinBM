@@ -120,7 +120,7 @@ namespace Audit.Work.Registry
                     }
                     else
                     {
-                        //  レジストリのみチェック
+                        //  レジストリ値のみチェック
                         if (regKeyA.GetValueNames().Any(x => x.Equals(_RegistryNameA)) &&
                             regKeyB.GetValueNames().Any(x => x.Equals(_RegistryNameB)))
                         {

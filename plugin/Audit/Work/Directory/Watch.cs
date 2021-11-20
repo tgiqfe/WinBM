@@ -14,6 +14,9 @@ using System.Security.Cryptography;
 
 namespace Audit.Work.Directory
 {
+    /// <summary>
+    /// Watch関連のクラス。Registry関連で詰まったので、一旦凍結。
+    /// </summary>
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Watch : AuditTaskWork
     {
@@ -122,7 +125,7 @@ namespace Audit.Work.Directory
 
             foreach (string path in _Path)
             {
-                WatchData watch = collection.GetWatchData(path);
+                WatchData watch = collection.GetWatchData(path, PathType.Directory);
                 Success |= WatchExists_dir(path, dictionary, watch);
 
                 if (System.IO.Directory.Exists(path))
@@ -133,11 +136,38 @@ namespace Audit.Work.Directory
                 collection.SetWatchData(path, watch);
             }
 
-            /*
-             * 
-             * このあたりで、前回Watch時に在って、今回Watch時に無くなっているファイル/フォルダーの確認
-             * 
-             */
+            foreach (KeyValuePair<string, WatchData> pair in collection)
+            {
+                if (pair.Value.PathType == PathType.File)
+                {
+                    if (!System.IO.File.Exists(pair.Key))
+                    {
+                        collection[pair.Key] = new WatchData(PathType.File);
+                        collection[pair.Key].Exists = false;
+                    }
+                    continue;
+                }
+                if (pair.Value.PathType == PathType.Directory)
+                {
+                    if (!System.IO.Directory.Exists(pair.Key))
+                    {
+                        collection[pair.Key] = new WatchData(PathType.Directory);
+                        collection[pair.Key].Exists = false;
+                    }
+                }
+            }
+
+            foreach (string notExistsFile in collection.Keys.ToList().Where(x => !System.IO.File.Exists(x)))
+            {
+                _serial++;
+                dictionary[$"file_NotExists_{_serial}"] = notExistsFile;
+
+            }
+            foreach (string notexistsDirectory in collection.Keys.ToList().Where(x => !System.IO.Directory.Exists(x)))
+            {
+                _serial++;
+                dictionary[$"directory_NotExists_{_serial}"] = notexistsDirectory;
+            }
 
             SaveWatchDB(_Serial, collection);
 
@@ -179,7 +209,14 @@ namespace Audit.Work.Directory
                 if ((_IsSize ?? false) || watch.Size != null) { Success |= WatchSize(filePath, dictionary, watch); }
             }
 
-
+            //  配下フォルダーを確認
+            foreach (string childDir in System.IO.Directory.GetDirectories(path))
+            {
+                if (depth < _MaxDepth)
+                {
+                    RecursiveTree(childDir, dictionary, watch, depth + 1);
+                }
+            }
         }
 
         #region Watch Exists
@@ -189,9 +226,18 @@ namespace Audit.Work.Directory
             bool exists = System.IO.Directory.Exists(path);
 
             dictionary[$"directory_Exists_{_serial}"] = exists.ToString();
-            bool ret = watch.Exists == null || watch.Exists == exists;
-            watch.Exists = exists;
-            return ret;
+            if (watch.Exists == null || watch.Exists == exists)
+            {
+                watch.Exists = exists;
+                return true;
+            }
+            if ((bool)watch.Exists && !exists)
+            {
+                watch = new WatchData(PathType.Directory);
+                watch.Exists = exists;
+            }
+
+            return false;
         }
 
         private bool WatchExists(string path, Dictionary<string, string> dictionary, WatchData watch)
@@ -209,7 +255,7 @@ namespace Audit.Work.Directory
             //  前回Watch時存在していて、今回存在しない場合はWatchDataをクリア
             if ((bool)watch.Exists && !exists)
             {
-                watch = new WatchData();
+                watch = new WatchData(PathType.File);
                 watch.Exists = exists;
             }
 
