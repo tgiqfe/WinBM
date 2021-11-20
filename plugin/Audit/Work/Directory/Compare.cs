@@ -166,7 +166,7 @@ namespace Audit.Work.Directory
                     if (_IsMD5Hash ?? false) { Success &= CompareHash(pathA, pathB, dictionary, "md5"); }
                     if (_IsSHA256Hash ?? false) { Success &= CompareHash(pathA, pathB, dictionary, "sha256"); }
                     if (_IsSHA512Hash ?? false) { Success &= CompareHash(pathA, pathB, dictionary, "sha512"); }
-                    if (_IsSize ?? false) { Success &= CheckSize(pathA, pathB, dictionary); }
+                    if (_IsSize ?? false) { Success &= CompareSize(pathA, pathB, dictionary); }
                 }
             }
             else
@@ -201,7 +201,7 @@ namespace Audit.Work.Directory
             }
         }
 
-        #region CheckDate methods
+        #region Compare Date
 
         /// <summary>
         /// 作成/更新/最終アクセス日時チェック
@@ -309,7 +309,7 @@ namespace Audit.Work.Directory
         }
 
         #endregion
-        #region  CheckAccess methods
+        #region  Compare Access
 
         /// <summary>
         /// アクセス権チェック
@@ -352,7 +352,7 @@ namespace Audit.Work.Directory
         }
 
         #endregion
-        #region CheckOwner methods
+        #region Compare Owner
 
         /// <summary>
         /// 所有者チェック
@@ -398,7 +398,7 @@ namespace Audit.Work.Directory
         }
 
         #endregion
-        #region CheckInherited methods
+        #region Compare Inherited
 
         /// <summary>
         /// アクセス権継承有無チェック
@@ -437,7 +437,7 @@ namespace Audit.Work.Directory
         }
 
         #endregion
-        #region CheckAttribute methods
+        #region Compare Attributes
 
         private bool CompareAttributes_dir(string dirA, string dirB, Dictionary<string, string> dictionary)
         {
@@ -487,9 +487,9 @@ namespace Audit.Work.Directory
         }
 
         #endregion
-        #region CheckHash methods
+        #region Compare methods
 
-        //  CheckHashAlgorithm_dirは無し
+        //  CompareHash_dirは無し
 
         /// <summary>
         /// ファイルのハッシュを比較
@@ -508,22 +508,16 @@ namespace Audit.Work.Directory
             {
                 case "md5":
                     checkTarget = "MD5Hash";
-                    //hashAlgA = new MD5CryptoServiceProvider();
-                    //hashAlgB = new MD5CryptoServiceProvider();
                     hashAlgA = MD5.Create();
                     hashAlgB = MD5.Create();
                     break;
                 case "sha256":
                     checkTarget = "SHA256Hash";
-                    //hashAlgA = new SHA256CryptoServiceProvider();
-                    //hashAlgB = new SHA256CryptoServiceProvider();
                     hashAlgA = SHA256.Create();
                     hashAlgB = SHA256.Create();
                     break;
                 case "sha512":
                     checkTarget = "SHA512Hash";
-                    //hashAlgA = new SHA512CryptoServiceProvider();
-                    //hashAlgB = new SHA512CryptoServiceProvider();
                     hashAlgA = SHA512.Create();
                     hashAlgB = SHA512.Create();
                     break;
@@ -550,11 +544,11 @@ namespace Audit.Work.Directory
         }
 
         #endregion
-        #region CheckSize methods
+        #region Compare Size
 
-        //  CheckSize_dirは無し
+        //  CompareSize_dirは無し
 
-        private bool CheckSize(string fileA, string fileB, Dictionary<string, string> dictionary)
+        private bool CompareSize(string fileA, string fileB, Dictionary<string, string> dictionary)
         {
             long ret_fileA = new System.IO.FileInfo(fileA).Length;
             long ret_fileB = new System.IO.FileInfo(fileB).Length;

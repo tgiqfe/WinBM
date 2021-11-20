@@ -24,14 +24,11 @@ namespace Audit.Lib
 
     public class WatchDataCollection : Dictionary<string, WatchData>
     {
-        //  key⇒ファイル/ディレクトリ/レジストリのパス
-        //  Value ⇒WatchData
-
         public WatchData GetWatchData(string path)
         {
             string matchKey = this.Keys.FirstOrDefault(x => x.Equals(path, StringComparison.OrdinalIgnoreCase));
-            return matchKey == null ? 
-                new WatchData() : 
+            return matchKey == null ?
+                new WatchData() :
                 this[matchKey];
         }
 

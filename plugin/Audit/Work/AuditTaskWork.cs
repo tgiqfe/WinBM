@@ -210,8 +210,8 @@ namespace Audit.Work
         /// Watchデータを保存
         /// </summary>
         /// <param name="serial"></param>
-        /// <param name="watchData"></param>
-        protected void SaveWatchDB(string serial, WatchDataCollection watchData)
+        /// <param name="collection"></param>
+        protected void SaveWatchDB(string serial, WatchDataCollection collection)
         {
             if (_WatchDBFile == null)
             {
@@ -241,7 +241,7 @@ namespace Audit.Work
             }
 
             db ??= new Dictionary<string, WatchDataCollection>();
-            db[serial] = watchData;
+            db[serial] = collection;
 
             try
             {
