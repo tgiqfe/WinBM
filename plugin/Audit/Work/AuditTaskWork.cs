@@ -112,6 +112,7 @@ namespace Audit.Work
 
         /// <summary>
         /// WatchDBファイルを読み込んでWatchデータを取得
+        /// ※一旦Watch関連凍結
         /// </summary>
         /// <param name="serial"></param>
         /// <returns></returns>
@@ -208,6 +209,7 @@ namespace Audit.Work
 
         /// <summary>
         /// Watchデータを保存
+        /// ※一旦Watch関連凍結
         /// </summary>
         /// <param name="serial"></param>
         /// <param name="collection"></param>

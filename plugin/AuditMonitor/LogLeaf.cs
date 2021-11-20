@@ -95,12 +95,6 @@ namespace AuditMonitor
         {
             if (_LineString_pre == null)
             {
-                /*
-                string logTarget = string.Format("{0} {1} / {2}",
-                    this.TaskName.Substring(TaskName.IndexOf("[")),
-                    this.PageName,
-                    this.SpecName);
-                */
                 string logTarget = string.Format("{0} / {1} {2}",
                     this.PageName, this.SpecName, this.TaskName.Substring(TaskName.IndexOf("[")));
                 if (logTarget.Length > _maxLogTargetLength)
