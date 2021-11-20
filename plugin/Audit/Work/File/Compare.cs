@@ -217,7 +217,7 @@ namespace Audit.Work.File
         }
 
         #endregion
-        #region CompareOwner
+        #region Compare Owner
 
         /// <summary>
         /// 所有者チェック
@@ -314,22 +314,16 @@ namespace Audit.Work.File
             {
                 case "md5":
                     checkTarget = "MD5Hash";
-                    //hashAlgA = new MD5CryptoServiceProvider();
-                    //hashAlgB = new MD5CryptoServiceProvider();
                     hashAlgA = MD5.Create();
                     hashAlgB = MD5.Create();
                     break;
                 case "sha256":
                     checkTarget = "SHA256Hash";
-                    //hashAlgA = new SHA256CryptoServiceProvider();
-                    //hashAlgB = new SHA256CryptoServiceProvider();
                     hashAlgA = SHA256.Create();
                     hashAlgB = SHA256.Create();
                     break;
                 case "sha512":
                     checkTarget = "SHA512Hash";
-                    //hashAlgA = new SHA512CryptoServiceProvider();
-                    //hashAlgB = new SHA512CryptoServiceProvider();
                     hashAlgA = SHA512.Create();
                     hashAlgB = SHA512.Create();
                     break;

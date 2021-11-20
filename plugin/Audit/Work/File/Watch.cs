@@ -7,6 +7,10 @@ using System.IO;
 using WinBM;
 using WinBM.Task;
 using Audit.Lib;
+using IO.Lib;
+using System.Security.Principal;
+using System.Security.AccessControl;
+using System.Security.Cryptography;
 
 namespace Audit.Work.File
 {
@@ -16,6 +20,7 @@ namespace Audit.Work.File
     /// 監視2回目以降は、いずれかの項目について変化が確認できたらSuccess
     /// 複数パスを監視する場合、どれか1つでも変化が確認できたらSuccess
     /// </summary>
+    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Watch : AuditTaskWork
     {
         [TaskParameter(Mandatory = true)]
@@ -212,8 +217,111 @@ namespace Audit.Work.File
 
         private bool watchAccess(string path, Dictionary<string, string> dictionary, WatchData watch)
         {
+            string access = AccessRuleSummary.FileToAccessString(path);
+
+            dictionary[$"file_Access_{_serial}"] = access;
+            bool ret = watch.Access == null || watch.Access == access;
+            watch.Access = access;
+            return ret;
+        }
+
+        #endregion
+        #region Watch Owner
+
+        private bool WatchOwner(string path, Dictionary<string, string> dictionary, WatchData watch)
+        {
+            string owner = new FileInfo(path).GetAccessControl().GetOwner(typeof(NTAccount)).Value;
+
+            dictionary[$"file_Owner_{_serial}"] = owner;
+            bool ret = watch.Owner == null || watch.Owner == owner;
+            watch.Owner = owner;
+            return ret;
+        }
+
+        #endregion
+        #region Watch Inherited
+
+        private bool WatchInherited(string path, Dictionary<string, string> dictionary, WatchData watch)
+        {
+            bool inherited = !new FileInfo(path).GetAccessControl().AreAccessRulesProtected;
+
+            dictionary[$"file_Inherited_{_serial}"] = inherited.ToString();
+            bool ret = watch.Inherited == null || watch.Inherited == inherited;
+            watch.Inherited = inherited;
+            return ret;
+        }
+
+        #endregion
+        #region Watch Attributes
+
+        private bool WatchAttributes(string path, Dictionary<string, string> dictionary, WatchData watch)
+        {
+            FileAttributes attr = System.IO.File.GetAttributes(path);
+            string[] attrArray = new string[]
+            {
+                (attr & FileAttributes.ReadOnly) == FileAttributes.ReadOnly ? "ReadOnly" : null,
+                (attr & FileAttributes.Hidden) == FileAttributes.Hidden ? "Hidden" : null,
+                (attr & FileAttributes.System) == FileAttributes.System ? "System" : null
+            }.Where(x => x != null).ToArray();
+
+            dictionary[$"file_Attributes_{_serial}"] = string.Join(", ", attrArray);
+            bool ret = watch.Attributes == null || watch.Attributes.SequenceEqual(attrArray);
+            watch.Attributes = attrArray;
+            return ret;
+        }
+
+        #endregion
+        #region Watch Hash
+
+        private bool WatchHash(string path, Dictionary<string, string> dictionary, WatchData watch, string hashType)
+        {
+            using (var fs = new System.IO.FileStream(path, FileMode.Open, FileAccess.Read))
+            {
+                switch (hashType)
+                {
+                    case "md5":
+                        HashAlgorithm md5 = MD5.Create();
+                        string text_md5 = BitConverter.ToString(md5.ComputeHash(fs)).Replace("-", "");
+                        md5.Clear();
+
+                        dictionary[$"file_MD5Hash_{_serial}"] = text_md5;
+                        bool ret_md5 = watch.MD5Hash == null || watch.MD5Hash == text_md5;
+                        watch.MD5Hash = text_md5;
+                        return ret_md5;
+                    case "sha256":
+                        HashAlgorithm sha256 = SHA256.Create();
+                        string text_sha256 = BitConverter.ToString(sha256.ComputeHash(fs)).Replace("-", "");
+                        sha256.Clear();
+
+                        dictionary[$"file_MD5Hash_{_serial}"] = text_sha256;
+                        bool ret_sha256 = watch.SHA256Hash == null || watch.SHA256Hash == text_sha256;
+                        watch.SHA256Hash = text_sha256;
+                        return ret_sha256;
+                    case "sha512":
+                        HashAlgorithm sha512 = SHA512.Create();
+                        string text_sha512 = BitConverter.ToString(sha512.ComputeHash(fs)).Replace("-", "");
+                        sha512.Clear();
+
+                        dictionary[$"file_MD5Hash_{_serial}"] = text_sha512;
+                        bool ret_sha512 = watch.SHA512Hash == null || watch.SHA512Hash == text_sha512;
+                        watch.SHA512Hash = text_sha512;
+                        return ret_sha512;
+                }
+            }
 
             return false;
+        }
+
+        #endregion
+        #region Watch Size
+
+        private bool WatchSize(string path, Dictionary<string, string> dictionary, WatchData watch)
+        {
+            long size = new FileInfo(path).Length;
+            dictionary[$"file_Size_{_serial}"] = size.ToString();
+            bool ret = watch.Size == null || watch.Size == size;
+            watch.Size = size;
+            return ret;
         }
 
         #endregion
