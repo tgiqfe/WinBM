@@ -599,6 +599,12 @@ namespace IO.Lib
             return null;
         }
 
+        public static string FileToAccessString(FileInfo info)
+        {
+            var rules = info.GetAccessControl().GetAccessRules(true, false, typeof(NTAccount));
+            return string.Join("/", FromAccessRules(rules, PathType.File).Select(x => x.ToString()));
+        }
+
         public static string DirectoryToAccessString(string path)
         {
             if (Directory.Exists(path))
@@ -607,6 +613,12 @@ namespace IO.Lib
                 return string.Join("/", FromAccessRules(rules, PathType.Directory).Select(x => x.ToString()));
             }
             return null;
+        }
+
+        public static string DirectoryToAccessString(DirectoryInfo info)
+        {
+            var rules = info.GetAccessControl().GetAccessRules(true, false, typeof(NTAccount));
+            return string.Join("/", FromAccessRules(rules, PathType.Directory).Select(x => x.ToString()));
         }
 
         public static string RegistryKeyToAccessString(string path)
