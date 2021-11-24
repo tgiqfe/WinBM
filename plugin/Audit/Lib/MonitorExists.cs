@@ -12,7 +12,7 @@ namespace Audit.Lib
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class MonitorExists
     {
-        #region Check method
+        #region Watch method
 
         public static bool WatchFile(
             WatchPath watch, Dictionary<string, string> dictionary, int serial, string path)

@@ -14,7 +14,7 @@ namespace Audit.Lib
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class MonitorSecurity
     {
-        #region Check method
+        #region Watch method
 
         public static bool WatchFileAccess(
             WatchPath watch, Dictionary<string, string> dictionary, int serial, bool? isMonitor, FileInfo info)

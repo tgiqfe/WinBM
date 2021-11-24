@@ -9,7 +9,6 @@ using System.IO;
 
 namespace Audit.Lib
 {
-    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     public class WatchPathCollection : Dictionary<string, WatchPath>
     {
         private List<string> _CheckedKeys = new List<string>();

@@ -11,7 +11,7 @@ namespace Audit.Lib
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class MonitorRegistryType
     {
-        #region Check method
+        #region Watch method
 
         public static bool WatchRegistryValue(
             WatchPath watch, Dictionary<string, string> dictionary, int serial, bool? isMonitor, RegistryKey regKey, string name)

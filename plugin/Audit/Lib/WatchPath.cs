@@ -12,7 +12,6 @@ using IO.Lib;
 
 namespace Audit.Lib
 {
-    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     public class WatchPath
     {
         public PathType PathType { get; set; }

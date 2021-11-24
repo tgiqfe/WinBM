@@ -10,7 +10,7 @@ namespace Audit.Lib
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class MonitorTimeStamp
     {
-        #region Check method
+        #region Watch method
 
         public static bool WatchFileCreationTime(
             WatchPath watch, Dictionary<string, string> dictionary, int serial, bool? isMonitor, FileInfo info, bool? isDateOnly, bool? isTimeOnly)

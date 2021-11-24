@@ -10,7 +10,7 @@ namespace Audit.Lib
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class MonitorAttributes
     {
-        #region Check method
+        #region Watch method
 
         public static bool WatchFile(
             WatchPath watch, Dictionary<string, string> dictionary, int serial, bool? isMonitor, string path)

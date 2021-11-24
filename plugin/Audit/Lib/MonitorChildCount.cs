@@ -11,7 +11,7 @@ namespace Audit.Lib
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class MonitorChildCount
     {
-        #region Check method
+        #region Watch method
 
         public static bool WatchDirectory(
             WatchPath watch, Dictionary<string, string> dictionary, int serial, bool? isMonitor, string path)
