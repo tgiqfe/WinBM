@@ -66,6 +66,9 @@ namespace Audit.Work.Directory
         [Keys("issha512hash", "sha512hash", "sha512")]
         protected bool? _IsSHA512Hash { get; set; }
 
+        //  ChildCount比較も追加予定
+        //  ディレクトリのサイズは削除で
+
         [TaskParameter(MandatoryAny = 11)]
         [Keys("issize", "size")]
         protected bool? _IsSize { get; set; }

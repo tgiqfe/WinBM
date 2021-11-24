@@ -34,7 +34,7 @@ namespace IO.Work.Registry
         protected string _ValueExpand { get; set; }
 
         [TaskParameter]
-        [Keys("valuekind", "kind", "type", "regtype")]
+        [Keys("valuekind", "kind", "type", "registrytype", "regtype")]
         [Values("unknown,reg_unknown",
             "string,reg_sz",
             "dword,reg_dword,int",

@@ -34,10 +34,6 @@ namespace Audit.Work.Registry
 
         //  ################################
 
-        [TaskParameter(MandatoryAny = 1)]
-        [Keys("istype", "isvaluekind", "isregtype", "valuekind", "kind", "type", "regtype")]
-        protected bool? _IsType { get; set; }
-
         [TaskParameter(MandatoryAny = 2)]
         [Keys("isaccess", "access", "acl")]
         protected bool? _IsAccess { get; set; }
@@ -61,6 +57,12 @@ namespace Audit.Work.Registry
         [TaskParameter(MandatoryAny = 7)]
         [Keys("issha512hash", "sha512hash", "sha512")]
         protected bool? _IsSHA512Hash { get; set; }
+
+        //  ChildCount比較も追加予定
+
+        [TaskParameter(MandatoryAny = 1)]
+        [Keys("isregistrytype", "isvaluekind", "isregtype", "valuekind", "kind", "type", "registrytype", "regtype")]
+        protected bool? _IsRegistryType { get; set; }
 
         /// <summary>
         /// 存在チェックのみに使用するパラメータ。その他の比較処理の過程で確認できる為、Exists用の特別な作業は無し
@@ -125,7 +127,7 @@ namespace Audit.Work.Registry
                             regKeyB.GetValueNames().Any(x => x.Equals(_RegistryNameB)))
                         {
                             _serial++;
-                            if (_IsType ?? false) { Success &= CompareType(regKeyA, regKeyB, _RegistryNameA, _RegistryNameB, dictionary); }
+                            if (_IsRegistryType ?? false) { Success &= CompareType(regKeyA, regKeyB, _RegistryNameA, _RegistryNameB, dictionary); }
                             if (_IsMD5Hash ?? false) { Success &= CompareHash(regKeyA, regKeyB, _RegistryNameA, _RegistryNameB, dictionary, "md5"); }
                             if (_IsSHA256Hash ?? false) { Success &= CompareHash(regKeyA, regKeyB, _RegistryNameA, _RegistryNameB, dictionary, "sha256"); }
                             if (_IsSHA512Hash ?? false) { Success &= CompareHash(regKeyA, regKeyB, _RegistryNameA, _RegistryNameB, dictionary, "sha512"); }
@@ -164,7 +166,7 @@ namespace Audit.Work.Registry
                     _serial++;
                     dictionary[$"RegistryName_{_serial}"] = name;
 
-                    if (_IsType ?? false) { Success &= CompareType(targetKeyA, targetKeyB, name, name, dictionary); }
+                    if (_IsRegistryType ?? false) { Success &= CompareType(targetKeyA, targetKeyB, name, name, dictionary); }
                     if (_IsMD5Hash ?? false) { Success &= CompareHash(targetKeyA, targetKeyB, name, name, dictionary, "md5"); }
                     if (_IsSHA256Hash ?? false) { Success &= CompareHash(targetKeyA, targetKeyB, name, name, dictionary, "sha256"); }
                     if (_IsSHA512Hash ?? false) { Success &= CompareHash(targetKeyA, targetKeyB, name, name, dictionary, "sha512"); }

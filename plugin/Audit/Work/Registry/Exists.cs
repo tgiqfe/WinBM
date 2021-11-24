@@ -22,7 +22,7 @@ namespace Audit.Work.Registry
         protected string[] _Name { get; set; }
 
         [TaskParameter]
-        [Keys("valuekind", "kind", "type", "regtype")]
+        [Keys("valuekind", "kind", "type", "registrytype", "regtype")]
         [Values("unknown,reg_unknown",
             "string,reg_sz",
             "dword,reg_dword,int",
