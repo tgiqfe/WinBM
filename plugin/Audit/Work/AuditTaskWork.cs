@@ -11,11 +11,14 @@ using System.Text.Json;
 
 namespace Audit.Work
 {
+    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class AuditTaskWork : TaskJob
     {
         private static string _AuditMonitorFile = null;
 
         private string _SinceDBFile = null;
+
+        private string _WatchDBDir = null;
 
         /// <summary>
         /// PreProcessのタイミングでAuditMonitorの準備
@@ -66,6 +69,8 @@ namespace Audit.Work
 
             Manager.WriteLog(LogLevel.Info, $"{this.TaskName} Add audit result. serial={leaf.Serial}");
         }
+
+        #region Load/Save SinceDB
 
         /// <summary>
         /// SinceDBファイルを読み込んで現在読み込みされているポジションを取得
@@ -162,5 +167,46 @@ namespace Audit.Work
                 Manager.WriteLog(LogLevel.Debug, "SinceDB write error.");
             }
         }
+
+        #endregion
+        #region Load/Save WatchDB
+
+        protected Audit.Lib.WatchPathCollection LoadWatchDB(string serial)
+        {
+            if (_WatchDBDir == null)
+            {
+                if ((Manager.Setting.PluginParam?.ContainsKey(Item.AUDIT_WATCHDBDIR) ?? false) &&
+                    !string.IsNullOrEmpty(Manager.Setting.PluginParam[Item.AUDIT_WATCHDBDIR]))
+                {
+                    _WatchDBDir = Manager.Setting.PluginParam[Item.AUDIT_WATCHDBDIR];
+                }
+                else
+                {
+                    _WatchDBDir = Path.Combine(
+                        Environment.GetEnvironmentVariable("ProgramData"), "WinBM", "Audit", "WatchDB");
+                }
+            }
+            return Audit.Lib.WatchPathCollection.Load(_WatchDBDir, serial);
+        }
+
+        protected void SaveWatchDB(Audit.Lib.WatchPathCollection collection, string serial)
+        {
+            if (_WatchDBDir == null)
+            {
+                if ((Manager.Setting.PluginParam?.ContainsKey(Item.AUDIT_WATCHDBDIR) ?? false) &&
+                    !string.IsNullOrEmpty(Manager.Setting.PluginParam[Item.AUDIT_WATCHDBDIR]))
+                {
+                    _WatchDBDir = Manager.Setting.PluginParam[Item.AUDIT_WATCHDBDIR];
+                }
+                else
+                {
+                    _WatchDBDir = Path.Combine(
+                        Environment.GetEnvironmentVariable("ProgramData"), "WinBM", "Audit", "WatchDB");
+                }
+            }
+            collection.Save(_WatchDBDir, serial);
+        }
+
+        #endregion
     }
 }

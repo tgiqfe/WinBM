@@ -19,8 +19,8 @@ namespace Audit.Config.Prepare
         protected string _SinceDBFile { get; set; }
 
         [TaskParameter(ResolvEnv = true)]
-        [Keys("watchdbfile", "watchdb")]
-        protected string _WatchDBFile { get;set; }
+        [Keys("watchdbdir", "watchdb", "watchdbdirectory")]
+        protected string _WatchDBDir{ get;set; }
 
         [TaskParameter]
         [Keys("persistent", "persist")]
@@ -38,9 +38,9 @@ namespace Audit.Config.Prepare
             {
                 Manager.Setting.PluginParam[Item.AUDIT_SINCEDBFILE] = this._SinceDBFile;
             }
-            if (!string.IsNullOrEmpty(_WatchDBFile))
+            if (!string.IsNullOrEmpty(_WatchDBDir))
             {
-                Manager.Setting.PluginParam[Item.AUDIT_WATCHDBFILE] = this._WatchDBFile;
+                Manager.Setting.PluginParam[Item.AUDIT_WATCHDBDIR] = this._WatchDBDir;
             }
 
             if (_Persistent)
