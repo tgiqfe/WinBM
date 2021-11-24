@@ -10,8 +10,8 @@ using IO.Lib;
 using System.Security.Cryptography;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using Audit.Lib;
 
+/*
 namespace Audit.Work.Registry
 {
     /// <summary>
@@ -114,3 +114,4 @@ namespace Audit.Work.Registry
 
     }
 }
+*/

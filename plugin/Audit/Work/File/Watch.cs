@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using System.IO;
 using WinBM;
 using WinBM.Task;
-using Audit.Lib;
 using IO.Lib;
 using System.Security.Principal;
 using System.Security.AccessControl;
 using System.Security.Cryptography;
 
+/*
 namespace Audit.Work.File
 {
     /// <summary>
@@ -347,3 +347,4 @@ namespace Audit.Work.File
         #endregion
     }
 }
+*/
