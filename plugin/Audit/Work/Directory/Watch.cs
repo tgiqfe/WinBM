@@ -8,7 +8,7 @@ using WinBM;
 using WinBM.Task;
 using IO.Lib;
 
-namespace Audit.Work.File
+namespace Audit.Work.Directory
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Watch : AuditTaskWork
@@ -18,7 +18,7 @@ namespace Audit.Work.File
         protected string _Id { get; set; }
 
         [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
-        [Keys("path", "filepath", "target", "targetpath")]
+        [Keys("path", "directorypath", "folderpath", "dirpath", "target", "targetpath")]
         protected string[] _Path { get; set; }
 
         //  ################################
@@ -68,6 +68,10 @@ namespace Audit.Work.File
         protected bool? _IsSize { get; set; }
 
         [TaskParameter(MandatoryAny = 12)]
+        [Keys("ischildcount", "childcount")]
+        protected bool? _IsChildCount { get; set; }
+
+        [TaskParameter(MandatoryAny = 13)]
         [Keys("exists", "exist")]
         protected bool? _IsExists { get; set; }
 
@@ -86,32 +90,89 @@ namespace Audit.Work.File
         protected bool _Begin { get; set; }
 
         [TaskParameter]
+        [Keys("maxdepth", "depth", "maxdeepth", "deepth")]
+        protected int? _MaxDepth { get; set; }
+
+        [TaskParameter]
         [Keys("invert", "not", "no", "none")]
         protected bool _Invert { get; set; }
 
         private int _serial;
+        private string _checkingPath;
 
         public override void MainProcess()
         {
+            _MaxDepth ??= 5;
             var dictionary = new Dictionary<string, string>();
             var collection = LoadWatchDB(_Id);
 
             foreach(string path in _Path)
             {
+                _checkingPath = path;
+                Success |= RecursiveTree(collection, dictionary, path, 0);
+            }
+            foreach (string uncheckedPath in collection.GetUncheckedKeys())
+            {
                 _serial++;
-                dictionary[$"file_{_serial}"] = path;
-                WatchPath watch = _Begin ?
-                    CreateForFile() :
-                    collection.GetWatchPath(path) ?? CreateForFile();
-                Success |= WatchFileCheck(watch, dictionary, path);
-                collection.SetWatchPath(path, watch);
+                dictionary[$"remove_{_serial}"] = uncheckedPath;
+                collection.Remove(uncheckedPath);
             }
             SaveWatchDB(collection, _Id);
 
             AddAudit(dictionary, this._Invert);
         }
 
+        private bool RecursiveTree(WatchPathCollection collection, Dictionary<string, string> dictionary, string path, int depth)
+        {
+            bool ret = false;
+
+            _serial++;
+            dictionary[$"directory_{_serial}"] = (path == _checkingPath) ?
+                path :
+                path.Replace(_checkingPath, "");
+            WatchPath watch = _Begin ?
+                CreateForDirectory() :
+                collection.GetWatchPath(path) ?? CreateForDirectory();
+            ret |= WatchDirectoryCheck(watch, dictionary, path);
+            collection.SetWatchPath(path, watch);
+
+            if (depth < _MaxDepth)
+            {
+                foreach (string filePath in System.IO.Directory.GetFiles(path))
+                {
+                    _serial++;
+                    dictionary[$"file_{_serial}"] = filePath.Replace(_checkingPath, "");
+                    WatchPath childWatch = _Begin ?
+                        CreateForFile() :
+                        collection.GetWatchPath(filePath) ?? CreateForFile();
+                    ret |= WatchFileCheck(childWatch, dictionary, filePath);
+                    collection.SetWatchPath(filePath, childWatch);
+                }
+                foreach (string dir in System.IO.Directory.GetDirectories(path))
+                {
+                    ret |= RecursiveTree(collection, dictionary, dir, depth + 1);
+                }
+            }
+
+            return ret;
+        }
+
         #region Create WatchPath
+
+        private WatchPath CreateForDirectory()
+        {
+            return new WatchPath(PathType.Directory)
+            {
+                IsCreationTime = _IsCreationTime,
+                IsLastWriteTime = _IsLastWriteTime,
+                IsLastAccessTime = _IsLastAccessTime,
+                IsAccess = _IsAccess,
+                IsOwner = _IsOwner,
+                IsInherited = _IsInherited,
+                IsAttributes = _IsAttributes,
+                IsChildCount = _IsChildCount,
+            };
+        }
 
         private WatchPath CreateForFile()
         {
@@ -133,6 +194,21 @@ namespace Audit.Work.File
 
         #endregion
         #region Check WatchPath
+
+        private bool WatchDirectoryCheck(WatchPath watch, Dictionary<string, string> dictionary, string path)
+        {
+            var info = new DirectoryInfo(path);
+            bool ret = MonitorExists.WatchDirectory(watch, dictionary, _serial, info);
+            ret |= MonitorTimeStamp.WatchDirectoryCreationTime(watch, dictionary, _serial, info);
+            ret |= MonitorTimeStamp.WatchDirectoryLastWriteTime(watch, dictionary, _serial, info);
+            ret |= MonitorTimeStamp.WatchDirectoryLastAccessTime(watch, dictionary, _serial, info);
+            ret |= MonitorSecurity.WatchDirectoryAccess(watch, dictionary, _serial, info);
+            ret |= MonitorSecurity.WatchDirectoryOwner(watch, dictionary, _serial, info);
+            ret |= MonitorSecurity.WatchDirectoryInherited(watch, dictionary, _serial, info);
+            ret |= MonitorAttributes.WatchDirectory(watch, dictionary, _serial, path);
+            ret |= MonitorChildCount.WatchDirectory(watch, dictionary, _serial, path);
+            return ret;
+        }
 
         private bool WatchFileCheck(WatchPath watch, Dictionary<string, string> dictionary, string path)
         {

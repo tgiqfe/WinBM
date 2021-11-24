@@ -51,7 +51,7 @@ namespace Audit.Work.File
         protected bool? _IsInherited { get; set; }
 
         [TaskParameter(MandatoryAny = 7)]
-        [Keys("attributes", "attribute", "attribs", "attrib", "attrs", "attr")]
+        [Keys("isattributes", "isattribute", "attributes", "attribute", "attribs", "attrib", "attrs", "attr")]
         protected bool? _IsAttributes { get; set; }
 
         [TaskParameter(MandatoryAny = 8)]
