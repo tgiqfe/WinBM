@@ -34,11 +34,11 @@ namespace Audit.Lib
 
         #region Load/Save
 
-        public static WatchPathCollection Load(string dbDir, string serial)
+        public static WatchPathCollection Load(string dbDir, string id)
         {
             try
             {
-                using (var sr = new StreamReader(Path.Combine(dbDir, serial), Encoding.UTF8))
+                using (var sr = new StreamReader(Path.Combine(dbDir, id), Encoding.UTF8))
                 {
                     return JsonSerializer.Deserialize<WatchPathCollection>(sr.ReadToEnd());
                 }
@@ -47,13 +47,13 @@ namespace Audit.Lib
             return new WatchPathCollection();
         }
 
-        public void Save(string dbDir, string serial)
+        public void Save(string dbDir, string id)
         {
             if (!Directory.Exists(dbDir))
             {
                 Directory.CreateDirectory(dbDir);
             }
-            using (var sw = new StreamWriter(Path.Combine(dbDir, serial), false, Encoding.UTF8))
+            using (var sw = new StreamWriter(Path.Combine(dbDir, id), false, Encoding.UTF8))
             {
                 string json = JsonSerializer.Serialize(this, new JsonSerializerOptions()
                 {

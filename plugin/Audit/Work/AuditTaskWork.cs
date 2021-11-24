@@ -171,7 +171,7 @@ namespace Audit.Work
         #endregion
         #region Load/Save WatchDB
 
-        protected Audit.Lib.WatchPathCollection LoadWatchDB(string serial)
+        protected Audit.Lib.WatchPathCollection LoadWatchDB(string id)
         {
             if (_WatchDBDir == null)
             {
@@ -186,10 +186,10 @@ namespace Audit.Work
                         Environment.GetEnvironmentVariable("ProgramData"), "WinBM", "Audit", "WatchDB");
                 }
             }
-            return Audit.Lib.WatchPathCollection.Load(_WatchDBDir, serial);
+            return Audit.Lib.WatchPathCollection.Load(_WatchDBDir, id);
         }
 
-        protected void SaveWatchDB(Audit.Lib.WatchPathCollection collection, string serial)
+        protected void SaveWatchDB(Audit.Lib.WatchPathCollection collection, string id)
         {
             if (_WatchDBDir == null)
             {
@@ -204,7 +204,7 @@ namespace Audit.Work
                         Environment.GetEnvironmentVariable("ProgramData"), "WinBM", "Audit", "WatchDB");
                 }
             }
-            collection.Save(_WatchDBDir, serial);
+            collection.Save(_WatchDBDir, id);
         }
 
         #endregion

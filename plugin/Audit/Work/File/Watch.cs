@@ -14,8 +14,8 @@ namespace Audit.Work.File
     internal class Watch : AuditTaskWork
     {
         [TaskParameter(Mandatory = true)]
-        [Keys("serial", "serialkey", "number", "uniquekey", "id")]
-        protected string _Serial { get; set; }
+        [Keys("id", "serial", "serialkey", "number", "uniquekey")]
+        protected string _Id { get; set; }
 
         [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath")]
@@ -85,13 +85,30 @@ namespace Audit.Work.File
         [Keys("begin", "start")]
         protected bool _Begin { get; set; }
 
+        [TaskParameter]
+        [Keys("invert", "not", "no", "none")]
+        protected bool _Invert { get; set; }
+
         private int _serial;
 
         public override void MainProcess()
         {
             var dictionary = new Dictionary<string, string>();
+            var collection = LoadWatchDB(_Id);
 
+            foreach(string path in _Path)
+            {
+                _serial++;
+                dictionary[$"file_{_serial}"] = path;
+                WatchPath watch = _Begin ?
+                    CreateForFile() :
+                    collection.GetWatchPath(path) ?? CreateForFile();
+                Success |= WatchFileCheck(watch, dictionary, path);
+                collection.SetWatchPath(path, watch);
+            }
+            SaveWatchDB(collection, _Id);
 
+            AddAudit(dictionary, this._Invert);
         }
 
         private WatchPath CreateForFile()
