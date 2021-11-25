@@ -78,6 +78,12 @@ namespace AuditMonitor
                                 }
                             }
                             break;
+                        case ConsoleKey.Escape:
+                            using (var sw = new StreamWriter(ap.MonitorTarget, false, Encoding.UTF8))
+                            {
+                                sw.WriteLine();
+                            }
+                            break;
                         case ConsoleKey.UpArrow:
                             manager.MoveUp();
                             break;
