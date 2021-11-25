@@ -17,6 +17,10 @@ namespace IO.Work
 
         protected delegate void TargetRegistryValueAction(RegistryKey key, string name);
 
+        protected delegate void SrcDstRegistryKeyAction(RegistryKey sourceKey, RegistryKey destinationKey);
+
+        protected delegate void SrcDstRegistryValueAction(RegistryKey sourceKey, RegistryKey destinationKey, string sourceName, string destinationName);
+
         /// <summary>
         /// 対象レジストリキーに対するシーケンシャル処理
         /// </summary>
@@ -68,6 +72,13 @@ namespace IO.Work
             }
         }
 
+        /// <summary>
+        /// 対象のレジストリ値に対するシーケンシャル処理
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="names"></param>
+        /// <param name="writable"></param>
+        /// <param name="targetRegistryValueAction"></param>
         protected void TargetRegistryValueProcess(string path, string[] names, bool writable, TargetRegistryValueAction targetRegistryValueAction)
         {
             using (RegistryKey regKey = RegistryControl.GetRegistryKey(path, false, writable))
@@ -98,6 +109,120 @@ namespace IO.Work
             }
         }
 
+        /// <summary>
+        /// 対象レジストリキーに対するシーケンシャル処理。src/dst指定
+        /// </summary>
+        /// <param name="sourcePaths"></param>
+        /// <param name="destinationPath"></param>
+        /// <param name="writable"></param>
+        /// <param name="srcDstRegistryKeyAction"></param>
+        protected void SrcDstRegistryKeyProcess(string[] sourcePaths, string destinationPath, bool writable, SrcDstRegistryKeyAction srcDstRegistryKeyAction)
+        {
+            foreach (string source in sourcePaths)
+            {
+                string sourceKeyName = Path.GetFileName(source);
+                if (sourceKeyName.Contains("*"))
+                {
+                    Manager.WriteLog(LogLevel.Info, "{0} Wildcard path.", this.TaskName);
 
+                    //  Sourceの親キーが存在しない場合
+                    string parent = Path.GetDirectoryName(source);
+                    using (RegistryKey parentKey = RegistryControl.GetRegistryKey(parent, false, false))
+                    {
+                        if (parentKey == null)
+                        {
+                            Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", parent);
+                            return;
+                        }
+
+                        System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(sourceKeyName);
+                        var matchItems = parentKey.GetSubKeyNames().Where(x => wildcard.IsMatch(sourceKeyName)).ToList();
+                        if (matchItems.Count > 0)
+                        {
+                            using (RegistryKey destinationKey = RegistryControl.GetRegistryKey(destinationPath, true, true))
+                            {
+                                matchItems.ForEach(x =>
+                                {
+                                    using (RegistryKey sourceKey = parentKey.OpenSubKey(x, writable))
+                                    {
+                                        srcDstRegistryKeyAction(sourceKey, destinationKey);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    using (RegistryKey sourceKey = RegistryControl.GetRegistryKey(source, false, writable))
+                    {
+                        //  Sourceが存在しない場合
+                        if (sourceKey == null)
+                        {
+                            Manager.WriteLog(LogLevel.Error, "Source target is Missing. \"{0}\"", source);
+                            return;
+                        }
+
+                        using (RegistryKey destinationKey = RegistryControl.GetRegistryKey(destinationPath, true, true))
+                        {
+                            srcDstRegistryKeyAction(sourceKey, destinationKey);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 対象のレジストリ値に対するシーケンシャル処理。src/dst指定
+        /// </summary>
+        /// <param name="sourcePaths"></param>
+        /// <param name="destinationPath"></param>
+        /// <param name="sourceNames"></param>
+        /// <param name="destinationName"></param>
+        /// <param name="srcDstRegistryValueAction"></param>
+        protected void SrcDstRegistryValueProcess(string sourcePath, string destinationPath, string[] sourceNames, string destinationName, bool writable, SrcDstRegistryValueAction srcDstRegistryValueAction)
+        {
+            using (RegistryKey parentKey = RegistryControl.GetRegistryKey(sourcePath, false, writable))
+            {
+                //  Sourceの所属キーが存在しない場合
+                if (parentKey == null)
+                {
+                    Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", sourcePath);
+                    return;
+                }
+
+                foreach (string name in sourceNames)
+                {
+                    if (name.Contains("*"))
+                    {
+                        Manager.WriteLog(LogLevel.Info, "{0} Wildcard path.", this.TaskName);
+
+                        System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(name);
+                        var matchItems = parentKey.GetValueNames().Where(x => wildcard.IsMatch(x)).ToList();
+                        if (matchItems.Count > 0)
+                        {
+                            using (RegistryKey destinationKey = RegistryControl.GetRegistryKey(destinationPath, true, true))
+                            {
+                                matchItems.ForEach(x =>
+                                {
+                                    using (RegistryKey sourceKey = parentKey.OpenSubKey(x, writable))
+                                    {
+                                        srcDstRegistryValueAction(sourceKey, destinationKey, name, destinationName);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                    else
+                    {
+                        using (RegistryKey destinationKey = RegistryControl.GetRegistryKey(destinationPath, true, true))
+                        {
+                            srcDstRegistryValueAction(parentKey, destinationKey, name, destinationName);
+                        }
+
+                    }
+                }
+            }
+        }
     }
 }

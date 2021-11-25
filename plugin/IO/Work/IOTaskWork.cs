@@ -31,6 +31,8 @@ namespace IO.Work
             {
                 if (Path.GetFileName(path).Contains("*"))
                 {
+                    Manager.WriteLog(LogLevel.Info, "{0} Wildcard path.", this.TaskName);
+
                     //  対象ファイルの親フォルダーが存在しない場合
                     string parent = Path.GetDirectoryName(path);
                     if (!System.IO.Directory.Exists(parent))
@@ -63,16 +65,16 @@ namespace IO.Work
         /// <summary>
         /// 対象ファイルに対するシーケンス処理。src/dst指定
         /// </summary>
-        /// <param name="sources"></param>
-        /// <param name="destination"></param>
+        /// <param name="sourcePaths"></param>
+        /// <param name="destinationPath"></param>
         /// <param name="srcDstFileAction"></param>
-        protected void SrcDstFileProcess(string[] sources, string destination, SrcDstFileAction srcDstFileAction)
+        protected void SrcDstFileProcess(string[] sourcePaths, string destinationPath, SrcDstFileAction srcDstFileAction)
         {
-            foreach (string source in sources)
+            foreach (string source in sourcePaths)
             {
                 if (Path.GetFileName(source).Contains("*"))
                 {
-                    Manager.WriteLog(LogLevel.Info, "{0} Wildcard Copy.", this.TaskName);
+                    Manager.WriteLog(LogLevel.Info, "{0} Wildcard path.", this.TaskName);
 
                     //  Sourceの親フォルダーが存在しない場合
                     string parent = Path.GetDirectoryName(source);
@@ -86,7 +88,7 @@ namespace IO.Work
                     System.IO.Directory.GetFiles(parent).
                         Where(x => wildcard.IsMatch(x)).
                         ToList().
-                        ForEach(x => srcDstFileAction(x, destination));
+                        ForEach(x => srcDstFileAction(x, destinationPath));
                 }
                 else
                 {
@@ -97,7 +99,7 @@ namespace IO.Work
                         return;
                     }
 
-                    srcDstFileAction(source, destination);
+                    srcDstFileAction(source, destinationPath);
                 }
             }
         }
@@ -113,6 +115,8 @@ namespace IO.Work
             {
                 if (Path.GetFileName(path).Contains("*"))
                 {
+                    Manager.WriteLog(LogLevel.Info, "{0} Wildcard path.", this.TaskName);
+
                     //  対象フォルダーの親フォルダーが存在しない場合
                     string parent = System.IO.Path.GetDirectoryName(path);
                     if (!System.IO.Directory.Exists(parent))
@@ -146,16 +150,16 @@ namespace IO.Work
         /// <summary>
         /// 対象フォルダーに対するシーケンス処理。src/dst指定
         /// </summary>
-        /// <param name="sources"></param>
-        /// <param name="destination"></param>
+        /// <param name="sourcePaths"></param>
+        /// <param name="destinationPath"></param>
         /// <param name="srcDstDirectoryAction"></param>
-        protected void SrcDstDirectoryProcess(string[] sources, string destination, SrcDstDirectoryAction srcDstDirectoryAction)
+        protected void SrcDstDirectoryProcess(string[] sourcePaths, string destinationPath, SrcDstDirectoryAction srcDstDirectoryAction)
         {
-            foreach (string source in sources)
+            foreach (string source in sourcePaths)
             {
                 if (Path.GetFileName(source).Contains("*"))
                 {
-                    Manager.WriteLog(LogLevel.Info, "{0} Wildcard Copy.", this.TaskName);
+                    Manager.WriteLog(LogLevel.Info, "{0} Wildcard path.", this.TaskName);
 
                     //  Sourceの親フォルダーが存在しない場合
                     string parent = Path.GetDirectoryName(source);
@@ -169,7 +173,7 @@ namespace IO.Work
                     System.IO.Directory.GetDirectories(parent).
                         Where(x => wildcard.IsMatch(x)).
                         ToList().
-                        ForEach(x => srcDstDirectoryAction(x, destination));
+                        ForEach(x => srcDstDirectoryAction(x, destinationPath));
                 }
                 else
                 {
@@ -180,7 +184,7 @@ namespace IO.Work
                         return;
                     }
 
-                    srcDstDirectoryAction(source, destination);
+                    srcDstDirectoryAction(source, destinationPath);
                 }
             }
         }
