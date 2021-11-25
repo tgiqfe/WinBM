@@ -88,7 +88,7 @@ namespace Audit.Work.Registry
             var dictionary = new Dictionary<string, string>();
             var collection = LoadWatchDB(_Id);
 
-            if(_Name?.Length > 0)
+            if (_Name?.Length > 0)
             {
                 //  レジストリ値のWatch
                 string keyPath = _Path[0];
@@ -186,6 +186,38 @@ namespace Audit.Work.Registry
 
         #region Create WatchPath
 
+        private WatchPath CreateForRegistryKey(WatchPathCollection collection, string path)
+        {
+            if (_Begin)
+            {
+                return new WatchPath(PathType.Registry)
+                {
+                    IsAccess = _IsAccess,
+                    IsOwner = _IsOwner,
+                    IsInherited = _IsInherited,
+                    IsChildCount = _IsChildCount,
+                };
+            }
+
+            var watch = collection.GetWatchPath(path);
+            if (watch == null)
+            {
+                return new WatchPath(PathType.Registry)
+                {
+                    IsAccess = _IsAccess,
+                    IsOwner = _IsOwner,
+                    IsInherited = _IsInherited,
+                    IsChildCount = _IsChildCount,
+                };
+            }
+
+            if (_IsAccess != null) { watch.IsAccess = _IsAccess; }
+            if (_IsOwner != null) { watch.IsOwner = _IsOwner; }
+            if (_IsInherited != null) { watch.IsInherited = _IsInherited; }
+            if (_IsChildCount != null) { watch.IsChildCount = _IsChildCount; }
+            return watch;
+        }
+
         private WatchPath CreateForRegistryKey()
         {
             return new WatchPath(PathType.Registry)
@@ -196,6 +228,39 @@ namespace Audit.Work.Registry
                 IsChildCount = _IsChildCount,
             };
         }
+
+        private WatchPath CreateForRegistryValue(WatchPathCollection collection, string path)
+        {
+            if (_Begin)
+            {
+                return new WatchPath(PathType.Registry)
+                {
+                    IsMD5Hash = _IsMD5Hash,
+                    IsSHA256Hash = _IsSHA256Hash,
+                    IsSHA512Hash = _IsSHA512Hash,
+                    IsRegistryType = _IsRegistryType,
+                };
+            }
+
+            var watch = collection.GetWatchPath(path);
+            if (watch == null)
+            {
+                return new WatchPath(PathType.Registry)
+                {
+                    IsMD5Hash = _IsMD5Hash,
+                    IsSHA256Hash = _IsSHA256Hash,
+                    IsSHA512Hash = _IsSHA512Hash,
+                    IsRegistryType = _IsRegistryType,
+                };
+            }
+
+            if (_IsMD5Hash != null) { watch.IsMD5Hash = _IsMD5Hash; }
+            if (_IsSHA256Hash != null) { watch.IsSHA256Hash = _IsSHA256Hash; }
+            if (_IsSHA512Hash != null) { watch.IsSHA512Hash = _IsSHA512Hash; }
+            if (_IsRegistryType != null) { watch.IsRegistryType = _IsRegistryType; }
+            return watch;
+        }
+
         private WatchPath CreateForRegistryValue()
         {
             return new WatchPath(PathType.Registry)
