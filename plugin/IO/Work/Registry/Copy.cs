@@ -72,6 +72,8 @@ namespace IO.Work.Registry
                     return;
                 }
 
+                //  SourceとDestinationが同じ場合はコピー不可
+
                 //  コピー先が存在し、force=falseの場合
                 if (RegistryControl.Exists(_DestinationPath) && !_Force)
                 {
