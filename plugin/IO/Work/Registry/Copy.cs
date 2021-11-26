@@ -81,17 +81,6 @@ namespace IO.Work.Registry
 
                 SrcDstRegistryKeyProcess(_SourcePath, _DestinationPath, false, CopyRegistryKeyAction);
             }
-
-            /*
-            if (_SourceName == null)
-            {
-                CopyRegistryKeyAction();
-            }
-            else
-            {
-                CopyRegistryValuceAction();
-            }
-            */
         }
 
         private void CopyRegistryValueAction(RegistryKey sourceKey, RegistryKey destinationKey, string sourceName, string destinationName)
@@ -132,106 +121,5 @@ namespace IO.Work.Registry
                 this.Success = false;
             }
         }
-
-        /*
-        private void CopyRegistryKeyAction2()
-        {
-            using (var sourceKey = RegistryControl.GetRegistryKey(_SourcePath2, false, false))
-            {
-                //  コピー元のキーが存在しない場合
-                if (sourceKey == null)
-                {
-                    Manager.WriteLog(LogLevel.Error, "Target path is missing. \"{0}\"", _SourcePath2);
-                    return;
-                }
-                try
-                {
-                    using (var destinationKey = RegistryControl.GetRegistryKey(_DestinationPath, false, false))
-                    {
-                        //  コピー先が存在し、force=falseの場合
-                        if (destinationKey != null && !_Force)
-                        {
-                            Manager.WriteLog(LogLevel.Warn, "Destination path is already exists. \"{0}\"", _DestinationPath);
-                            return;
-                        }
-                    }
-                    using (var destinationKey = RegistryControl.GetRegistryKey(_DestinationPath, true, true))
-                    {
-                        RegistryControl.CopyRegistryKey(sourceKey, destinationKey, null);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Manager.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
-                    Manager.WriteLog(LogLevel.Debug, e.ToString());
-                    this.Success = false;
-                }
-            }
-        }
-
-        private void CopyRegistryValuceAction2()
-        {
-            using (var sourceKey = RegistryControl.GetRegistryKey(_SourcePath2, false, false))
-            {
-                //  コピー元のキーが存在しない場合
-                if (sourceKey == null)
-                {
-                    Manager.WriteLog(LogLevel.Error, "Target path is missing. \"{0}\"", _SourcePath2);
-                    return;
-                }
-
-                //  名前を複数指定する場合は、コピー先名をnullに変更して、コピー元名と同じになるようにする。
-                if (_SourceName.Length > 1)
-                {
-                    _DestinationName = null;
-                }
-
-                //  値コピー
-                _DestinationPath ??= _SourcePath2;
-                try
-                {
-                    using (var destinationKey = RegistryControl.GetRegistryKey(_DestinationPath, true, true))
-                    {
-                        Action<string, string> registryValueCopy = (srcName, dstName) =>
-                        {
-                            //  コピー先が存在し、force=falseの場合
-                            if (destinationKey.GetValueNames().Any(x => x.Equals(dstName, StringComparison.OrdinalIgnoreCase)) && !_Force)
-                            {
-                                Manager.WriteLog(LogLevel.Warn, "Destination name is already exists. \"{0}\"", dstName);
-                                return;
-                            }
-                            RegistryValueKind valueKind = sourceKey.GetValueKind(srcName);
-                            object srcValue = valueKind == RegistryValueKind.ExpandString ?
-                                sourceKey.GetValue(srcName, null, RegistryValueOptions.DoNotExpandEnvironmentNames) :
-                                sourceKey.GetValue(srcName);
-                            destinationKey.SetValue(dstName, srcValue, valueKind);
-                        };
-
-                        foreach (string sourceName in _SourceName)
-                        {
-                            if (sourceName.Contains("*"))
-                            {
-                                System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(sourceName);
-                                sourceKey.GetValueNames().
-                                    Where(x => wildcard.IsMatch(x)).
-                                    ToList().
-                                    ForEach(x => registryValueCopy(x, x));
-                            }
-                            else
-                            {
-                                registryValueCopy(sourceName, _DestinationName ?? sourceName);
-                            }
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    Manager.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
-                    Manager.WriteLog(LogLevel.Debug, e.ToString());
-                    this.Success = false;
-                }
-            }
-        }
-        */
     }
 }
