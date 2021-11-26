@@ -59,8 +59,6 @@ namespace IO.Work.Registry
                     return;
                 }
 
-                //  移動先が存在し、force=falseの場合
-
                 SrcDstRegistryValueProcess(_SourcePath[0], _DestinationPath, _SourceName, _DestinationName, false, MoveRegistryValueAction);
             }
             else
@@ -73,14 +71,7 @@ namespace IO.Work.Registry
                 }
 
                 //  移動先が存在し、force=falseの場合
-                bool registryKeyExists(string keyPath)
-                {
-                    using (RegistryKey checkingKey = RegistryControl.GetRegistryKey(keyPath, false, false))
-                    {
-                        return checkingKey != null;
-                    }
-                }
-                if (registryKeyExists(_DestinationPath) && !_Force)
+                if (RegistryControl.Exists(_DestinationPath) && !_Force)
                 {
                     Manager.WriteLog(LogLevel.Warn, "Destination path is already exists. \"{0}\"", _DestinationPath);
                     return;
@@ -118,6 +109,7 @@ namespace IO.Work.Registry
                     sourceKey.GetValue(sourceName);
                 destinationKey.SetValue(destinationName, srcValue, valueKind);
 
+                //  移動の為、Sourceを削除
                 sourceKey.DeleteValue(sourceName);
             }
             catch (Exception e)
@@ -133,6 +125,8 @@ namespace IO.Work.Registry
             try
             {
                 RegistryControl.CopyRegistryKey(sourceKey, destinationKey, null);
+
+                //  移動の為、Sourceを削除
                 sourceKey.DeleteSubKeyTree("");
             }
             catch (Exception e)
@@ -143,6 +137,7 @@ namespace IO.Work.Registry
             }
         }
 
+        /*
         private void MoveRegistryKeyAction()
         {
             using (var sourceKey = RegistryControl.GetRegistryKey(_SourcePath2, false, true))
@@ -169,7 +164,7 @@ namespace IO.Work.Registry
                         RegistryControl.CopyRegistryKey(sourceKey, destinationKey, null);
                     }
 
-                    //  コピー完了後に移動元を削除
+                    //  移動の為、Sourceを削除
                     sourceKey.DeleteSubKeyTree("");
                 }
                 catch (Exception e)
@@ -247,5 +242,6 @@ namespace IO.Work.Registry
                 }
             }
         }
+        */
     }
 }

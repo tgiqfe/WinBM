@@ -73,14 +73,7 @@ namespace IO.Work.Registry
                 }
 
                 //  コピー先が存在し、force=falseの場合
-                bool registryKeyExists(string keyPath)
-                {
-                    using (RegistryKey checkingKey = RegistryControl.GetRegistryKey(keyPath, false, false))
-                    {
-                        return checkingKey != null;
-                    }
-                }
-                if (registryKeyExists(_DestinationPath) && !_Force)
+                if (RegistryControl.Exists(_DestinationPath) && !_Force)
                 {
                     Manager.WriteLog(LogLevel.Warn, "Destination path is already exists. \"{0}\"", _DestinationPath);
                     return;

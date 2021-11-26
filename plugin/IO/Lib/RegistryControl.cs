@@ -298,6 +298,11 @@ namespace IO.Lib
             }
         }
 
+        /// <summary>
+        /// 対象のレジストリキーの有無チェック。
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static bool Exists(string path)
         {
             using (RegistryKey regKey = GetRegistryKey(path, false, false))
@@ -306,6 +311,12 @@ namespace IO.Lib
             }
         }
 
+        /// <summary>
+        /// 対象のレジストリ値の有無チェック
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public static bool Exists(string path, string name)
         {
             using (RegistryKey regKey = GetRegistryKey(path, false, false))
