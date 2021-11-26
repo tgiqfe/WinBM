@@ -74,7 +74,7 @@ namespace Audit.Work.File
         /// 存在チェックのみに使用するパラメータ。その他の比較処理の過程で確認できる為、Exists用の特別な作業は無し
         /// </summary>
         [TaskParameter(MandatoryAny = 12)]
-        [Keys("exists", "exist")]
+        [Keys("isexists", "exists", "exist")]
         protected bool? _IsExists { get; set; }
 
         //  ################################

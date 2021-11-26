@@ -61,7 +61,7 @@ namespace Audit.Work.Registry
         protected bool? _IsRegistryType { get; set; }
 
         [TaskParameter(MandatoryAny = 9)]
-        [Keys("exists", "exist")]
+        [Keys("isexists", "exists", "exist")]
         protected bool? _IsExists { get; set; }
 
         //  ################################
