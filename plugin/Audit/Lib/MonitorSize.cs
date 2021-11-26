@@ -13,33 +13,6 @@ namespace Audit.Lib
         #region Watch method
 
         public static bool WatchFile(
-            WatchPath watch, Dictionary<string, string> dictionary, int serial, bool? isMonitor, FileInfo info)
-        {
-            if ((!isMonitor ?? true) && watch.Size == null) { return false; }
-
-            bool ret = false;
-            if (watch.Size == null)
-            {
-                ret = true;
-                watch.Size = info.Length;
-            }
-            else
-            {
-                string pathType = "file";
-                string checkTarget = "Size";
-
-                long ret_long = info.Length;
-                ret = ret_long != watch.Size;
-                dictionary[$"{pathType}_{checkTarget}_{serial}"] = ret ?
-                    $"{watch.Size} -> {ret_long}" :
-                    ret_long.ToString();
-
-                watch.Size = ret_long;
-            }
-            return ret;
-        }
-
-        public static bool WatchFile(
             WatchPath watch, Dictionary<string, string> dictionary, int serial, FileInfo info)
         {
             bool ret = false;

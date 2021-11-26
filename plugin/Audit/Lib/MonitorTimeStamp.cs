@@ -13,38 +13,6 @@ namespace Audit.Lib
         #region Watch method
 
         public static bool WatchFileCreationTime(
-            WatchPath watch, Dictionary<string, string> dictionary, int serial, bool? isMonitor, FileInfo info, bool? isDateOnly, bool? isTimeOnly)
-        {
-            if ((!isMonitor ?? true) && watch.CreationTime == null) { return false; }
-
-            bool ret = false;
-            if (watch.CreationTime == null)
-            {
-                ret = true;
-                watch.CreationTime = GetFileCreationTime(info,
-                    isDateOnly ?? watch.IsDateOnly ?? false,
-                    isTimeOnly ?? watch.IsTimeOnly ?? false);
-            }
-            else
-            {
-                string pathType = "file";
-                string checkTarget = "CreationTime";
-
-                string ret_string = GetFileCreationTime(info,
-                    isDateOnly ?? watch.IsDateOnly ?? false,
-                    isTimeOnly ?? watch.IsTimeOnly ?? false);
-                ret = ret_string != watch.CreationTime;
-                dictionary[$"{pathType}_{checkTarget}_{serial}"] = ret ?
-                    $"{watch.CreationTime} -> {ret_string}" :
-                    ret_string;
-                watch.CreationTime = ret_string;
-            }
-            watch.IsDateOnly ??= isDateOnly;
-            watch.IsTimeOnly ??= isTimeOnly;
-            return ret;
-        }
-
-        public static bool WatchFileCreationTime(
             WatchPath watch, Dictionary<string, string> dictionary, int serial, FileInfo info)
         {
             bool ret = false;
@@ -71,38 +39,6 @@ namespace Audit.Lib
                     watch.CreationTime = null;
                 }
             }
-            return ret;
-        }
-
-        public static bool WatchDirectoryCreationTime(
-            WatchPath watch, Dictionary<string, string> dictionary, int serial, bool? isMonitor, DirectoryInfo info, bool? isDateOnly, bool? isTimeOnly)
-        {
-            if ((!isMonitor ?? true) && watch.CreationTime == null) { return false; }
-
-            bool ret = false;
-            if (watch.CreationTime == null)
-            {
-                ret = true;
-                watch.CreationTime = GetDirectoryCreationTime(info,
-                    isDateOnly ?? watch.IsDateOnly ?? false,
-                    isTimeOnly ?? watch.IsTimeOnly ?? false);
-            }
-            else
-            {
-                string pathType = "directory";
-                string checkTarget = "CreationTime";
-
-                string ret_string = GetDirectoryCreationTime(info,
-                    isDateOnly ?? watch.IsDateOnly ?? false,
-                    isTimeOnly ?? watch.IsTimeOnly ?? false);
-                ret = ret_string != watch.CreationTime;
-                dictionary[$"{pathType}_{checkTarget}_{serial}"] = ret ?
-                    $"{watch.CreationTime} -> {ret_string}" :
-                    ret_string;
-                watch.CreationTime = ret_string;
-            }
-            watch.IsDateOnly ??= isDateOnly;
-            watch.IsTimeOnly ??= isTimeOnly;
             return ret;
         }
 
@@ -137,38 +73,6 @@ namespace Audit.Lib
         }
 
         public static bool WatchFileLastWriteTime(
-            WatchPath watch, Dictionary<string, string> dictionary, int serial, bool? isMonitor, FileInfo info, bool? isDateOnly, bool? isTimeOnly)
-        {
-            if ((!isMonitor ?? true) && watch.LastWriteTime == null) { return false; }
-
-            bool ret = false;
-            if (watch.LastWriteTime == null)
-            {
-                ret = true;
-                watch.LastWriteTime = GetFileLastWriteTime(info,
-                    isDateOnly ?? watch.IsDateOnly ?? false,
-                    isTimeOnly ?? watch.IsTimeOnly ?? false);
-            }
-            else
-            {
-                string pathType = "file";
-                string checkTarget = "LastWriteTime";
-
-                string ret_string = GetFileLastWriteTime(info,
-                    isDateOnly ?? watch.IsDateOnly ?? false,
-                    isTimeOnly ?? watch.IsTimeOnly ?? false);
-                ret = ret_string != watch.LastWriteTime;
-                dictionary[$"{pathType}_{checkTarget}_{serial}"] = ret ?
-                    $"{watch.LastWriteTime} -> {ret_string}" :
-                    ret_string;
-                watch.LastWriteTime = ret_string;
-            }
-            watch.IsDateOnly ??= isDateOnly;
-            watch.IsTimeOnly ??= isTimeOnly;
-            return ret;
-        }
-
-        public static bool WatchFileLastWriteTime(
             WatchPath watch, Dictionary<string, string> dictionary, int serial, FileInfo info)
         {
             bool ret = false;
@@ -195,38 +99,6 @@ namespace Audit.Lib
                     watch.LastWriteTime = null;
                 }
             }
-            return ret;
-        }
-
-        public static bool WatchDirectoryLastWriteTime(
-            WatchPath watch, Dictionary<string, string> dictionary, int serial, bool? isMonitor, DirectoryInfo info, bool? isDateOnly, bool? isTimeOnly)
-        {
-            if ((!isMonitor ?? true) && watch.LastWriteTime == null) { return false; }
-
-            bool ret = false;
-            if (watch.LastWriteTime == null)
-            {
-                ret = true;
-                watch.LastWriteTime = GetDirectoryLastWriteTime(info,
-                    isDateOnly ?? watch.IsDateOnly ?? false,
-                    isTimeOnly ?? watch.IsTimeOnly ?? false);
-            }
-            else
-            {
-                string pathType = "directory";
-                string checkTarget = "LastWriteTime";
-
-                string ret_string = GetDirectoryLastWriteTime(info,
-                    isDateOnly ?? watch.IsDateOnly ?? false,
-                    isTimeOnly ?? watch.IsTimeOnly ?? false);
-                ret = ret_string != watch.LastWriteTime;
-                dictionary[$"{pathType}_{checkTarget}_{serial}"] = ret ?
-                    $"{watch.LastWriteTime} -> {ret_string}" :
-                    ret_string;
-                watch.LastWriteTime = ret_string;
-            }
-            watch.IsDateOnly ??= isDateOnly;
-            watch.IsTimeOnly ??= isTimeOnly;
             return ret;
         }
 
@@ -261,38 +133,6 @@ namespace Audit.Lib
         }
 
         public static bool WatchFileLastAccessTime(
-            WatchPath watch, Dictionary<string, string> dictionary, int serial, bool? isMonitor, FileInfo info, bool? isDateOnly, bool? isTimeOnly)
-        {
-            if ((!isMonitor ?? true) && watch.LastAccessTime == null) { return false; }
-
-            bool ret = false;
-            if (watch.LastAccessTime == null)
-            {
-                ret = true;
-                watch.LastAccessTime = GetFileLastAccessTime(info,
-                    isDateOnly ?? watch.IsDateOnly ?? false,
-                    isTimeOnly ?? watch.IsTimeOnly ?? false);
-            }
-            else
-            {
-                string pathType = "file";
-                string checkTarget = "LastAccessTime";
-
-                string ret_string = GetFileLastAccessTime(info,
-                    isDateOnly ?? watch.IsDateOnly ?? false,
-                    isTimeOnly ?? watch.IsTimeOnly ?? false);
-                ret = ret_string != watch.LastAccessTime;
-                dictionary[$"{pathType}_{checkTarget}_{serial}"] = ret ?
-                    $"{watch.LastAccessTime} -> {ret_string}" :
-                    ret_string;
-                watch.LastAccessTime = ret_string;
-            }
-            watch.IsDateOnly ??= isDateOnly;
-            watch.IsTimeOnly ??= isTimeOnly;
-            return ret;
-        }
-
-        public static bool WatchFileLastAccessTime(
             WatchPath watch, Dictionary<string, string> dictionary, int serial, FileInfo info)
         {
             bool ret = false;
@@ -319,38 +159,6 @@ namespace Audit.Lib
                     watch.LastAccessTime = null;
                 }
             }
-            return ret;
-        }
-
-        public static bool WatchDirectoryLastAccessTime(
-            WatchPath watch, Dictionary<string, string> dictionary, int serial, bool? isMonitor, DirectoryInfo info, bool? isDateOnly, bool? isTimeOnly)
-        {
-            if ((!isMonitor ?? true) && watch.LastAccessTime == null) { return false; }
-
-            bool ret = false;
-            if (watch.LastAccessTime == null)
-            {
-                ret = true;
-                watch.LastAccessTime = GetDirectoryLastAccessTime(info,
-                    isDateOnly ?? watch.IsDateOnly ?? false,
-                    isTimeOnly ?? watch.IsTimeOnly ?? false);
-            }
-            else
-            {
-                string pathType = "directory";
-                string checkTarget = "LastAccessTime";
-
-                string ret_string = GetDirectoryLastAccessTime(info,
-                    isDateOnly ?? watch.IsDateOnly ?? false,
-                    isTimeOnly ?? watch.IsTimeOnly ?? false);
-                ret = ret_string != watch.LastAccessTime;
-                dictionary[$"{pathType}_{checkTarget}_{serial}"] = ret ?
-                    $"{watch.LastAccessTime} -> {ret_string}" :
-                    ret_string;
-                watch.LastAccessTime = ret_string;
-            }
-            watch.IsDateOnly ??= isDateOnly;
-            watch.IsTimeOnly ??= isTimeOnly;
             return ret;
         }
 
