@@ -11,11 +11,15 @@ using IO.Lib;
 namespace IO.Work.Registry
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Copy : TaskJob
+    internal class Copy : IOTaskWorkRegistry
     {
         [TaskParameter(Mandatory = true, ResolvEnv = true)]
         [Keys("sourcepath", "srcpath", "src", "source", "sourcekey", "srckey", "path", "keypath")]
-        protected string _SourcePath { get; set; }
+        protected string _SourcePath2 { get; set; }
+
+        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [Keys("sourcepath", "srcpath", "src", "source", "sourcekey", "srckey", "path", "keypath")]
+        protected string[] _SourcePath { get; set; }
 
         [TaskParameter(ResolvEnv = true)]
         [Keys("destinationpath", "dstpath", "dst", "destination", "destinationkey", "dstkey")]
@@ -41,6 +45,51 @@ namespace IO.Work.Registry
         {
             this.Success = true;
 
+            if (_SourceName?.Length > 0)
+            {
+                //  sourceNameが複数の場合は、destinationNameの指定は無視
+                if (_SourceName.Length > 1)
+                {
+                    _DestinationName = null;
+                }
+
+                //  SourceとDestinationのキーが同じ場合、destinationNameの設定が必須。
+                //  ※SourceとDestinationのキーが同じ場合、sourceNameは1つのみ指定可能。
+                if (_SourcePath[0].Equals(_DestinationPath, StringComparison.OrdinalIgnoreCase) && _DestinationName == null)
+                {
+                    Manager.WriteLog(LogLevel.Error, "SourceKeyPath = DestinationKeyPath, and not destinationName.", _SourcePath[0]);
+                    return;
+                }
+
+                SrcDstRegistryValueProcess(_SourcePath[0], _DestinationPath, _SourceName, _DestinationName, false, CopyRegistryValueAction);
+            }
+            else
+            {
+                //  キーコピーの為、DestinationPath必須
+                if (string.IsNullOrEmpty(_DestinationPath))
+                {
+                    Manager.WriteLog(LogLevel.Error, "DestinationKeyPath is unset.");
+                    return;
+                }
+
+                //  コピー先が存在し、force=falseの場合
+                bool registryKeyExists(string keyPath)
+                {
+                    using (RegistryKey checkingKey = RegistryControl.GetRegistryKey(keyPath, false, false))
+                    {
+                        return checkingKey != null;
+                    }
+                }
+                if (registryKeyExists(_DestinationPath) && !_Force)
+                {
+                    Manager.WriteLog(LogLevel.Warn, "Destination path is already exists. \"{0}\"", _DestinationPath);
+                    return;
+                }
+
+                SrcDstRegistryKeyProcess(_SourcePath, _DestinationPath, false, CopyRegistryKeyAction);
+            }
+
+            /*
             if (_SourceName == null)
             {
                 CopyRegistryKeyAction();
@@ -49,16 +98,58 @@ namespace IO.Work.Registry
             {
                 CopyRegistryValuceAction();
             }
+            */
         }
 
-        private void CopyRegistryKeyAction()
+        private void CopyRegistryValueAction(RegistryKey sourceKey, RegistryKey destinationKey, string sourceName, string destinationName)
         {
-            using (var sourceKey = RegistryControl.GetRegistryKey(_SourcePath, false, false))
+            try
+            {
+                //  コピー先が存在し、force=falseの場合
+                if (destinationKey.GetValueNames().Any(x => x.Equals(destinationName, StringComparison.OrdinalIgnoreCase)) && !_Force)
+                {
+                    Manager.WriteLog(LogLevel.Warn, "Destination name is already exists. \"{0}\"", destinationName);
+                    return;
+                }
+
+                RegistryValueKind valueKind = sourceKey.GetValueKind(sourceName);
+                object srcValue = valueKind == RegistryValueKind.ExpandString ?
+                    sourceKey.GetValue(sourceName, null, RegistryValueOptions.DoNotExpandEnvironmentNames) :
+                    sourceKey.GetValue(sourceName);
+                destinationKey.SetValue(destinationName, srcValue, valueKind);
+
+                Success = true;
+            }
+            catch (Exception e)
+            {
+                Manager.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
+                Manager.WriteLog(LogLevel.Debug, e.ToString());
+                this.Success = false;
+            }
+        }
+
+        private void CopyRegistryKeyAction(RegistryKey sourceKey, RegistryKey destinationKey)
+        {
+            try
+            {
+                RegistryControl.CopyRegistryKey(sourceKey, destinationKey, _ExcludeKey);
+            }
+            catch (Exception e)
+            {
+                Manager.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
+                Manager.WriteLog(LogLevel.Debug, e.ToString());
+                this.Success = false;
+            }
+        }
+
+        private void CopyRegistryKeyAction2()
+        {
+            using (var sourceKey = RegistryControl.GetRegistryKey(_SourcePath2, false, false))
             {
                 //  コピー元のキーが存在しない場合
                 if (sourceKey == null)
                 {
-                    Manager.WriteLog(LogLevel.Error, "Target path is missing. \"{0}\"", _SourcePath);
+                    Manager.WriteLog(LogLevel.Error, "Target path is missing. \"{0}\"", _SourcePath2);
                     return;
                 }
                 try
@@ -86,14 +177,14 @@ namespace IO.Work.Registry
             }
         }
 
-        private void CopyRegistryValuceAction()
+        private void CopyRegistryValuceAction2()
         {
-            using (var sourceKey = RegistryControl.GetRegistryKey(_SourcePath, false, false))
+            using (var sourceKey = RegistryControl.GetRegistryKey(_SourcePath2, false, false))
             {
                 //  コピー元のキーが存在しない場合
                 if (sourceKey == null)
                 {
-                    Manager.WriteLog(LogLevel.Error, "Target path is missing. \"{0}\"", _SourcePath);
+                    Manager.WriteLog(LogLevel.Error, "Target path is missing. \"{0}\"", _SourcePath2);
                     return;
                 }
 
@@ -104,7 +195,7 @@ namespace IO.Work.Registry
                 }
 
                 //  値コピー
-                _DestinationPath ??= _SourcePath;
+                _DestinationPath ??= _SourcePath2;
                 try
                 {
                     using (var destinationKey = RegistryControl.GetRegistryKey(_DestinationPath, true, true))

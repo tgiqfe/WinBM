@@ -81,12 +81,12 @@ namespace IO.Work
         /// <param name="targetRegistryValueAction"></param>
         protected void TargetRegistryValueProcess(string path, string[] names, bool writable, TargetRegistryValueAction targetRegistryValueAction)
         {
-            using (RegistryKey regKey = RegistryControl.GetRegistryKey(path, false, writable))
+            using (RegistryKey parentKey = RegistryControl.GetRegistryKey(path, false, writable))
             {
                 //  対象キーが存在しない場合
-                if (regKey == null)
+                if (parentKey == null)
                 {
-                    Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", regKey.Name);
+                    Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", parentKey.Name);
                     return;
                 }
 
@@ -96,14 +96,14 @@ namespace IO.Work
                     {
                         //  ワイルドカード指定
                         System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(name);
-                        foreach (var valueName in regKey.GetValueNames().Where(x => wildcard.IsMatch(x)))
+                        foreach (var valueName in parentKey.GetValueNames().Where(x => wildcard.IsMatch(x)))
                         {
-                            targetRegistryValueAction(regKey, valueName);
+                            targetRegistryValueAction(parentKey, valueName);
                         }
                     }
                     else
                     {
-                        targetRegistryValueAction(regKey, name);
+                        targetRegistryValueAction(parentKey, name);
                     }
                 }
             }
@@ -191,8 +191,10 @@ namespace IO.Work
                     return;
                 }
 
+                destinationPath ??= sourcePath;
                 foreach (string name in sourceNames)
                 {
+                    destinationName ??= name;
                     if (name.Contains("*"))
                     {
                         Manager.WriteLog(LogLevel.Info, "{0} Wildcard path.", this.TaskName);
