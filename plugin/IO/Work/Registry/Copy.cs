@@ -13,9 +13,11 @@ namespace IO.Work.Registry
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Copy : IOTaskWorkRegistry
     {
+        /*
         [TaskParameter(Mandatory = true, ResolvEnv = true)]
         [Keys("sourcepath", "srcpath", "src", "source", "sourcekey", "srckey", "path", "keypath")]
         protected string _SourcePath2 { get; set; }
+        */
 
         [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
         [Keys("sourcepath", "srcpath", "src", "source", "sourcekey", "srckey", "path", "keypath")]
@@ -48,14 +50,12 @@ namespace IO.Work.Registry
             if (_SourceName?.Length > 0)
             {
                 //  sourceNameが複数の場合は、destinationNameの指定は無視
-                if (_SourceName.Length > 1)
-                {
-                    _DestinationName = null;
-                }
+                if (_SourceName.Length > 1) { _DestinationName = null; }
 
                 //  SourceとDestinationのキーが同じ場合、destinationNameの設定が必須。
                 //  ※SourceとDestinationのキーが同じ場合、sourceNameは1つのみ指定可能。
-                if (_SourcePath[0].Equals(_DestinationPath, StringComparison.OrdinalIgnoreCase) && _DestinationName == null)
+                if ((_SourcePath[0].Equals(_DestinationPath, StringComparison.OrdinalIgnoreCase) || string.IsNullOrEmpty(_DestinationPath))
+                    && _DestinationName == null)
                 {
                     Manager.WriteLog(LogLevel.Error, "SourceKeyPath = DestinationKeyPath, and not destinationName.", _SourcePath[0]);
                     return;
@@ -117,8 +117,6 @@ namespace IO.Work.Registry
                     sourceKey.GetValue(sourceName, null, RegistryValueOptions.DoNotExpandEnvironmentNames) :
                     sourceKey.GetValue(sourceName);
                 destinationKey.SetValue(destinationName, srcValue, valueKind);
-
-                Success = true;
             }
             catch (Exception e)
             {
@@ -142,6 +140,7 @@ namespace IO.Work.Registry
             }
         }
 
+        /*
         private void CopyRegistryKeyAction2()
         {
             using (var sourceKey = RegistryControl.GetRegistryKey(_SourcePath2, false, false))
@@ -240,5 +239,6 @@ namespace IO.Work.Registry
                 }
             }
         }
+        */
     }
 }

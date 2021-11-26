@@ -297,5 +297,23 @@ namespace IO.Lib
                     return new byte[0] { };
             }
         }
+
+        public static bool Exists(string path)
+        {
+            using (RegistryKey regKey = GetRegistryKey(path, false, false))
+            {
+                return regKey != null;
+            }
+        }
+
+        public static bool Exists(string path, string name)
+        {
+            using (RegistryKey regKey = GetRegistryKey(path, false, false))
+            {
+                if (regKey == null) { return false; }
+
+                return regKey.GetValueNames().Any(x => x.Equals(name, StringComparison.OrdinalIgnoreCase));
+            }
+        }
     }
 }
