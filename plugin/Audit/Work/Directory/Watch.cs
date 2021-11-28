@@ -72,7 +72,7 @@ namespace Audit.Work.Directory
         protected bool? _IsChildCount { get; set; }
 
         [TaskParameter(MandatoryAny = 13)]
-        [Keys("exists", "exist")]
+        [Keys("isexists", "exists", "exist")]
         protected bool? _IsExists { get; set; }
 
         //  ################################

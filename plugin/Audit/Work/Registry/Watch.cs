@@ -61,7 +61,7 @@ namespace Audit.Work.Registry
         protected bool? _IsRegistryType { get; set; }
 
         [TaskParameter(MandatoryAny = 9)]
-        [Keys("exists", "exist")]
+        [Keys("isexists", "exists", "exist")]
         protected bool? _IsExists { get; set; }
 
         //  ################################
@@ -80,7 +80,7 @@ namespace Audit.Work.Registry
 
         private int _serial;
         private string _checkingPath;
-        const string REGPATH_PREFIX = "[registry]";
+        //const string REGPATH_PREFIX = "[registry]";
 
         public override void MainProcess()
         {
@@ -97,7 +97,7 @@ namespace Audit.Work.Registry
                     foreach (string name in _Name)
                     {
                         _serial++;
-                        string regPath = REGPATH_PREFIX + keyPath + "\\" + name;
+                        string regPath = WatchPath.REGPATH_PREFIX + keyPath + "\\" + name;
                         dictionary[$"registry_{_serial}"] = regPath.Replace(_checkingPath, "");
                         WatchPath watch = _Begin ?
                             CreateForRegistryValue() :
@@ -167,7 +167,7 @@ namespace Audit.Work.Registry
                 foreach (string name in regKey.GetValueNames())
                 {
                     _serial++;
-                    string regPath = REGPATH_PREFIX + keyPath + "\\" + name;
+                    string regPath = WatchPath.REGPATH_PREFIX + keyPath + "\\" + name;
                     dictionary[$"registry_{_serial}"] = regPath.Replace(_checkingPath, "");
                     WatchPath childWatch = _Begin ?
                         CreateForRegistryValue() :

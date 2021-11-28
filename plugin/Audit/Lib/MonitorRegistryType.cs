@@ -14,33 +14,6 @@ namespace Audit.Lib
         #region Watch method
 
         public static bool WatchRegistryValue(
-            WatchPath watch, Dictionary<string, string> dictionary, int serial, bool? isMonitor, RegistryKey regKey, string name)
-        {
-            if ((!isMonitor ?? true) && watch.RegistryType == null) { return false; }
-
-            bool ret = false;
-            if (watch.RegistryType == null)
-            {
-                ret = true;
-                watch.RegistryType = RegistryControl.ValueKindToString(regKey.GetValueKind(name));
-            }
-            else
-            {
-                string pathType = "registry";
-                string checkTarget = "RegistryType";
-
-                string ret_string = RegistryControl.ValueKindToString(regKey.GetValueKind(name));
-                ret = ret_string != watch.RegistryType;
-                dictionary[$"{pathType}_{checkTarget}_{serial}"] = ret ?
-                    $"{watch.RegistryType} -> {ret_string}" :
-                    ret_string;
-
-                watch.RegistryType = ret_string;
-            }
-            return ret;
-        }
-
-        public static bool WatchRegistryValue(
             WatchPath watch, Dictionary<string, string> dictionary, int serial, RegistryKey regKey, string name)
         {
             bool ret = false;

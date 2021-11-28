@@ -11,7 +11,7 @@ using IO.Lib;
 namespace IO.Work.Registry
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Move : TaskJob
+    internal class Move : IOTaskWorkRegistry
     {
         //  SourcePath + DesrintaionPath ⇒ キーを移動
         //  SourcePath + SourceName + DestinationName ⇒ 同じキー内で値を移動
@@ -19,7 +19,11 @@ namespace IO.Work.Registry
 
         [TaskParameter(Mandatory = true, ResolvEnv = true)]
         [Keys("sourcepath", "srcpath", "src", "source", "sourcekey", "srckey", "path", "keypath")]
-        protected string _SourcePath { get; set; }
+        protected string _SourcePath2 { get; set; }
+
+        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [Keys("sourcepath", "srcpath", "src", "source", "sourcekey", "srckey", "path", "keypath")]
+        protected string[] _SourcePath { get; set; }
 
         [TaskParameter(ResolvEnv = true)]
         [Keys("destinationpath", "dstpath", "dst", "destination", "destinationkey", "dstkey")]
@@ -43,116 +47,82 @@ namespace IO.Work.Registry
 
             if (_SourceName?.Length > 0)
             {
-                MoveRegistryValuceAction();
+                //  sourceNameが複数の場合は、destinationNameの指定は無視
+                if (_SourceName.Length > 1) { _DestinationName = null; }
+
+                //  SourceとDestinationのキーが同じ場合(Destinationキーがnullの場合も含む)、destinationNameの設定が必須。
+                //  ※SourceとDestinationのキーが同じ場合、sourceNameは1つのみ指定可能。
+                if ((_SourcePath[0].Equals(_DestinationPath, StringComparison.OrdinalIgnoreCase) || string.IsNullOrEmpty(_DestinationPath))
+                    && _DestinationName == null)
+                {
+                    Manager.WriteLog(LogLevel.Error, "SourceKeyPath = DestinationKeyPath, and not destinationName.", _SourcePath[0]);
+                    return;
+                }
+
+                SrcDstRegistryValueProcess(_SourcePath[0], _DestinationPath, _SourceName, _DestinationName, false, MoveRegistryValueAction);
             }
             else
             {
-                MoveRegistryKeyAction();
-            }
-        }
-
-        private void MoveRegistryKeyAction()
-        {
-            using (var sourceKey = RegistryControl.GetRegistryKey(_SourcePath, false, true))
-            {
-                //  コピー元のキーが存在しない場合
-                if (sourceKey == null)
+                //  キー移動の為、DestinationPath必須
+                if (string.IsNullOrEmpty(_DestinationPath))
                 {
-                    Manager.WriteLog(LogLevel.Error, "Target path is missing. \"{0}\"", _SourcePath);
-                    return;
-                }
-                try
-                {
-                    using (var destinationKey = RegistryControl.GetRegistryKey(_DestinationPath, false, false))
-                    {
-                        //  コピー先が存在し、force=falseの場合
-                        if (destinationKey != null && !_Force)
-                        {
-                            Manager.WriteLog(LogLevel.Warn, "Destination path is already exists. \"{0}\"", _DestinationPath);
-                            return;
-                        }
-                    }
-                    using (var destinationKey = RegistryControl.GetRegistryKey(_DestinationPath, true, true))
-                    {
-                        RegistryControl.CopyRegistryKey(sourceKey, destinationKey, null);
-                    }
-
-                    //  コピー完了後に移動元を削除
-                    sourceKey.DeleteSubKeyTree("");
-                }
-                catch (Exception e)
-                {
-                    Manager.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
-                    Manager.WriteLog(LogLevel.Debug, e.ToString());
-                    this.Success = false;
-                }
-            }
-        }
-
-        private void MoveRegistryValuceAction()
-        {
-            using (var sourceKey = RegistryControl.GetRegistryKey(_SourcePath, false, true))
-            {
-                //  コピー元のキーが存在しない場合
-                if (sourceKey == null)
-                {
-                    Manager.WriteLog(LogLevel.Error, "Target path is missing. \"{0}\"", _SourcePath);
+                    Manager.WriteLog(LogLevel.Error, "DestinationKeyPath is unset.");
                     return;
                 }
 
-                //  名前を複数指定する場合は、コピー先名をnullに変更して、コピー元名と同じになるようにする。
-                if (_SourceName.Length > 1)
+                //  移動先が存在し、force=falseの場合
+                if (RegistryControl.Exists(_DestinationPath) && !_Force)
                 {
-                    _DestinationName = null;
+                    Manager.WriteLog(LogLevel.Warn, "Destination path is already exists. \"{0}\"", _DestinationPath);
+                    return;
                 }
 
-                //  値コピー
-                _DestinationPath ??= _SourcePath;
-                try
-                {
-                    using (var destinationKey = RegistryControl.GetRegistryKey(_DestinationPath, true, true))
-                    {
-                        Action<string, string> registryValueCopy = (srcName, dstName) =>
-                        {
-                            //  コピー先が存在し、force=falseの場合
-                            if (destinationKey.GetValueNames().Any(x => x.Equals(dstName, StringComparison.OrdinalIgnoreCase)) && !_Force)
-                            {
-                                Manager.WriteLog(LogLevel.Warn, "Destination name is already exists. \"{0}\"", dstName);
-                                return;
-                            }
-                            RegistryValueKind valueKind = sourceKey.GetValueKind(srcName);
-                            object srcValue = valueKind == RegistryValueKind.ExpandString ?
-                                sourceKey.GetValue(srcName, null, RegistryValueOptions.DoNotExpandEnvironmentNames) :
-                                sourceKey.GetValue(srcName);
-                            destinationKey.SetValue(dstName, srcValue, valueKind);
+                SrcDstRegistryKeyProcess(_SourcePath, _DestinationPath, false, MoveRegistryKeyAction);
+            }
+        }
 
-                            //  コピー完了後に移動元を削除
-                            sourceKey.DeleteValue(srcName);
-                        };
-
-                        foreach (string sourceName in _SourceName)
-                        {
-                            if (sourceName.Contains("*"))
-                            {
-                                System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(sourceName);
-                                sourceKey.GetValueNames().
-                                    Where(x => wildcard.IsMatch(x)).
-                                    ToList().
-                                    ForEach(x => registryValueCopy(x, x));
-                            }
-                            else
-                            {
-                                registryValueCopy(sourceName, _DestinationName ?? sourceName);
-                            }
-                        }
-                    }
-                }
-                catch (Exception e)
+        private void MoveRegistryValueAction(RegistryKey sourceKey, RegistryKey destinationKey, string sourceName, string destinationName)
+        {
+            try
+            {
+                //  コピー先が存在し、force=falseの場合
+                if (destinationKey.GetValueNames().Any(x => x.Equals(destinationName, StringComparison.OrdinalIgnoreCase)) && !_Force)
                 {
-                    Manager.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
-                    Manager.WriteLog(LogLevel.Debug, e.ToString());
-                    this.Success = false;
+                    Manager.WriteLog(LogLevel.Warn, "Destination name is already exists. \"{0}\"", destinationName);
+                    return;
                 }
+
+                RegistryValueKind valueKind = sourceKey.GetValueKind(sourceName);
+                object srcValue = valueKind == RegistryValueKind.ExpandString ?
+                    sourceKey.GetValue(sourceName, null, RegistryValueOptions.DoNotExpandEnvironmentNames) :
+                    sourceKey.GetValue(sourceName);
+                destinationKey.SetValue(destinationName, srcValue, valueKind);
+
+                //  移動の為、Sourceを削除
+                sourceKey.DeleteValue(sourceName);
+            }
+            catch (Exception e)
+            {
+                Manager.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
+                Manager.WriteLog(LogLevel.Debug, e.ToString());
+                this.Success = false;
+            }
+        }
+
+        private void MoveRegistryKeyAction(RegistryKey sourceKey, RegistryKey destinationKey)
+        {
+            try
+            {
+                RegistryControl.CopyRegistryKey(sourceKey, destinationKey, null);
+
+                //  移動の為、Sourceを削除
+                sourceKey.DeleteSubKeyTree("");
+            }
+            catch (Exception e)
+            {
+                Manager.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
+                Manager.WriteLog(LogLevel.Debug, e.ToString());
+                this.Success = false;
             }
         }
     }

@@ -11,14 +11,28 @@ namespace Audit.Lib
 {
     public class WatchPathCollection : Dictionary<string, WatchPath>
     {
+        /// <summary>
+        /// SetWatchPath()時に格納。
+        /// 未チェックパスの確認要に使用。
+        /// </summary>
         private List<string> _CheckedKeys = new List<string>();
 
+        /// <summary>
+        /// Targetのパス(文字列)から、WatchPathを取得
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public WatchPath GetWatchPath(string path)
         {
             string matchKey = this.Keys.FirstOrDefault(x => x.Equals(path, StringComparison.OrdinalIgnoreCase));
             return matchKey == null ? null : this[matchKey];
         }
 
+        /// <summary>
+        /// Targetに対して、WatchPathを格納
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="watchPath"></param>
         public void SetWatchPath(string path, WatchPath watchPath)
         {
             watchPath.FullPath = path;
@@ -26,6 +40,10 @@ namespace Audit.Lib
             this._CheckedKeys.Add(path);
         }
 
+        /// <summary>
+        /// SetWatchPath()でまだ更新していないパスを返す。
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<string> GetUncheckedKeys()
         {
             return this.Keys.Where(x => !_CheckedKeys.Any(y => y.Equals(x, StringComparison.OrdinalIgnoreCase)));
@@ -33,6 +51,12 @@ namespace Audit.Lib
 
         #region Load/Save
 
+        /// <summary>
+        /// 指定したIDからWatchDBを読み込み
+        /// </summary>
+        /// <param name="dbDir"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public static WatchPathCollection Load(string dbDir, string id)
         {
             try
@@ -46,6 +70,11 @@ namespace Audit.Lib
             return new WatchPathCollection();
         }
 
+        /// <summary>
+        /// 指定したIDでWatchDBを保存
+        /// </summary>
+        /// <param name="dbDir"></param>
+        /// <param name="id"></param>
         public void Save(string dbDir, string id)
         {
             if (!Directory.Exists(dbDir))

@@ -68,7 +68,7 @@ namespace Audit.Work.File
         protected bool? _IsSize { get; set; }
 
         [TaskParameter(MandatoryAny = 12)]
-        [Keys("exists", "exist")]
+        [Keys("isexists", "exists", "exist")]
         protected bool? _IsExists { get; set; }
 
         //  ################################
