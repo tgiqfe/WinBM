@@ -12,17 +12,17 @@ namespace WinBM
     {
         #region Private Parameter
 
-        private static readonly string _DBFile = Path.Combine(
-            Environment.GetEnvironmentVariable("ProgramData"), "WinBM", "setting.db");
+        public static readonly string WorkiDir = Environment.UserName == "SYSTEM" ?
+            Path.Combine(Environment.GetEnvironmentVariable("ProgramData"), "WinBM") :
+            Path.Combine(Path.GetTempPath(), "WinBM");
 
-        private static readonly string _DBJson = Path.Combine(
-            Environment.GetEnvironmentVariable("ProgramData"), "WinBM", "setting.json");
+        public static readonly string DBFile = Path.Combine(WorkiDir, "setting.db");
 
-        private static readonly string _LogDir = Path.Combine(
-            Environment.GetEnvironmentVariable("ProgramData"), "WinBM", "Logs");
+        public static readonly string DBJson = Path.Combine(WorkiDir, "setting.json");
 
-        private static readonly string _LogFile = Path.Combine(
-            _LogDir, DateTime.Now.ToString("yyyyMMdd") + ".log");
+        public static readonly string LogDir = Path.Combine(WorkiDir, "Logs");
+
+        public static readonly string LogFile = Path.Combine(LogDir, DateTime.Now.ToString("yyyyMMdd") + ".log");
 
         #endregion
 
@@ -54,9 +54,9 @@ namespace WinBM
         /// </summary>
         public GlobalSetting()
         {
-            if (!Directory.Exists(_LogDir))
+            if (!Directory.Exists(LogDir))
             {
-                Directory.CreateDirectory(_LogDir);
+                Directory.CreateDirectory(LogDir);
             }
         }
 
@@ -80,7 +80,7 @@ namespace WinBM
             GlobalSetting config = null;
             try
             {
-                using (var litedb = new LiteDatabase(_DBFile))
+                using (var litedb = new LiteDatabase(DBFile))
                 {
                     var collection = litedb.GetCollection<GlobalSetting>("GlobalConfig");
                     collection.EnsureIndex(x => x.Serial, true);
@@ -104,19 +104,19 @@ namespace WinBM
         /// </summary>
         public void Save()
         {
-            string parent = Path.GetDirectoryName(_DBFile);
+            string parent = Path.GetDirectoryName(DBFile);
             if (!Directory.Exists(parent))
             {
                 Directory.CreateDirectory(parent);
             }
 
-            using (var litedb = new LiteDatabase(_DBFile))
+            using (var litedb = new LiteDatabase(DBFile))
             {
                 var collection = litedb.GetCollection<GlobalSetting>("GlobalConfig");
                 collection.EnsureIndex(x => x.Serial, true);
                 collection.Upsert(this);
             }
-            using (var sw = new StreamWriter(_DBJson, false, Encoding.UTF8))
+            using (var sw = new StreamWriter(DBJson, false, Encoding.UTF8))
             {
                 sw.WriteLine(System.Text.Json.JsonSerializer.Serialize(this,
                     new System.Text.Json.JsonSerializerOptions()
@@ -131,7 +131,7 @@ namespace WinBM
 
         public void WriteLog(LogLevel level, string message)
         {
-            using (var sw = new StreamWriter(_LogFile, true, Encoding.UTF8))
+            using (var sw = new StreamWriter(LogFile, true, Encoding.UTF8))
             {
                 sw.WriteLine("[{0}][{1}] {2}",
                     DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), level, message);

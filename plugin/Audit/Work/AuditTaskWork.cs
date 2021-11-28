@@ -11,7 +11,6 @@ using System.Text.Json;
 
 namespace Audit.Work
 {
-    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class AuditTaskWork : TaskJob
     {
         private static string _AuditMonitorFile = null;
@@ -37,7 +36,7 @@ namespace Audit.Work
                 else
                 {
                     _AuditMonitorFile = Path.Combine(
-                        Environment.GetEnvironmentVariable("ProgramData"), "WinBM", "Audit", "AuditMonitor.json");
+                        GlobalSetting.WorkiDir, "Audit", "AuditMonitor.json");
                 }
 
                 string parent = Path.GetDirectoryName(_AuditMonitorFile);
@@ -89,7 +88,7 @@ namespace Audit.Work
                 else
                 {
                     _SinceDBFile = Path.Combine(
-                        Environment.GetEnvironmentVariable("ProgramData"), "WinBM", "Audit", "SinceDB.json");
+                        GlobalSetting.WorkiDir, "Audit", "SinceDB.json");
                 }
             }
 
@@ -128,7 +127,7 @@ namespace Audit.Work
                 else
                 {
                     _SinceDBFile = Path.Combine(
-                        Environment.GetEnvironmentVariable("ProgramData"), "WinBM", "Audit", "SinceDB.json");
+                        GlobalSetting.WorkiDir, "Audit", "SinceDB.json");
                 }
             }
 
@@ -183,7 +182,7 @@ namespace Audit.Work
                 else
                 {
                     _WatchDBDir = Path.Combine(
-                        Environment.GetEnvironmentVariable("ProgramData"), "WinBM", "Audit", "WatchDB");
+                        GlobalSetting.WorkiDir, "Audit", "WatchDB");
                 }
             }
             return Audit.Lib.WatchPathCollection.Load(_WatchDBDir, id);
@@ -201,7 +200,7 @@ namespace Audit.Work
                 else
                 {
                     _WatchDBDir = Path.Combine(
-                        Environment.GetEnvironmentVariable("ProgramData"), "WinBM", "Audit", "WatchDB");
+                        GlobalSetting.WorkiDir, "Audit", "WatchDB");
                 }
             }
             collection.Save(_WatchDBDir, id);

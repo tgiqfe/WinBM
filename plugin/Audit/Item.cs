@@ -1,4 +1,5 @@
-﻿namespace Audit
+﻿
+namespace Audit
 {
     internal class Item
     {
