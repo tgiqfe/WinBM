@@ -12,8 +12,19 @@ namespace OSVersion.Lib
 {
     internal class OSInfoCollection : List<OSInfo>
     {
+        #region Constructor
+
         public OSInfoCollection() { }
 
+        public OSInfoCollection(bool loadDefault)
+        {
+            if (loadDefault)
+            {
+                this.LoadDefault();
+            }
+        }
+
+        #endregion
         #region Load default
 
         public void LoadDefault()
@@ -201,8 +212,7 @@ namespace OSVersion.Lib
 
             if (result == null)
             {
-                result = new OSInfoCollection();
-                result.LoadDefault();
+                result = new OSInfoCollection(loadDefault: true);
                 result.Save(dbPath);
             }
 

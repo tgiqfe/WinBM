@@ -181,9 +181,7 @@ namespace OSVersion.Lib
         /// <returns></returns>
         public static OSInfo GetCurrent()
         {
-            OSInfoCollection collection = new OSInfoCollection();
-            collection.LoadDefault();
-            return GetCurrent(collection);
+            return GetCurrent(new OSInfoCollection(loadDefault: true));
         }
 
         public static OSInfo GetCurrent(OSInfoCollection collection)
@@ -221,9 +219,7 @@ namespace OSVersion.Lib
 
         public static OSInfo GetWindows(int versionSerial)
         {
-            OSInfoCollection collection = new OSInfoCollection();
-            collection.LoadDefault();
-            return GetWindows(versionSerial, collection);
+            return GetWindows(versionSerial, new OSInfoCollection(loadDefault: true));
         }
 
         public static OSInfo GetWindows(string versionName, OSInfoCollection collection)
@@ -250,9 +246,7 @@ namespace OSVersion.Lib
 
         public static OSInfo GetWindows(string versionName)
         {
-            OSInfoCollection collection = new OSInfoCollection();
-            collection.LoadDefault();
-            return GetWindows(versionName, collection);
+            return GetWindows(versionName, new OSInfoCollection(loadDefault: true));
         }
 
         public static OSInfo GetWindowsServer(int versionSerial, OSInfoCollection collection)
@@ -270,9 +264,7 @@ namespace OSVersion.Lib
 
         public static OSInfo GetWindowsServer(int versionSerial)
         {
-            OSInfoCollection collection = new OSInfoCollection();
-            collection.LoadDefault();
-            return GetWindowsServer(versionSerial, collection);
+            return GetWindowsServer(versionSerial, new OSInfoCollection(loadDefault: true));
         }
 
         public static OSInfo GetWindowsServer(string versionName, OSInfoCollection collection)
@@ -298,9 +290,7 @@ namespace OSVersion.Lib
 
         public static OSInfo GetWindowsServer(string versionName)
         {
-            OSInfoCollection collection = new OSInfoCollection();
-            collection.LoadDefault();
-            return GetWindowsServer(versionName, collection);
+            return GetWindowsServer(versionName, new OSInfoCollection(loadDefault: true));
         }
 
         #endregion
@@ -315,9 +305,7 @@ namespace OSVersion.Lib
 
         public static OSInfo GetMac(int versionSerial)
         {
-            OSInfoCollection collection = new OSInfoCollection();
-            collection.LoadDefault();
-            return GetMac(versionSerial, collection);
+            return GetMac(versionSerial, new OSInfoCollection(loadDefault: true));
         }
 
         public static OSInfo GetMac(string versionName, OSInfoCollection collection)
@@ -337,9 +325,7 @@ namespace OSVersion.Lib
 
         public static OSInfo GetMac(string versionName)
         {
-            OSInfoCollection collection = new OSInfoCollection();
-            collection.LoadDefault();
-            return GetMac(versionName, collection);
+            return GetMac(versionName, new OSInfoCollection(loadDefault: true));
         }
 
         #endregion
@@ -354,9 +340,7 @@ namespace OSVersion.Lib
 
         public static OSInfo GetLinux(int versionSerial)
         {
-            OSInfoCollection collection = new OSInfoCollection();
-            collection.LoadDefault();
-            return GetLinux(versionSerial, collection);
+            return GetLinux(versionSerial, new OSInfoCollection(loadDefault: true));
         }
 
         public static OSInfo GetLinux(string versionName, OSInfoCollection collection)
@@ -376,9 +360,7 @@ namespace OSVersion.Lib
 
         public static OSInfo GetLinux(string versionName)
         {
-            OSInfoCollection collection = new OSInfoCollection();
-            collection.LoadDefault();
-            return GetLinux(versionName, collection);
+            return GetLinux(versionName, new OSInfoCollection(loadDefault: true));
         }
 
         public static OSInfo GetLinux(int versionSerial, Linux.Distribution distribution, OSInfoCollection collection)
@@ -390,9 +372,7 @@ namespace OSVersion.Lib
 
         public static OSInfo GetLinux(int versionSerial, Linux.Distribution distribution)
         {
-            OSInfoCollection collection = new OSInfoCollection();
-            collection.LoadDefault();
-            return GetLinux(versionSerial, distribution, collection);
+            return GetLinux(versionSerial, distribution, new OSInfoCollection(loadDefault: true));
         }
 
         public static OSInfo GetLinux(string versionName, Linux.Distribution distribution, OSInfoCollection collection)
@@ -412,9 +392,7 @@ namespace OSVersion.Lib
 
         public static OSInfo GetLinux(string versionName, Linux.Distribution distribution)
         {
-            OSInfoCollection collection = new OSInfoCollection();
-            collection.LoadDefault();
-            return GetLinux(versionName, distribution, collection);
+            return GetLinux(versionName, distribution, new OSInfoCollection(loadDefault: true));
         }
 
         #endregion

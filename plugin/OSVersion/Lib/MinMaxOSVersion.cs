@@ -47,8 +47,8 @@ namespace OSVersion.Lib
                     if (tempMin is not null && tempMax is not null)
                     {
                         this.Enabled = true;
-                        this.Min = (OSInfo)tempMin;
-                        this.Max = (OSInfo)tempMax;
+                        this.Min = tempMin;
+                        this.Max = tempMax;
                     }
                 }
             }
