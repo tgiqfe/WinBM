@@ -35,8 +35,9 @@ namespace Audit.Work
                 }
                 else
                 {
-                    _AuditMonitorFile = Path.Combine(
-                        GlobalSetting.WorkiDir, "Audit", "AuditMonitor.json");
+                    //_AuditMonitorFile = Path.Combine(
+                    //    GlobalSetting.WorkDir, "Audit", "AuditMonitor.json");
+                    _AuditMonitorFile = Item.GetDefaultMonitorFile();
                 }
 
                 string parent = Path.GetDirectoryName(_AuditMonitorFile);
@@ -87,8 +88,9 @@ namespace Audit.Work
                 }
                 else
                 {
-                    _SinceDBFile = Path.Combine(
-                        GlobalSetting.WorkiDir, "Audit", "SinceDB.json");
+                    //_SinceDBFile = Path.Combine(
+                    //    GlobalSetting.WorkDir, "Audit", "SinceDB.json");
+                    _SinceDBFile = Item.GetDefaultSinceDBFile();
                 }
             }
 
@@ -126,8 +128,9 @@ namespace Audit.Work
                 }
                 else
                 {
-                    _SinceDBFile = Path.Combine(
-                        GlobalSetting.WorkiDir, "Audit", "SinceDB.json");
+                    //_SinceDBFile = Path.Combine(
+                    //    GlobalSetting.WorkDir, "Audit", "SinceDB.json");
+                    _SinceDBFile = Item.GetDefaultSinceDBFile();
                 }
             }
 
@@ -181,8 +184,9 @@ namespace Audit.Work
                 }
                 else
                 {
-                    _WatchDBDir = Path.Combine(
-                        GlobalSetting.WorkiDir, "Audit", "WatchDB");
+                    //_WatchDBDir = Path.Combine(
+                    //    GlobalSetting.WorkDir, "Audit", "WatchDB");
+                    _WatchDBDir = Item.GetDefaultWatchDBDir();
                 }
             }
             return Audit.Lib.WatchPathCollection.Load(_WatchDBDir, id);
@@ -199,8 +203,9 @@ namespace Audit.Work
                 }
                 else
                 {
-                    _WatchDBDir = Path.Combine(
-                        GlobalSetting.WorkiDir, "Audit", "WatchDB");
+                    //_WatchDBDir = Path.Combine(
+                    //    GlobalSetting.WorkDir, "Audit", "WatchDB");
+                    _WatchDBDir = Item.GetDefaultWatchDBDir();
                 }
             }
             collection.Save(_WatchDBDir, id);

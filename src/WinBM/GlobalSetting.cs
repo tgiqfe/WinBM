@@ -12,15 +12,15 @@ namespace WinBM
     {
         #region Private Parameter
 
-        public static readonly string WorkiDir = Environment.UserName == "SYSTEM" ?
+        public static readonly string WorkDir = Environment.UserName == "SYSTEM" ?
             Path.Combine(Environment.GetEnvironmentVariable("ProgramData"), "WinBM") :
             Path.Combine(Path.GetTempPath(), "WinBM");
 
-        public static readonly string DBFile = Path.Combine(WorkiDir, "setting.db");
+        public static readonly string DBFile = Path.Combine(WorkDir, "setting.db");
 
-        public static readonly string DBJson = Path.Combine(WorkiDir, "setting.json");
+        public static readonly string DBJson = Path.Combine(WorkDir, "setting.json");
 
-        public static readonly string LogDir = Path.Combine(WorkiDir, "Logs");
+        public static readonly string LogDir = Path.Combine(WorkDir, "Logs");
 
         public static readonly string LogFile = Path.Combine(LogDir, DateTime.Now.ToString("yyyyMMdd") + ".log");
 
