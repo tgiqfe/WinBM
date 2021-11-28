@@ -106,14 +106,97 @@ namespace OSVersion.Lib
             OSInfo result =
                 winSVCollection.FirstOrDefault(x => x.VersionName.Equals(versionName, StringComparison.OrdinalIgnoreCase)) ??
                 winSVCollection.FirstOrDefault(x => x.Alias.Any(y => y.Equals(versionName, StringComparison.OrdinalIgnoreCase))) ??
-                winSVCollection.FirstOrDefault(x => x.Version.Equals(versionName)) ??
-                winSVCollection.FirstOrDefault(x => x.BuildVersion.Equals(versionName));
+                winSVCollection.FirstOrDefault(x => x.Version.Equals(versionName));
             if (result is not null)
             {
                 result.Edition = null;
                 result.EndSupportDate = null;
             }
 
+            return result;
+        }
+
+        #endregion
+        #region GetMac
+
+        public static OSInfo GetMac(int versionSerial)
+        {
+            _collection ??= OSInfoCollection.Load();
+
+            var macCollection = _collection.Where(x => x.OSFamily == OSFamily.Mac);
+            OSInfo result = macCollection.FirstOrDefault(x => x.Serial == versionSerial);
+            return result;
+        }
+
+        public static OSInfo GetMac(string versionName)
+        {
+            if(int.TryParse(versionName, out int tempInt))
+            {
+                return GetMac(tempInt);
+            }
+
+            _collection ??= OSInfoCollection.Load();
+
+            var macCollection = _collection.Where(x => x.OSFamily == OSFamily.Mac);
+            OSInfo result =
+                macCollection.FirstOrDefault(x => x.VersionName.Equals(versionName, StringComparison.OrdinalIgnoreCase)) ??
+                macCollection.FirstOrDefault(x => x.Alias.Any(y => y.Equals(versionName, StringComparison.OrdinalIgnoreCase))) ??
+                macCollection.FirstOrDefault(x => x.Version.Equals(versionName));
+            return result;
+        }
+
+        #endregion
+        #region GetLinux
+
+        public static OSInfo GetLinux(int versionSerial)
+        {
+            _collection ??= OSInfoCollection.Load();
+
+            var macCollection = _collection.Where(x => x.OSFamily == OSFamily.Linux);
+            OSInfo result = macCollection.FirstOrDefault(x => x.Serial == versionSerial);
+            return result;
+        }
+
+        public static OSInfo GetLinux(string versionName)
+        {
+            if (int.TryParse(versionName, out int tempInt))
+            {
+                return GetLinux(tempInt);
+            }
+
+            _collection ??= OSInfoCollection.Load();
+
+            var linuxCollection = _collection.Where(x => x.OSFamily == OSFamily.Linux);
+            OSInfo result =
+                linuxCollection.FirstOrDefault(x => x.VersionName.Equals(versionName, StringComparison.OrdinalIgnoreCase)) ??
+                linuxCollection.FirstOrDefault(x => x.Alias.Any(y => y.Equals(versionName, StringComparison.OrdinalIgnoreCase))) ??
+                linuxCollection.FirstOrDefault(x => x.Version.Equals(versionName));
+            return result;
+        }
+
+        public static OSInfo GetLinux(int versionSerial, Linux.Distribution distribution)
+        {
+            _collection ??= OSInfoCollection.Load();
+
+            var linuxCollection = _collection.Where(x => x.OSFamily == OSFamily.Linux).Where(x => x.Distribution == distribution);
+            OSInfo result = linuxCollection.FirstOrDefault(x => x.Serial == versionSerial);
+            return result;
+        }
+
+        public static OSInfo GetLinux(string versionName, Linux.Distribution distribution)
+        {
+            if (int.TryParse(versionName, out int tempInt))
+            {
+                return GetLinux(tempInt);
+            }
+
+            _collection ??= OSInfoCollection.Load();
+
+            var linuxCollection = _collection.Where(x => x.OSFamily == OSFamily.Linux).Where(x => x.Distribution == distribution);
+            OSInfo result =
+                linuxCollection.FirstOrDefault(x => x.VersionName.Equals(versionName, StringComparison.OrdinalIgnoreCase)) ??
+                linuxCollection.FirstOrDefault(x => x.Alias.Any(y => y.Equals(versionName, StringComparison.OrdinalIgnoreCase))) ??
+                linuxCollection.FirstOrDefault(x => x.Version.Equals(versionName));
             return result;
         }
 

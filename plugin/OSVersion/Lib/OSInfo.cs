@@ -125,5 +125,48 @@ namespace OSVersion.Lib
                     " " + Edition,
                 VersionName);
         }
+
+        /// <summary>
+        /// OSバージョンで解決できるかどうかを判定
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="family"></param>
+        /// <param name="result"></param>
+        /// <returns></returns>
+        public static bool TryParse(string s, OSFamily family, out OSInfo result)
+        {
+            result = family switch
+            {
+                OSFamily.Windows =>
+                    OSVersion.GetWindows(s) ??
+                    OSVersion.GetWindowsServer(s),
+                OSFamily.Mac => OSVersion.GetMac(s),
+                OSFamily.Linux => OSVersion.GetLinux(s),
+                _ => null,
+            };
+            return result is not null;
+        }
+
+        public static OSInfo GetMinVersion(OSFamily family)
+        {
+            return family switch
+            {
+                OSFamily.Windows => Windows.MinMax.CreateMinimum(),
+                OSFamily.Mac => Mac.MinMax.CreateMinimum(),
+                OSFamily.Linux => Linux.MinMax.CreateMinimum(),
+                _ => null,
+            };
+        }
+
+        public static OSInfo GetMaxVersion(OSFamily family)
+        {
+            return family switch
+            {
+                OSFamily.Windows => Windows.MinMax.CreateMaximum(),
+                OSFamily.Mac => Mac.MinMax.CreateMaximum(),
+                OSFamily.Linux => Linux.MinMax.CreateMaximum(),
+                _ => null,
+            };
+        }
     }
 }
