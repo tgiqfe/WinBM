@@ -5,14 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using WinBM;
 using WinBM.Task;
+using OSVersion.Lib;
 
 namespace OSVersion.Require.Windows
 {
     internal class Within : TaskJob
     {
-        [TaskParameter(Mandatory = true, EqualSign = '~', Delimiter = '\n')]
+        [TaskParameter(Mandatory = true)]
         [Keys("range", "ranges")]
-        protected Dictionary<string, string> _Range { get; set; }
+        protected string[] _Range { get; set; }
 
         [TaskParameter]
         [Keys("invert", "not", "no", "none")]
@@ -20,14 +21,19 @@ namespace OSVersion.Require.Windows
 
         public override void MainProcess()
         {
-            //  _Rangeをstring配列Listに変換。
-            List<string[]>  rangeList = 
-                _Range.Select(x => new string[2] { x.Key, x.Value }).ToList();
+            OSInfo thisPC = OSVersion.Lib.OSVersion.GetCurrent();
 
+            //  現在実行中のOSが、_Rangeのいずれかの範囲に含まれていたらSuccess
+            foreach (string range in _Range)
+            {
+                MinMaxOSVersion minMax = new MinMaxOSVersion(range);
+                Success |= minMax.Within(thisPC);
+            }
 
-
-
-
+            if (!Success)
+            {
+                Manager.WriteLog(WinBM.LogLevel.Attention, "OS version is out of range. {0}", thisPC);
+            }
         }
     }
 }
