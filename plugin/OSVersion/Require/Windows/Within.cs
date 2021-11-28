@@ -9,7 +9,7 @@ using OSVersion.Lib;
 
 namespace OSVersion.Require.Windows
 {
-    internal class Within : TaskJob
+    internal class Within : OSVersionTaskRequire
     {
         [TaskParameter(Mandatory = true)]
         [Keys("range", "ranges")]
@@ -21,7 +21,9 @@ namespace OSVersion.Require.Windows
 
         public override void MainProcess()
         {
-            OSInfo thisPC = OSVersion.Lib.OSVersion.GetCurrent();
+            OSInfoCollection collection = LoadOSInfoDB();
+
+            OSInfo thisPC = OSInfo.GetCurrent(collection);
 
             //  現在実行中のOSが、_Rangeのいずれかの範囲に含まれていたらSuccess
             foreach (string range in _Range)

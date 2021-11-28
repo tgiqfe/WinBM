@@ -15,9 +15,9 @@ namespace Audit.Work
     {
         private static string _AuditMonitorFile = null;
 
-        private string _SinceDBFile = null;
+        private static string _SinceDBFile = null;
 
-        private string _WatchDBDir = null;
+        private static string _WatchDBDir = null;
 
         /// <summary>
         /// PreProcessのタイミングでAuditMonitorの準備

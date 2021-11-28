@@ -12,8 +12,6 @@ namespace OSVersion.Lib
 {
     internal class OSInfoCollection : List<OSInfo>
     {
-        const string dbPath = "osinfocollection.json";
-
         public OSInfoCollection() { }
 
         #region Load default
@@ -189,7 +187,7 @@ namespace OSVersion.Lib
         #endregion
         #region Load/Save
 
-        public static OSInfoCollection Load()
+        public static OSInfoCollection Load(string dbPath)
         {
             OSInfoCollection result = null;
             try
@@ -205,13 +203,13 @@ namespace OSVersion.Lib
             {
                 result = new OSInfoCollection();
                 result.LoadDefault();
-                result.Save();
+                result.Save(dbPath);
             }
 
             return result;
         }
 
-        public void Save()
+        public void Save(string dbPath)
         {
             using (var sw = new StreamWriter(dbPath, false, Encoding.UTF8))
             {

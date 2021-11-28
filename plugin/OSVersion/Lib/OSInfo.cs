@@ -142,10 +142,10 @@ namespace OSVersion.Lib
             result = family switch
             {
                 OSFamily.Windows =>
-                    OSVersion.GetWindows(s) ??
-                    OSVersion.GetWindowsServer(s),
-                OSFamily.Mac => OSVersion.GetMac(s),
-                OSFamily.Linux => OSVersion.GetLinux(s),
+                    OSInfo.GetWindows(s) ??
+                    OSInfo.GetWindowsServer(s),
+                OSFamily.Mac => OSInfo.GetMac(s),
+                OSFamily.Linux => OSInfo.GetLinux(s),
                 _ => null,
             };
             return result is not null;
@@ -418,7 +418,5 @@ namespace OSVersion.Lib
         }
 
         #endregion
-
-
     }
 }

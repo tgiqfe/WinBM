@@ -77,7 +77,6 @@ namespace OSVersion.Lib
             string editionText = Regex.Replace(caption, @"Microsoft\sWindows\s\d+\s", "");
             Edition edition = Enum.TryParse(editionText, out Edition tempEdition) ? tempEdition : Edition.None;
 
-            collection ??= OSInfoCollection.Load();
             if (IsWindowsServer())
             {
                 //  Windows Serverのチェックをここで
