@@ -138,7 +138,8 @@ namespace WinBM.PowerShell.Cmdlet
                         Console.ResetColor();
                         Console.WriteLine("]");
 
-                        TestPageDetail(pageText);
+                        //  ↓一旦保留。
+                        //TestPageDetail(pageText);
                     }
                 }
             }
