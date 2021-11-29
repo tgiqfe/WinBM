@@ -188,9 +188,9 @@ namespace Audit.Work.Registry
             {
                 if (depth < _MaxDepth)
                 {
-                    foreach (string path in targetKeyA_keys)
+                    foreach (string childKey in targetKeyA_keys)
                     {
-                        RecursiveTree(targetKeyA, targetKeyB, dictionary, depth + 1);
+                        RecursiveTree(targetKeyA.OpenSubKey(childKey, false), targetKeyB.OpenSubKey(childKey), dictionary, depth + 1);
                         if (!this.Success) { return; }
                     }
                 }

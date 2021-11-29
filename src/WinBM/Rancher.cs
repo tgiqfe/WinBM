@@ -449,7 +449,10 @@ namespace WinBM
                     type = module.GetType(typeName, true);
                     _LoadedTypes.AddRange(module.GetTypes());
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
             }
 
             if (type == null)

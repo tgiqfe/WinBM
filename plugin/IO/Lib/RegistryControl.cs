@@ -80,10 +80,12 @@ namespace IO.Lib
         /// <param name="excludeKey"></param>
         public static void CopyRegistryKey(RegistryKey sourceKey, RegistryKey destinationKey, string[] excludeKey)
         {
+            //  ↓の除外キーの為の処理の位置を変更
             if (excludeKey?.Any(x => x.Equals(sourceKey.Name, StringComparison.OrdinalIgnoreCase)) ?? false)
             {
                 return;
             }
+
             foreach (string paramName in sourceKey.GetValueNames())
             {
                 RegistryValueKind valueKind = sourceKey.GetValueKind(paramName);
@@ -96,6 +98,9 @@ namespace IO.Lib
             }
             foreach (string keyName in sourceKey.GetSubKeyNames())
             {
+
+                //  除外キー用の処理をここで記述。
+
                 using (RegistryKey subSrcKey = sourceKey.OpenSubKey(keyName, false))
                 using (RegistryKey subDstKey = destinationKey.CreateSubKey(keyName, true))
                 {

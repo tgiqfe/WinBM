@@ -80,8 +80,7 @@ namespace Audit.Work.Registry
 
         private int _serial;
         private string _checkingPath;
-        //const string REGPATH_PREFIX = "[registry]";
-
+        
         public override void MainProcess()
         {
             _MaxDepth ??= 5;

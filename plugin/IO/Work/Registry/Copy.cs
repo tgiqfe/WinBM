@@ -39,8 +39,8 @@ namespace IO.Work.Registry
         [Keys("force", "forse")]
         protected bool _Force { get; set; }
 
-        [TaskParameter(ResolvEnv = true)]
-        [Keys("excludekey", "exkey", "xk", "xkey")]
+        [TaskParameter(ResolvEnv = true, Delimiter = ';')]
+        [Keys("excludekey", "exkey", "xk", "xkey", "excludepath", "expath", "xpath")]
         protected string[] _ExcludeKey { get; set; }
 
         public override void MainProcess()
@@ -85,6 +85,13 @@ namespace IO.Work.Registry
             }
         }
 
+        /// <summary>
+        /// レジストリ値コピー
+        /// </summary>
+        /// <param name="sourceKey"></param>
+        /// <param name="destinationKey"></param>
+        /// <param name="sourceName"></param>
+        /// <param name="destinationName"></param>
         private void CopyRegistryValueAction(RegistryKey sourceKey, RegistryKey destinationKey, string sourceName, string destinationName)
         {
             try
@@ -110,6 +117,11 @@ namespace IO.Work.Registry
             }
         }
 
+        /// <summary>
+        /// レジストリキーコピー
+        /// </summary>
+        /// <param name="sourceKey"></param>
+        /// <param name="destinationKey"></param>
         private void CopyRegistryKeyAction(RegistryKey sourceKey, RegistryKey destinationKey)
         {
             try
