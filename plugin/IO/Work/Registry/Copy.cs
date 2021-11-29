@@ -40,7 +40,7 @@ namespace IO.Work.Registry
         protected bool _Force { get; set; }
 
         [TaskParameter(ResolvEnv = true, Delimiter = ';')]
-        [Keys("excludekey", "exkey", "xk", "xkey", "excludepath", "expath", "xpath")]
+        [Keys("excludekey", "exkey", "xkey", "excludepath", "expath", "xpath", "exclude", "ex")]
         protected string[] _ExcludeKey { get; set; }
 
         public override void MainProcess()

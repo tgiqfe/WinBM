@@ -13,8 +13,10 @@ namespace AuditMonitor.Arguments
 
         public MonitorTarget()
         {
-            this.File = Path.Combine(
-                Environment.GetEnvironmentVariable("ProgramData"), "WinBM", "Audit", "AuditMonitor.json");
+            string workDir = Environment.UserName == "SYSTEM" ?
+                Path.Combine(Environment.GetEnvironmentVariable("ProgramData"), "WinBM") :
+                Path.Combine(Path.GetTempPath(), "WinBM");
+            this.File = Path.Combine(workDir, "Audit", "AuditMonitor.json");
         }
         public MonitorTarget(string targetFile)
         {
@@ -22,7 +24,7 @@ namespace AuditMonitor.Arguments
         }
 
         public override string ToString()
-        {
+        
             return File;
         }
     }
