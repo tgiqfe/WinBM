@@ -14,26 +14,34 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
         [Parameter(Mandatory = true, Position = 0), Alias("File")]
         public string RecipeFile { get; set; }
 
+        private string _currentDirectory = null;
+
+        protected override void BeginProcessing()
+        {
+            _currentDirectory = Environment.CurrentDirectory;
+            Environment.CurrentDirectory = this.SessionState.Path.CurrentFileSystemLocation.Path;
+        }
+
         protected override void ProcessRecord()
         {
-            string recipeFile = RecipeFile;
+            //string recipeFile = RecipeFile;
 
             List<WinBM.Recipe.Page> list = null;
-            if (File.Exists(recipeFile))
+            if (File.Exists(RecipeFile))
             {
-                using (var sr = new StreamReader(recipeFile, Encoding.UTF8))
+                using (var sr = new StreamReader(RecipeFile, Encoding.UTF8))
                 {
                     list = WinBM.Recipe.Page.Deserialize(sr);
                 }
             }
-            else if (Directory.Exists(recipeFile))
+            else if (Directory.Exists(RecipeFile))
             {
-                foreach (string file in Directory.GetFiles(recipeFile))
+                foreach (string filePath in Directory.GetFiles(RecipeFile))
                 {
-                    string extension = Path.GetExtension(file).ToLower();
+                    string extension = Path.GetExtension(filePath).ToLower();
                     if (extension == ".yml" || extension == ".yaml")
                     {
-                        using (var sr = new StreamReader(file, Encoding.UTF8))
+                        using (var sr = new StreamReader(filePath, Encoding.UTF8))
                         {
                             list ??= new List<WinBM.Recipe.Page>();
                             list.AddRange(WinBM.Recipe.Page.Deserialize(sr));
@@ -43,6 +51,11 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
             }
 
             WriteObject(list);
+        }
+
+        protected override void EndProcessing()
+        {
+            Environment.CurrentDirectory = _currentDirectory;
         }
     }
 }

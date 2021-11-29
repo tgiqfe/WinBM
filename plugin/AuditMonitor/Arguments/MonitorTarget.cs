@@ -24,7 +24,7 @@ namespace AuditMonitor.Arguments
         }
 
         public override string ToString()
-        
+        {
             return File;
         }
     }
