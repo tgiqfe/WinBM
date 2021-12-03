@@ -60,7 +60,14 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
                             spec.Description = pair.Value;
                             break;
                         case "skip":
-                            spec.Skip = bool.TryParse(pair.Value, out bool skip) ? skip : null;
+                            if (bool.TryParse(pair.Value, out bool skip))
+                            {
+                                spec.Skip = skip;
+                            }
+                            else
+                            {
+                                spec.IllegalList.Add(pair.Key + ": " + pair.Value);
+                            }
                             break;
                         case "task":
                             spec.Task = pair.Value;
@@ -83,6 +90,16 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
 
         public string SearchIllegal()
         {
+            if (IllegalList.Count > 0)
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine();
+                foreach (var illegal in IllegalList)
+                {
+                    sb.AppendLine($"      {illegal}");
+                }
+                return sb.ToString();
+            }
             return null;
         }
     }
