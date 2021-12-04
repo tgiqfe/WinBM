@@ -7,7 +7,7 @@ using System.IO;
 
 namespace WinBM.PowerShell.Lib.TestWinBMYaml
 {
-    internal class YamlKind
+    internal class YamlKind 
     {
         public string Kind { get; set; }
 

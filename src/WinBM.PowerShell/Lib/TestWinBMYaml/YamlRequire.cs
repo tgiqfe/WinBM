@@ -91,6 +91,7 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
                             break;
                     }
                 }
+                list.Add(spec);
             }
 
             return list;

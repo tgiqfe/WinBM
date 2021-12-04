@@ -86,11 +86,12 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
                         case "progress":
                             spec.Progress = bool.TryParse(pair.Value, out bool progress) ? progress : null;
                             break;
-                        default: 
+                        default:
                             spec.IllegalList.Add("[Illegal] " + pair.Key + ": " + pair.Value);
                             break;
                     }
                 }
+                list.Add(spec);
             }
 
             return list;

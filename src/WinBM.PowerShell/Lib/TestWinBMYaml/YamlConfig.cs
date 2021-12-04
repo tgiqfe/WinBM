@@ -7,7 +7,7 @@ using System.IO;
 
 namespace WinBM.PowerShell.Lib.TestWinBMYaml
 {
-    internal class YamlConfig
+    internal class YamlConfig 
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -80,6 +80,7 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
                             break;
                     }
                 }
+                list.Add(spec);
             }
 
             return list;

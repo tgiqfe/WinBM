@@ -7,7 +7,7 @@ using System.IO;
 
 namespace WinBM.PowerShell.Lib.TestWinBMYaml
 {
-    internal class YamlMetadata
+    internal class YamlMetadata 
     {
         public string Name { get; set; }
         public string Description { get; set; }

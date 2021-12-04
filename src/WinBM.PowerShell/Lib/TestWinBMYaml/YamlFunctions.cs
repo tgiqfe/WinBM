@@ -10,7 +10,8 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
 {
     internal class YamlFunctions
     {
-        private static Regex _indent_space = new Regex(@"^\s*");
+        private readonly static Regex _indent_space = new Regex(@"^\s*");
+        private readonly static Regex _param_start = new Regex(@"(?<=\s*)- ");
 
         /// <summary>
         /// 行のインデントの深さを取得
@@ -47,7 +48,7 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
 
                 if (parameter == null || readLine.StartsWith("- "))
                 {
-                    readLine = Regex.Replace(readLine, @"(?<=\s*)- ", "  ");
+                    readLine = _param_start.Replace(readLine, "  ");
                     parameter = new Dictionary<string, string>();
                     list.Add(parameter);
                 }
