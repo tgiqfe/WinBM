@@ -7,45 +7,48 @@ using System.IO;
 
 namespace WinBM.PowerShell.Lib.TestWinBMYaml
 {
-    internal class YamlKind 
+    internal class YamlKind
     {
         public string Kind { get; set; }
 
-        /// <summary>
-        /// インスタンス作成用メソッド
-        /// </summary>
-        /// <param name="content"></param>
-        /// <returns></returns>
+        public IllegalParamCollection Illegals { get; set; }
+
         public static YamlKind Create(string content)
         {
-            var spec = new YamlKind();
+            var result = new YamlKind();
 
-            using (var sr = new StringReader(content))
+            YamlNodeCollection collection = new YamlNodeCollection();
+            using (var asr = new AdvancedStringReader(content))
             {
                 string readLine = "";
-                while ((readLine = sr.ReadLine()) != null)
+                while ((readLine = asr.ReadLine()) != null)
                 {
                     if (readLine.StartsWith("kind:"))
                     {
-                        spec.Kind = readLine.Substring(readLine.IndexOf(":") + 1).Trim();
+                        collection.Add(
+                            asr.Line,
+                            LineType.Kind,
+                            "kind",
+                            readLine.Substring(readLine.IndexOf(":") + 1).Trim());
                         break;
                     }
                 }
-            }
 
-            return spec;
+                result.SetKind(collection.First());
+            }
+            return result;
         }
 
-        public string SearchIllegal()
+        public void SetKind(YamlNode node)
         {
-            switch (this.Kind.ToLower())
+            if (Enum.TryParse(node.Value, out WinBM.Recipe.Page.EnumKind kind))
             {
-                case "config":
-                case "output":
-                case "job":
-                    return null;
-                default:
-                    return $"[Illegal] {this.Kind}";
+                this.Kind = kind.ToString();
+            }
+            else
+            {
+                this.Illegals ??= new IllegalParamCollection();
+                Illegals.AddIllegalValue(node);
             }
         }
     }

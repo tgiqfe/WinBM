@@ -34,7 +34,7 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
         {
             try
             {
-                using(var sr = new StringReader(this.Content))
+                using (var sr = new StringReader(this.Content))
                 {
                     _ = WinBM.Recipe.Page.Deserialize(sr);
                 }
@@ -44,87 +44,33 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
             return false;
         }
 
-        public string TestParameter()
+        public void TestParameter()
         {
             LoadFromContent();
-
-            var sb = new StringBuilder();
-            string ret = null;
-
-            if ((ret = Kind.SearchIllegal()) != null)
-            {
-                sb.AppendLine($"    Kind: {ret}");
-            }
-            if ((ret = Metadata.SearchIllegal()) != null)
-            {
-                sb.AppendLine($"    Metadata: {ret}");
-            }
-            foreach (var config in Config)
-            {
-                if ((ret = config.SearchIllegal()) != null)
-                {
-                    sb.AppendLine($"    Config: {ret}");
-                }
-            }
-            foreach (var output in Output)
-            {
-                if ((ret = output.SearchIllegal()) != null)
-                {
-                    sb.AppendLine($"    Output: {ret}");
-                }
-            }
-            foreach (var require in Require)
-            {
-                if ((ret = require.SearchIllegal()) != null)
-                {
-                    sb.AppendLine($"    Require: {ret}");
-                }
-            }
-            foreach (var work in Work)
-            {
-                if ((ret = work.SearchIllegal()) != null)
-                {
-                    sb.AppendLine($"    Work: {ret}");
-                }
-            }
-
-            return sb.ToString();
+            ViewIllegals();
         }
 
         private void LoadFromContent()
         {
             if (Content.Trim() != "")
             {
-                /*
-                Regex comment_hash = new Regex(@"(?<=(('[^']*){2})*)\s*#.*$");
-                var sb = new StringBuilder();
-                using (var sr = new StringReader(Content))
-                {
-                    string readLine = "";
-                    while ((readLine = sr.ReadLine()) != null)
-                    {
-                        if (readLine.Contains("#"))
-                        {
-                            readLine = comment_hash.Replace(readLine, "");
-                        }
-                        if (readLine.Trim() == "")
-                        {
-                            continue;
-                        }
-                        sb.AppendLine(readLine);
-                    }
-                }
-                string content = sb.ToString();
-                */
-                string content = Content;
-
-                this.Kind = YamlKind.Create(content);
-                this.Metadata = YamlMetadata.Create(content);
-                this.Config = YamlConfig.Create(content);
-                this.Output = YamlOutput.Create(content);
-                this.Require = YamlRequire.Create(content);
-                this.Work = YamlWork.Create(content);
+                this.Kind = YamlKind.Create(Content);
+                this.Metadata = YamlMetadata.Create(Content);
+                this.Config = YamlConfig.Create(Content);
+                this.Output = YamlOutput.Create(Content);
+                this.Require = YamlRequire.Create(Content);
+                this.Work = YamlWork.Create(Content);
             }
+        }
+
+        private void ViewIllegals()
+        {
+            Kind.Illegals?.ForEach(y => y.View());
+            Metadata.Illegals?.ForEach(y => y.View());
+            Config.ForEach(x => x.Illegals?.ForEach(y => y.View()));
+            Output.ForEach(x => x.Illegals?.ForEach(y => y.View()));
+            Require.ForEach(x => x.Illegals?.ForEach(y => y.View()));
+            Work.ForEach(x => x.Illegals?.ForEach(y => y.View()));
         }
     }
 }

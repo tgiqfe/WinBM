@@ -7,101 +7,128 @@ using System.IO;
 
 namespace WinBM.PowerShell.Lib.TestWinBMYaml
 {
-    internal class YamlMetadata 
+    internal class YamlMetadata
     {
         public string Name { get; set; }
         public string Description { get; set; }
         public bool? Skip { get; set; }
         public bool? Step { get; set; }
         public int? Priority { get; set; }
-        public List<string> IllegalList { get; set; }
 
-        /// <summary>
-        /// インスタンス作成用メソッド
-        /// </summary>
-        /// <param name="content"></param>
-        /// <returns></returns>
+        public IllegalParamCollection Illegals { get; set; }
+
         public static YamlMetadata Create(string content)
         {
-            Dictionary<string, string> paramset = null;
+            var result = new YamlMetadata();
 
-            using (var sr = new StringReader(content))
+            Func<string, string, LineType, List<YamlNodeCollection>> searchContent = (category, spec, type) =>
             {
-                string readLine = "";
-                while ((readLine = sr.ReadLine()) != null)
+                using (var asr = new AdvancedStringReader(content))
                 {
-                    if (readLine == "metadata:")
+                    string readLine = "";
+                    bool inChild = false;
+                    while ((readLine = asr.ReadLine()) != null)
                     {
-                        paramset = YamlFunctions.GetParameters(sr)[0];
-                        break;
+                        if (readLine.Contains("#"))
+                        {
+                            readLine = YamlFunctions.RemoveComment(readLine);
+                        }
+                        if (readLine == category)
+                        {
+                            if (string.IsNullOrEmpty(spec))
+                            {
+                                return YamlFunctions.GetNodeCollections(asr, type);
+                            }
+                            else
+                            {
+                                inChild = true;
+                                continue;
+                            }
+                        }
+                        if (inChild && readLine.Trim() == spec)
+                        {
+                            return YamlFunctions.GetNodeCollections(asr, type);
+                        }
                     }
                 }
-            }
+                return new List<YamlNodeCollection>();
+            };
 
-            var spec = new YamlMetadata();
-            spec.IllegalList = new List<string>();
-            foreach (KeyValuePair<string, string> pair in paramset)
+            foreach (YamlNode node in searchContent("metadata:", null, LineType.Metadata)[0])
             {
-                switch (pair.Key)
+                switch (node.Key)
                 {
                     case "name":
-                        spec.Name = pair.Value;
+                        result.SetName(node);
                         break;
                     case "description":
-                        spec.Description = pair.Value;
+                        result.SetDescription(node);
                         break;
                     case "skip":
-                        if (bool.TryParse(pair.Value, out bool skip))
-                        {
-                            spec.Skip = skip;
-                        }
-                        else
-                        {
-                            spec.IllegalList.Add(pair.Key + ": " + pair.Value);
-                        }
+                        result.SetSkip(node);
                         break;
                     case "step":
-                        if (bool.TryParse(pair.Value, out bool step))
-                        {
-                            spec.Skip = step;
-                        }
-                        else
-                        {
-                            spec.IllegalList.Add(pair.Key + ": " + pair.Value);
-                        }
+                        result.SetStep(node);
                         break;
                     case "priority":
-                        if (int.TryParse(pair.Value, out int priority))
-                        {
-                            spec.Priority = priority;
-                        }
-                        else
-                        {
-                            spec.IllegalList.Add(pair.Key + ": " + pair.Value);
-                        }
+                        result.SetPriority(node);
                         break;
                     default:
-                        spec.IllegalList.Add("[Illegal] " + pair.Key + ": " + pair.Value);
+                        result.Illegals ??= new IllegalParamCollection();
+                        result.Illegals.AddIllegalKey(node);
                         break;
                 }
             }
-
-            return spec;
+            return result;
         }
 
-        public string SearchIllegal()
+        public void SetName(YamlNode node)
         {
-            if (IllegalList.Count > 0)
+            this.Name = node.Value;
+        }
+
+        public void SetDescription(YamlNode node)
+        {
+            this.Description = node.Value;
+        }
+
+        public void SetSkip(YamlNode node)
+        {
+            if (bool.TryParse(node.Value, out bool skip))
             {
-                var sb = new StringBuilder();
-                sb.AppendLine();
-                foreach (var illegal in IllegalList)
-                {
-                    sb.AppendLine($"      {illegal}");
-                }
-                return sb.ToString();
+                this.Skip = skip;
             }
-            return null;
+            else
+            {
+                this.Illegals ??= new IllegalParamCollection();
+                Illegals.AddIllegalValue(node);
+            }
+        }
+
+        public void SetStep(YamlNode node)
+        {
+            if (bool.TryParse(node.Value, out bool step))
+            {
+                this.Skip = step;
+            }
+            else
+            {
+                this.Illegals ??= new IllegalParamCollection();
+                Illegals.AddIllegalValue(node);
+            }
+        }
+
+        public void SetPriority(YamlNode node)
+        {
+            if (int.TryParse(node.Value, out int priority))
+            {
+                this.Priority = priority;
+            }
+            else
+            {
+                this.Illegals ??= new IllegalParamCollection();
+                Illegals.AddIllegalValue(node);
+            }
         }
     }
 }
