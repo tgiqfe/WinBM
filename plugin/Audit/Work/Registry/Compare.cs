@@ -34,33 +34,35 @@ namespace Audit.Work.Registry
 
         //  ################################
 
-        [TaskParameter(MandatoryAny = 2)]
+        [TaskParameter(MandatoryAny = 1)]
         [Keys("isaccess", "access", "acl")]
         protected bool? _IsAccess { get; set; }
 
-        [TaskParameter(MandatoryAny = 3)]
+        [TaskParameter(MandatoryAny = 2)]
         [Keys("isowner", "owner", "own")]
         protected bool? _IsOwner { get; set; }
 
-        [TaskParameter(MandatoryAny = 4)]
+        [TaskParameter(MandatoryAny = 3)]
         [Keys("isinherited", "inherited", "inherit", "inheritance")]
         protected bool? _IsInherited { get; set; }
 
-        [TaskParameter(MandatoryAny = 5)]
+        [TaskParameter(MandatoryAny = 4)]
         [Keys("ismd5hash", "md5hash", "md5")]
         protected bool? _IsMD5Hash { get; set; }
 
-        [TaskParameter(MandatoryAny = 6)]
+        [TaskParameter(MandatoryAny = 5)]
         [Keys("issha256hash", "sha256hash", "sha256", "hash")]
         protected bool? _IsSHA256Hash { get; set; }
 
-        [TaskParameter(MandatoryAny = 7)]
+        [TaskParameter(MandatoryAny = 6)]
         [Keys("issha512hash", "sha512hash", "sha512")]
         protected bool? _IsSHA512Hash { get; set; }
 
-        //  ChildCount比較も追加予定
+        [TaskParameter(MandatoryAny = 7)]
+        [Keys("ischildcount", "childcount")]
+        protected bool? _IsChildCount { get; set; }
 
-        [TaskParameter(MandatoryAny = 1)]
+        [TaskParameter(MandatoryAny = 8)]
         [Keys("isregistrytype", "isvaluekind", "isregtype", "valuekind", "kind", "type", "registrytype", "regtype")]
         protected bool? _IsRegistryType { get; set; }
 
@@ -154,6 +156,7 @@ namespace Audit.Work.Registry
             if (_IsAccess ?? false) { Success &= CompareAccess(targetKeyA, targetKeyB, dictionary); }
             if (_IsOwner ?? false) { Success &= CompareOwner(targetKeyA, targetKeyB, dictionary); }
             if (_IsInherited ?? false) { Success &= CompareInherited(targetKeyA, targetKeyB, dictionary); }
+            if(_IsChildCount ?? false) { Success &= CompareChildCount(targetKeyA, targetKeyB, dictionary); }
             if (!this.Success) { return; }
 
             //  レジストリ値の比較
@@ -203,28 +206,6 @@ namespace Audit.Work.Registry
             }
         }
 
-        #region Compare RegistryType
-        /// <summary>
-        /// レジストリタイプ比較
-        /// </summary>
-        /// <param name="regKeyA"></param>
-        /// <param name="regKeyB"></param>
-        /// <param name="nameA"></param>
-        /// <param name="nameB"></param>
-        /// <param name="dictionary"></param>
-        /// <returns></returns>
-        private bool CompareType(RegistryKey regKeyA, RegistryKey regKeyB, string nameA, string nameB, Dictionary<string, string> dictionary)
-        {
-            RegistryValueKind ret_nameA = regKeyA.GetValueKind(nameA);
-            RegistryValueKind ret_nameB = regKeyB.GetValueKind(nameB);
-
-            string checkTarget = "RegistryType";
-            dictionary[$"nameA_{checkTarget}_{_serial}"] = RegistryControl.ValueKindToString(ret_nameA);
-            dictionary[$"nameB_{checkTarget}_{_serial}"] = RegistryControl.ValueKindToString(ret_nameB);
-            return ret_nameA == ret_nameB;
-        }
-
-        #endregion
         #region Compare Access
 
         /// <summary>
@@ -325,22 +306,16 @@ namespace Audit.Work.Registry
             {
                 case "md5":
                     checkTarget = "MD5Hash";
-                    //hashAlgA = new MD5CryptoServiceProvider();
-                    //hashAlgB = new MD5CryptoServiceProvider();
                     hashAlgA = MD5.Create();
                     hashAlgB = MD5.Create();
                     break;
                 case "sha256":
                     checkTarget = "SHA256Hash";
-                    //hashAlgA = new SHA256CryptoServiceProvider();
-                    //hashAlgB = new SHA256CryptoServiceProvider();
                     hashAlgA = SHA256.Create();
                     hashAlgB = SHA256.Create();
                     break;
                 case "sha512":
                     checkTarget = "SHA512Hash";
-                    //hashAlgA = new SHA512CryptoServiceProvider();
-                    //hashAlgB = new SHA512CryptoServiceProvider();
                     hashAlgA = SHA512.Create();
                     hashAlgB = SHA512.Create();
                     break;
@@ -356,6 +331,65 @@ namespace Audit.Work.Registry
 
             dictionary[$"nameA_{checkTarget}_{_serial}"] = ret_nameA.ToString();
             dictionary[$"nameB_{checkTarget}_{_serial}"] = ret_nameB.ToString();
+            return ret_nameA == ret_nameB;
+        }
+
+        #endregion
+        #region Compare ChildCount
+
+        private bool CompareChildCount(RegistryKey regKeyA, RegistryKey regKeyB, Dictionary<string, string> dictionary)
+        {
+            Func<RegistryKey, int[]> getRegistryKeyChildCount = null;
+            getRegistryKeyChildCount = (regKey) =>
+            {
+                string[] childKeys = regKey.GetSubKeyNames();
+                int[] ret_childCounts = new int[]
+                {
+                    childKeys.Length,
+                    regKey.GetValueNames().Length
+                };
+
+                foreach (string childKey in childKeys)
+                {
+                    using (RegistryKey regChildKey = regKey.OpenSubKey(childKey, false))
+                    {
+                        int[] childCounts = getRegistryKeyChildCount(regChildKey);
+                        ret_childCounts[0] += childCounts[0];
+                        ret_childCounts[1] += childCounts[1];
+                    }
+                }
+
+                return ret_childCounts;
+            };
+            int[] retA = getRegistryKeyChildCount(regKeyA);
+            int[] retB = getRegistryKeyChildCount(regKeyB);
+
+
+            string checkTarget = "ChildCount";
+            dictionary[$"keyA_{checkTarget}_{_serial}"] = $"Key:{retA[0]} value:{retB[1]}";
+            dictionary[$"keyB_{checkTarget}_{_serial}"] = $"Key:{retB[0]} value:{retB[1]}";
+            return (retA[0] == retB[0]) && (retA[1] == retB[1]);
+        }
+
+        #endregion
+        #region Compare RegistryType
+        /// <summary>
+        /// レジストリタイプ比較
+        /// </summary>
+        /// <param name="regKeyA"></param>
+        /// <param name="regKeyB"></param>
+        /// <param name="nameA"></param>
+        /// <param name="nameB"></param>
+        /// <param name="dictionary"></param>
+        /// <returns></returns>
+        private bool CompareType(RegistryKey regKeyA, RegistryKey regKeyB, string nameA, string nameB, Dictionary<string, string> dictionary)
+        {
+            RegistryValueKind ret_nameA = regKeyA.GetValueKind(nameA);
+            RegistryValueKind ret_nameB = regKeyB.GetValueKind(nameB);
+
+            string checkTarget = "RegistryType";
+            dictionary[$"nameA_{checkTarget}_{_serial}"] = RegistryControl.ValueKindToString(ret_nameA);
+            dictionary[$"nameB_{checkTarget}_{_serial}"] = RegistryControl.ValueKindToString(ret_nameB);
             return ret_nameA == ret_nameB;
         }
 

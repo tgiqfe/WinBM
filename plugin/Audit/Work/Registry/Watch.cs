@@ -139,6 +139,7 @@ namespace Audit.Work.Registry
                     _serial++;
                     dictionary[$"remove_{_serial}"] = uncheckedPath;
                     collection.Remove(uncheckedPath);
+                    Success = true;
                 }
             }
             SaveWatchDB(collection, _Id);
@@ -185,6 +186,7 @@ namespace Audit.Work.Registry
 
         #region Create WatchPath
 
+        /*
         private WatchPath CreateForRegistryKey(WatchPathCollection collection, string path)
         {
             if (_Begin)
@@ -216,6 +218,7 @@ namespace Audit.Work.Registry
             if (_IsChildCount != null) { watch.IsChildCount = _IsChildCount; }
             return watch;
         }
+        */
 
         private WatchPath CreateForRegistryKey()
         {
@@ -228,6 +231,7 @@ namespace Audit.Work.Registry
             };
         }
 
+        /*
         private WatchPath CreateForRegistryValue(WatchPathCollection collection, string path)
         {
             if (_Begin)
@@ -259,6 +263,7 @@ namespace Audit.Work.Registry
             if (_IsRegistryType != null) { watch.IsRegistryType = _IsRegistryType; }
             return watch;
         }
+        */
 
         private WatchPath CreateForRegistryValue()
         {

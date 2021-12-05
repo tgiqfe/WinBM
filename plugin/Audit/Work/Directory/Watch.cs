@@ -116,6 +116,7 @@ namespace Audit.Work.Directory
                 _serial++;
                 dictionary[$"remove_{_serial}"] = uncheckedPath;
                 collection.Remove(uncheckedPath);
+                Success = true;
             }
             SaveWatchDB(collection, _Id);
 
@@ -159,6 +160,7 @@ namespace Audit.Work.Directory
 
         #region Create WatchPath
 
+        /*
         private WatchPath CreateForDirectory(WatchPathCollection collection, string path)
         {
             if (_Begin)
@@ -202,6 +204,7 @@ namespace Audit.Work.Directory
             if (_IsChildCount != null) { watch.IsChildCount = _IsChildCount; }
             return watch;
         }
+        */
 
         private WatchPath CreateForDirectory()
         {
@@ -218,6 +221,7 @@ namespace Audit.Work.Directory
             };
         }
 
+        /*
         private WatchPath CreateForFile(WatchPathCollection collection, string path)
         {
             if (_Begin)
@@ -256,7 +260,7 @@ namespace Audit.Work.Directory
                     IsSize = _IsSize,
                 };
             }
-
+        
             if (_IsCreationTime != null) { watch.IsCreationTime = _IsCreationTime; }
             if (_IsLastWriteTime != null) { watch.IsLastWriteTime = _IsLastWriteTime; }
             if (_IsLastAccessTime != null) { watch.IsLastAccessTime = _IsLastAccessTime; }
@@ -270,6 +274,7 @@ namespace Audit.Work.Directory
             if (_IsSize != null) { watch.IsSize = _IsSize; }
             return watch;
         }
+        */
 
         private WatchPath CreateForFile()
         {

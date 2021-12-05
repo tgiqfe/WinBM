@@ -66,10 +66,11 @@ namespace Audit.Work.Directory
         [Keys("issha512hash", "sha512hash", "sha512")]
         protected bool? _IsSHA512Hash { get; set; }
 
-        //  ChildCount比較も追加予定
-        //  ディレクトリのサイズは削除で
-
         [TaskParameter(MandatoryAny = 11)]
+        [Keys("ischildcount", "childcount")]
+        protected bool? _IsChildCount { get; set; }
+
+        [TaskParameter(MandatoryAny = 12)]
         [Keys("issize", "size")]
         protected bool? _IsSize { get; set; }
 
@@ -144,6 +145,7 @@ namespace Audit.Work.Directory
             if (_IsOwner ?? false) { Success &= CompareOwner_dir(targetDirA, targetDirB, dictionary); }
             if (_IsInherited ?? false) { Success &= CompareInherited_dir(targetDirA, targetDirB, dictionary); }
             if (_IsAttributes ?? false) { Success &= CompareAttributes_dir(targetDirA, targetDirB, dictionary); }
+            if (_IsChildCount ?? false) { Success &= CompareChildCount_dir(targetDirA, targetDirB, dictionary); }
             if (!this.Success) { return; }
 
             //  配下のファイル情報の比較
@@ -498,7 +500,7 @@ namespace Audit.Work.Directory
         }
 
         #endregion
-        #region Compare methods
+        #region Compare Hash
 
         //  CompareHash_dirは無し
 
@@ -552,6 +554,22 @@ namespace Audit.Work.Directory
             return !string.IsNullOrEmpty(ret_fileA) &&
                 !string.IsNullOrEmpty(ret_fileB) &&
                 ret_fileA == ret_fileB;
+        }
+
+        #endregion
+        #region Compare ChildCount
+
+        private bool CompareChildCount_dir(string dirA, string dirB, Dictionary<string, string> dictionary)
+        {
+            int dirA_directories = System.IO.Directory.GetDirectories(dirA, "*", SearchOption.AllDirectories).Length;
+            int dirB_directories = System.IO.Directory.GetDirectories(dirB, "*", SearchOption.AllDirectories).Length;
+            int dirA_files = System.IO.Directory.GetFiles(dirA, "*", SearchOption.AllDirectories).Length;
+            int dirB_files = System.IO.Directory.GetFiles(dirB, "*", SearchOption.AllDirectories).Length;
+
+            string checkTarget = "ChildCount";
+            dictionary[$"directoryA_{checkTarget}_{_serial}"] = $"Directory:{dirA_directories} File:{dirA_files}";
+            dictionary[$"directoryB_{checkTarget}_{_serial}"] = $"Directory:{dirB_directories} File:{dirB_files}";
+            return (dirA_directories == dirB_directories) && (dirA_files == dirB_files);
         }
 
         #endregion
