@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace WinBM.PowerShell.Lib.TestWinBMYaml
 {
@@ -18,6 +19,8 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
         public bool? Progress { get; set; }
         public List<string> IllegalList { get; set; }
 
+        public List<IllegalParam> Illegals { get; set; }
+
         /// <summary>
         /// インスタンス作成用メソッド
         /// </summary>
@@ -25,6 +28,7 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
         /// <returns></returns>
         public static List<YamlWork> Create(string content)
         {
+            Regex comment_hash = new Regex(@"(?<=(('[^']*){2})*)\s*#.*$");
             List<Dictionary<string, string>> paramsetList = new List<Dictionary<string, string>>();
 
             using (var sr = new StringReader(content))
@@ -45,12 +49,15 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
                     }
                 }
             }
-
+            
             List<YamlWork> list = new List<YamlWork>();
             foreach (Dictionary<string, string> paramset in paramsetList)
             {
                 var spec = new YamlWork();
                 spec.IllegalList = new List<string>();
+
+                spec.Illegals = new List<IllegalParam>();
+
                 foreach (KeyValuePair<string, string> pair in paramset)
                 {
                     switch (pair.Key)
@@ -69,6 +76,7 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
                             else
                             {
                                 spec.IllegalList.Add(pair.Key + ": " + pair.Value);
+                                
                             }
                             break;
                         case "task":

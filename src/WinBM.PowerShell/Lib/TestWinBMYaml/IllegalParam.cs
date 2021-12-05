@@ -7,10 +7,9 @@ using System.Text.RegularExpressions;
 
 namespace WinBM.PowerShell.Lib.TestWinBMYaml
 {
-    internal class IllegalParameter
+    internal class IllegalParam
     {
         public IllegalType IllegalType { get; set; }
-        public WinBMType Type { get; set; }
         public int Lines { get; set; }
         public string Text { get; set; }
 

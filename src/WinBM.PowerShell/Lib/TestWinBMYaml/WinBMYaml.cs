@@ -95,6 +95,7 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
         {
             if (Content.Trim() != "")
             {
+                /*
                 Regex comment_hash = new Regex(@"(?<=(('[^']*){2})*)\s*#.*$");
                 var sb = new StringBuilder();
                 using (var sr = new StringReader(Content))
@@ -114,6 +115,8 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
                     }
                 }
                 string content = sb.ToString();
+                */
+                string content = Content;
 
                 this.Kind = YamlKind.Create(content);
                 this.Metadata = YamlMetadata.Create(content);
