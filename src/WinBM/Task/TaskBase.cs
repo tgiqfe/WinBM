@@ -385,7 +385,7 @@ namespace WinBM.Task
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        private bool IsDefined(object obj)
+        protected bool IsDefined(object obj)
         {
             switch (obj)
             {
@@ -403,7 +403,7 @@ namespace WinBM.Task
         /// <summary>
         /// falseと判定できる文字/文字列のセット
         /// </summary>
-        private static string[] falseCandidate = new string[]
+        protected static string[] falseCandidate = new string[]
         {
             "", "0", "-", "false", "fals", "no", "not", "none", "non", "empty", "null", "否", "不", "無"
         };
@@ -413,7 +413,7 @@ namespace WinBM.Task
         /// </summary>
         /// <param name="env"></param>
         /// <returns></returns>
-        private string ExpandEnvironment(string env)
+        protected string ExpandEnvironment(string env)
         {
             for (int i = 0; i < 5 && env.Contains("%"); i++)
             {

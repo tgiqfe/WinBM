@@ -57,6 +57,7 @@ namespace Standard.Work.Execute
                 {
                     if (_Arguments.Contains("^\r\n")) { _Arguments = _Arguments.Replace("^\r\n", ""); }
                     if (_Arguments.Contains("^\n")) { _Arguments = _Arguments.Replace("^\n", ""); }
+                    if (_Arguments.Contains("%")) { _Arguments = ExpandEnvironment(_Arguments); }
                     proc.StartInfo.Arguments = _Arguments;
                 }
                 if (System.IO.Directory.Exists(_Work))
