@@ -7,98 +7,120 @@ using System.IO;
 
 namespace WinBM.PowerShell.Lib.TestWinBMYaml
 {
-    internal class YamlConfig 
+    internal class YamlConfig
     {
         public string Name { get; set; }
         public string Description { get; set; }
         public bool? Skip { get; set; }
         public string Task { get; set; }
         public Dictionary<string, string> Param { get; set; }
-        public List<string> IllegalList { get; set; }
 
-        public YamlConfig() { }
+        public IllegalParamCollection Illegals { get; set; }
 
         public static List<YamlConfig> Create(string content)
         {
-            List<Dictionary<string, string>> paramsetList = new List<Dictionary<string, string>>();
+            var resultList = new List<YamlConfig>();
 
-            using (var sr = new StringReader(content))
+            Func<string, string, LineType, List<YamlNodeCollection>> searchContent = (category, spec, type) =>
             {
-                string readLine = "";
-                bool inChild = false;
-                while ((readLine = sr.ReadLine()) != null)
+                using (var asr = new AdvancedStringReader(content))
                 {
-                    if (readLine == "config:")
+                    string readLine = "";
+                    bool inChild = false;
+                    while ((readLine = asr.ReadLine()) != null)
                     {
-                        inChild = true;
-                        continue;
-                    }
-                    if (inChild && readLine.Trim() == "spec:")
-                    {
-                        paramsetList = YamlFunctions.GetParameters(sr);
-                        break;
-                    }
-                }
-            }
-
-            List<YamlConfig> list = new List<YamlConfig>();
-            foreach (Dictionary<string, string> paramset in paramsetList)
-            {
-                var spec = new YamlConfig();
-                spec.IllegalList = new List<string>();
-                foreach (KeyValuePair<string, string> pair in paramset)
-                {
-                    switch (pair.Key)
-                    {
-                        case "name":
-                            spec.Name = pair.Value;
-                            break;
-                        case "description":
-                            spec.Description = pair.Value;
-                            break;
-                        case "skip":
-                            if (bool.TryParse(pair.Value, out bool skip))
+                        if (readLine.Contains("#"))
+                        {
+                            readLine = YamlFunctions.RemoveComment(readLine);
+                        }
+                        if (readLine == category)
+                        {
+                            if (string.IsNullOrEmpty(spec))
                             {
-                                spec.Skip = skip;
+                                return YamlFunctions.GetNodeCollections(asr, type);
                             }
                             else
                             {
-                                spec.IllegalList.Add(pair.Key + ": " + pair.Value);
+                                inChild = true;
+                                continue;
                             }
+                        }
+                        if (inChild && readLine.Trim() == spec)
+                        {
+                            return YamlFunctions.GetNodeCollections(asr, type);
+                        }
+                    }
+                }
+                return new List<YamlNodeCollection>();
+            };
+
+            foreach (var collection in searchContent("config:", "spec:", LineType.ConfigSpec))
+            {
+                var spec = new YamlConfig();
+                foreach (YamlNode node in collection)
+                {
+                    switch (node.Key)
+                    {
+                        case "name":
+                            spec.SetName(node);
+                            break;
+                        case "description":
+                            spec.SetDescription(node);
+                            break;
+                        case "skip":
+                            spec.SetSkip(node);
                             break;
                         case "task":
-                            spec.Task = pair.Value;
+                            spec.SetTask(node);
                             break;
                         case "param":
-                            using(var sr = new StringReader(pair.Value))
-                            {
-                                spec.Param = YamlFunctions.GetParameters(sr)[0];
-                            }
+                            spec.SetParam(node);
                             break;
                         default:
-                            spec.IllegalList.Add("[Illegal] " + pair.Key + ": " + pair.Value);
+                            spec.Illegals ??= new IllegalParamCollection();
+                            spec.Illegals.AddIllegalKey(node);
                             break;
                     }
                 }
-                list.Add(spec);
+                resultList.Add(spec);
             }
-
-            return list;
+            return resultList;
         }
 
-        public string SearchIllegal()
+        public void SetName(YamlNode node)
         {
-            if (IllegalList.Count > 0)
+            this.Name = node.Value;
+        }
+
+        public void SetDescription(YamlNode node)
+        {
+            this.Description = node.Value;
+        }
+
+        public void SetSkip(YamlNode node)
+        {
+            if (bool.TryParse(node.Value, out bool skip))
             {
-                var sb = new StringBuilder();
-                sb.AppendLine();
-                foreach (var illegal in IllegalList)
-                {
-                    sb.AppendLine($"      {illegal}");
-                }
-                return sb.ToString();
+                this.Skip = skip;
             }
-            return null;
+            else
+            {
+                this.Illegals ??= new IllegalParamCollection();
+                Illegals.AddIllegalValue(node);
+            }
+        }
+
+        public void SetTask(YamlNode node)
+        {
+            this.Task = node.Value;
+        }
+
+        public void SetParam(YamlNode node)
+        {
+            using (var asr = new AdvancedStringReader(node.Value))
+            {
+                this.Param = YamlFunctions.GetNodeCollections(asr, LineType.ConfigSpecParam)[0].ToDictionary();
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
     {
         private readonly static Regex _indent_space = new Regex(@"^\s*");
         private readonly static Regex _param_start = new Regex(@"(?<=\s*)- ");
+        private readonly static Regex _comment_hash = new Regex(@"(?<=(('[^']*){2})*)\s*#.*$");
 
         /// <summary>
         /// 行のインデントの深さを取得
@@ -24,33 +25,23 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
             return match.Value.Length;
         }
 
-        /// <summary>
-        /// 子要素パラメータをリスト化して返す
-        /// </summary>
-        /// <param name="sr"></param>
-        /// <returns></returns>
-        public static List<Dictionary<string, string>> GetParameters(StringReader sr)
+        public static List<YamlNodeCollection> GetNodeCollections(AdvancedStringReader asr, LineType type)
         {
-            List<Dictionary<string, string>> list = new List<Dictionary<string, string>>();
+            var list = new List<YamlNodeCollection>();
 
-            string key = "";
             string readLine = "";
             int? indent = null;
 
-            Dictionary<string, string> parameter = null;
-
-            while ((readLine = sr.ReadLine()) != null)
+            YamlNodeCollection collection = null;
+            while ((readLine = asr.ReadLine()) != null)
             {
-                if (readLine.Trim() == "")
-                {
-                    continue;
-                }
+                if (readLine.Trim() == "") { continue; }
 
-                if (parameter == null || readLine.StartsWith("- "))
+                if (collection == null || readLine.Trim().StartsWith("- "))
                 {
                     readLine = _param_start.Replace(readLine, "  ");
-                    parameter = new Dictionary<string, string>();
-                    list.Add(parameter);
+                    collection = new YamlNodeCollection();
+                    list.Add(collection);
                 }
 
                 indent ??= GetIndentDepth(readLine);
@@ -63,23 +54,34 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
                 {
                     if (readLine.Contains(":"))
                     {
-                        key = readLine.Substring(0, readLine.IndexOf(":")).Trim();
-                        parameter[key] = readLine.Substring(readLine.IndexOf(":") + 1).Trim();
+                        collection.Add(
+                            asr.Line,
+                            type,
+                            readLine.Substring(0, readLine.IndexOf(":")).Trim(),
+                            readLine.Substring(readLine.IndexOf(":") + 1).Trim());
                     }
                     else
                     {
-                        parameter[key] += (Environment.NewLine + readLine.Trim());
+                        collection.AppendValue(Environment.NewLine + readLine.Trim());
                     }
                 }
                 else if (nowIndent > indent)
                 {
-                    parameter[key] += (Environment.NewLine + readLine.Trim());
+                    collection.AppendValue(Environment.NewLine + readLine.Trim());
                 }
             }
 
             return list;
         }
 
-
+        /// <summary>
+        /// コメント行/コメント部分を削除
+        /// </summary>
+        /// <param name="readLine"></param>
+        /// <returns></returns>
+        public static string RemoveComment(string readLine)
+        {
+            return readLine = _comment_hash.Replace(readLine, "");
+        }
     }
 }
