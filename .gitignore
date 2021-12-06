@@ -350,7 +350,7 @@ MigrationBackup/
 .ionide/
 
 # TestDirectory
-/Test/
-Test.zip
+# /Test/
+# Test.zip
 !/plugin/Audit/Work/Log/
 

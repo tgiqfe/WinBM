@@ -1,0 +1,69 @@
+---
+kind: Job
+metadata:
+  name: PrepareJob01
+  description: IO/File/Copyテスト [準備]
+  priority: 101
+job:
+  work:
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01'
+  - task: IO/File/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample02.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample03.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample04.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample05.txt
+  - task: IO/File/Write
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample05.txt'
+      text: |-
+        てすとてすとてすとてすとてすとてすとてすとてすと
+        テストテストテストテストテストテストテストテスト
+        testtesttesttesttesttesttesttesttesttesttesttest
+        TESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTESTTEST
+
+---
+kind: Job
+metadata:
+  name: FileCopy01
+  priority: 102
+job:
+  work:
+  - task: IO/File/Copy
+    description: 通常コピー
+    param:
+      src: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample05.txt'
+      dst: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample05_copy1.txt'
+  - task: Audit/File/Compare
+    param:
+      fileA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample05.txt'
+      fileB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample05_copy1.txt'
+      size: true
+      md5hash: true
+  - task: IO/File/Copy
+    description: 上書きコピー(失敗)
+    param:
+      src: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample05.txt'
+      dst: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample01.txt'
+  - task: Audit/Log/Contains
+    param:
+      path: '%LOGFILE%'
+      contains: 'already exists.'
+  - task: IO/File/Copy
+    description: 上書きコピー(成功)
+    param:
+      src: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample05.txt'
+      dst: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample01.txt'
+      force: true
+  - task: Audit/File/Compare
+    param:
+      fileA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample05.txt'
+      fileB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample01.txt'
+      size: true
+      md5hash: true
+
+
