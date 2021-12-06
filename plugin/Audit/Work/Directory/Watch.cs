@@ -160,52 +160,6 @@ namespace Audit.Work.Directory
 
         #region Create WatchPath
 
-        /*
-        private WatchPath CreateForDirectory(WatchPathCollection collection, string path)
-        {
-            if (_Begin)
-            {
-                return new WatchPath(PathType.Directory)
-                {
-                    IsCreationTime = _IsCreationTime,
-                    IsLastWriteTime = _IsLastWriteTime,
-                    IsLastAccessTime = _IsLastAccessTime,
-                    IsAccess = _IsAccess,
-                    IsOwner = _IsOwner,
-                    IsInherited = _IsInherited,
-                    IsAttributes = _IsAttributes,
-                    IsChildCount = _IsChildCount,
-                };
-            }
-
-            var watch = collection.GetWatchPath(path);
-            if (watch == null)
-            {
-                return new WatchPath(PathType.Directory)
-                {
-                    IsCreationTime = _IsCreationTime,
-                    IsLastWriteTime = _IsLastWriteTime,
-                    IsLastAccessTime = _IsLastAccessTime,
-                    IsAccess = _IsAccess,
-                    IsOwner = _IsOwner,
-                    IsInherited = _IsInherited,
-                    IsAttributes = _IsAttributes,
-                    IsChildCount = _IsChildCount,
-                };
-            }
-
-            if (_IsCreationTime != null) { watch.IsCreationTime = _IsCreationTime; }
-            if (_IsLastWriteTime != null) { watch.IsLastWriteTime = _IsLastWriteTime; }
-            if (_IsLastAccessTime != null) { watch.IsLastAccessTime = _IsLastAccessTime; }
-            if (_IsAccess != null) { watch.IsAccess = _IsAccess; }
-            if (_IsOwner != null) { watch.IsOwner = _IsOwner; }
-            if (_IsInherited != null) { watch.IsInherited = _IsInherited; }
-            if (_IsAttributes != null) { watch.IsAttributes = _IsAttributes; }
-            if (_IsChildCount != null) { watch.IsChildCount = _IsChildCount; }
-            return watch;
-        }
-        */
-
         private WatchPath CreateForDirectory()
         {
             return new WatchPath(PathType.Directory)
@@ -220,61 +174,6 @@ namespace Audit.Work.Directory
                 IsChildCount = _IsChildCount,
             };
         }
-
-        /*
-        private WatchPath CreateForFile(WatchPathCollection collection, string path)
-        {
-            if (_Begin)
-            {
-                return new WatchPath(PathType.File)
-                {
-                    IsCreationTime = _IsCreationTime,
-                    IsLastWriteTime = _IsLastWriteTime,
-                    IsLastAccessTime = _IsLastAccessTime,
-                    IsAccess = _IsAccess,
-                    IsOwner = _IsOwner,
-                    IsInherited = _IsInherited,
-                    IsAttributes = _IsAttributes,
-                    IsMD5Hash = _IsMD5Hash,
-                    IsSHA256Hash = _IsSHA256Hash,
-                    IsSHA512Hash = _IsSHA512Hash,
-                    IsSize = _IsSize,
-                };
-            }
-
-            var watch = collection.GetWatchPath(path);
-            if (watch == null)
-            {
-                return new WatchPath(PathType.File)
-                {
-                    IsCreationTime = _IsCreationTime,
-                    IsLastWriteTime = _IsLastWriteTime,
-                    IsLastAccessTime = _IsLastAccessTime,
-                    IsAccess = _IsAccess,
-                    IsOwner = _IsOwner,
-                    IsInherited = _IsInherited,
-                    IsAttributes = _IsAttributes,
-                    IsMD5Hash = _IsMD5Hash,
-                    IsSHA256Hash = _IsSHA256Hash,
-                    IsSHA512Hash = _IsSHA512Hash,
-                    IsSize = _IsSize,
-                };
-            }
-        
-            if (_IsCreationTime != null) { watch.IsCreationTime = _IsCreationTime; }
-            if (_IsLastWriteTime != null) { watch.IsLastWriteTime = _IsLastWriteTime; }
-            if (_IsLastAccessTime != null) { watch.IsLastAccessTime = _IsLastAccessTime; }
-            if (_IsAccess != null) { watch.IsAccess = _IsAccess; }
-            if (_IsOwner != null) { watch.IsOwner = _IsOwner; }
-            if (_IsInherited != null) { watch.IsInherited = _IsInherited; }
-            if (_IsAttributes != null) { watch.IsAttributes = _IsAttributes; }
-            if (_IsMD5Hash != null) { watch.IsMD5Hash = _IsMD5Hash; }
-            if (_IsSHA256Hash != null) { watch.IsSHA256Hash = _IsSHA256Hash; }
-            if (_IsSHA512Hash != null) { watch.IsSHA512Hash = _IsSHA512Hash; }
-            if (_IsSize != null) { watch.IsSize = _IsSize; }
-            return watch;
-        }
-        */
 
         private WatchPath CreateForFile()
         {

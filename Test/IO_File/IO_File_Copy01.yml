@@ -1,7 +1,7 @@
 ---
 kind: Job
 metadata:
-  name: PrepareJob01
+  name: TestCopy01
   description: IO/File/Copyテスト [準備]
   priority: 101
 job:
@@ -29,7 +29,7 @@ job:
 ---
 kind: Job
 metadata:
-  name: FileCopy01
+  description: 通常コピー
   priority: 102
 job:
   work:
@@ -66,4 +66,43 @@ job:
       size: true
       md5hash: true
 
+---
+kind: Job
+metadata:
+  description: 新規フォルダー配下へコピー
+  priority: 103
+job:
+  work:
+  - task: IO/File/Copy
+    description: 新規フォルダー配下を指定した場合。
+    param:
+      src: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample01.txt'
+      dst: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\new01\Sample01.txt'
+  - task: IO/File/Copy
+    description: 最後に「\」で終わるパスをdstに指定した場合
+    param:
+      src: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample01.txt'
+      dst: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\new02\'
+  - task: IO/Directory/Create
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\new03'
+  - task: IO/File/Copy
+    description: すでに存在するフォルダーを指定した場合
+    param:
+      src: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample01.txt'
+      dst: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\new03'
+  - task: Audit/File/Exists
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\new01\Sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\new02\Sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\new03\Sample01.txt
 
+---
+kind: Job
+metadata:
+  description: ワイルドカード指定してのコピー
+  priority: 104
+job:
+  work:
+  
