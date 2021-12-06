@@ -1,0 +1,72 @@
+---
+kind: Job
+metadata:
+  name: TestAttribute
+  description: IO/File/Attributeテスト [準備]
+  priority: 101
+job:
+  work:
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Attribute01'
+  - task: IO/File/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Attribute01\Sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Attribute01\Sample02.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Attribute01\Sample03.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Attribute01\Sample04.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Attribute01\Sample05.txt
+
+---
+kind: Job
+metadata:
+  description: 属性付与
+  priority: 102
+job:
+  work:
+  - task: Audit/File/Watch
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Attribute01\Sample01.txt'
+      id: attributeTest01
+      attribute: true
+      begin: true
+  - task: IO/File/Attribute
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Attribute01\Sample01.txt'
+      attribute: +readonly
+  - task: Audit/File/Watch
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Attribute01\Sample01.txt'
+      id: attributeTest01
+      attribute: true
+  - task: IO/File/Attribute
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Attribute01\Sample01.txt'
+      attribute: -readonly,+hidden
+  - task: Audit/File/Watch
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Attribute01\Sample01.txt'
+      id: attributeTest01
+      attribute: true
+
+---
+kind: Job
+metadata:
+  description: (管理者実行時のみ)システム属性付与のテスト
+  priority: 103
+job:
+  require:
+  - task: Standard/Computer/Admin
+    failed: stop
+  work:
+  - task: IO/File/Attribute
+    description: システム属性は管理者実行しておく必要がある為、通常時実行の場合は失敗
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Attribute01\Sample01.txt'
+      attribute: -hidden,+system
+  - task: Audit/File/Watch
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Attribute01\Sample01.txt'
+      id: attributeTest01
+      attribute: true

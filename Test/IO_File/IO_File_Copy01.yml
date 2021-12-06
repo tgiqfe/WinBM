@@ -3,7 +3,7 @@ kind: Job
 metadata:
   name: TestCopy01
   description: IO/File/Copyテスト [準備]
-  priority: 101
+  priority: 111
 job:
   work:
   - task: IO/Directory/Delete
@@ -30,7 +30,7 @@ job:
 kind: Job
 metadata:
   description: 通常コピー
-  priority: 102
+  priority: 112
 job:
   work:
   - task: IO/File/Copy
@@ -70,7 +70,7 @@ job:
 kind: Job
 metadata:
   description: 新規フォルダー配下へコピー
-  priority: 103
+  priority: 113
 job:
   work:
   - task: IO/File/Copy
@@ -102,7 +102,19 @@ job:
 kind: Job
 metadata:
   description: ワイルドカード指定してのコピー
-  priority: 104
+  priority: 114
 job:
   work:
-  
+  - task: IO/File/Copy
+    param:
+      src: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\Sample0*'
+      dst: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\wild01'
+  - task: Audit/File/Exists
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\wild01\Sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\wild01\Sample02.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\wild01\Sample03.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\wild01\Sample04.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Copy01\wild01\Sample05.txt
+

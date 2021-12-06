@@ -133,42 +133,6 @@ namespace IO.Work.File
                     };
 
                     setAttribute(target);
-
-
-
-                    /*
-                    FileAttributes attr = System.IO.File.GetAttributes(target);
-
-                    Action<FileAttributes, string, bool> actionAttributes = (checkAttr, attrString, toEnable) =>
-                    {
-                        bool hasAttribute = (attr & checkAttr) == checkAttr;
-                        if (!hasAttribute && toEnable)
-                        {
-                            Manager.WriteLog(LogLevel.Info, $"Attribute add: {attrString}");
-                            attr |= checkAttr;
-                        }
-                        else if (hasAttribute && !toEnable)
-                        {
-                            Manager.WriteLog(LogLevel.Info, $"Attribute subtrcut: {attrString}");
-                            attr &= (~checkAttr);
-                        }
-                    };
-
-                    if (_attr_readOnly != null)
-                    {
-                        actionAttributes(FileAttributes.ReadOnly, "ReadOnly", (bool)_attr_readOnly);
-                    }
-                    if (_attr_hidden != null)
-                    {
-                        actionAttributes(FileAttributes.Hidden, "Hidden", (bool)_attr_hidden);
-                    }
-                    if (_attr_system != null)
-                    {
-                        actionAttributes(FileAttributes.System, "System", (bool)_attr_system);
-                    }
-
-                    System.IO.File.SetAttributes(target, attr);
-                    */
                 }
             }
             catch (Exception e)
@@ -178,5 +142,13 @@ namespace IO.Work.File
                 this.Success = false;
             }
         }
+    }
+
+    /// <summary>
+    /// Attributesへのエイリアス
+    /// </summary>
+    internal class Attributes : Attribute
+    {
+        protected override bool IsAlias { get { return true; } }
     }
 }
