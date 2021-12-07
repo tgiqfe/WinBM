@@ -17,6 +17,11 @@ job:
         %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample03.txt
         %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample04.txt
         %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample05.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample06.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample07.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample08.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample09.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample10.txt
 
 ---
 kind: Job
@@ -57,3 +62,40 @@ job:
     param:
       path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample02.txt'
       invert: true
+
+---
+kind: Job
+metadata:
+  description: エイリアスとワイルドカード指定で削除
+  priority: 123
+job:
+  work:
+  - task: Audit/File/Watch
+    param:
+      id: Sample03.txt
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample03.txt'
+      begin: true
+      exists: true
+  - task: IO/File/Remove
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample03.txt'
+  - task: Audit/File/Watch
+    param:
+      id: Sample03.txt
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample03.txt'
+      exists: true
+  - task: IO/File/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample*'
+  - task: Audit/File/Exists
+    param:
+      invert: true
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample04.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample05.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample06.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample07.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample08.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample09.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample10.txt
+
