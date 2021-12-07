@@ -23,7 +23,6 @@ kind: Job
 metadata:
   description: ファイル削除
   priority: 122
-  step: true
 job:
   work:
   - task: IO/File/Delete

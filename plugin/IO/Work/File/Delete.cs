@@ -44,15 +44,18 @@ namespace IO.Work.File
         {
             try
             {
-                //  対話モードでない場合はゴミ箱に移動しない。
-                RecycleOption recycleOption = Manager.Interactive && _Recycle ?
-                    RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently;
-
-                FileSystem.DeleteFile(
-                    target,
-                    UIOption.OnlyErrorDialogs,
-                    recycleOption,
-                    UICancelOption.DoNothing);
+                if(Manager.Interactive && _Recycle)
+                {
+                    FileSystem.DeleteFile(
+                        target,
+                        UIOption.OnlyErrorDialogs,
+                        RecycleOption.SendToRecycleBin,
+                        UICancelOption.DoNothing);
+                }
+                else
+                {
+                    System.IO.File.Delete(target);
+                }
             }
             catch (UnauthorizedAccessException uae)
             {
