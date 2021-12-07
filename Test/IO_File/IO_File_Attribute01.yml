@@ -61,7 +61,7 @@ job:
     failed: stop
   work:
   - task: IO/File/Attribute
-    description: システム属性は管理者実行しておく必要がある為、通常時実行の場合は失敗
+    description: システム属性は管理者実行しておく必要がある為、通常時実行の場合はスルー
     param:
       path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Attribute01\Sample01.txt'
       attribute: -hidden,+system
@@ -70,3 +70,8 @@ job:
       path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Attribute01\Sample01.txt'
       id: attributeTest01
       attribute: true
+
+
+
+
+

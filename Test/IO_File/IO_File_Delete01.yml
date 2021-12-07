@@ -1,0 +1,60 @@
+---
+kind: Job
+metadata:
+  name: TestAttribute
+  description: IO/File/Attributeテスト [準備]
+  priority: 121
+job:
+  work:
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01'
+  - task: IO/File/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample02.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample03.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample04.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample05.txt
+
+---
+kind: Job
+metadata:
+  description: ファイル削除
+  priority: 122
+  step: true
+job:
+  work:
+  - task: IO/File/Delete
+    description: 通常削除
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample01.txt'
+  - task: Audit/File/Exists
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample01.txt'
+      invert: true
+  - task: IO/File/Attribute
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample02.txt'
+      attrib: ReadOnly
+  - task: Audit/File/Attribute
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample02.txt'
+      attrib: ReadOnly
+  - task: IO/File/Delete
+    description: 読み取り専用ファイルを削除。force=falseの為、エラー
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample02.txt'
+  - task: Audit/File/Exists
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample02.txt'
+  - task: IO/File/Delete
+    description: 読み取り専用ファイルを削除。force=trueの為、成功
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample02.txt'
+      force: true
+  - task: Audit/File/Exists
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample02.txt'
+      invert: true
