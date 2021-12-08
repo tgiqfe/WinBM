@@ -80,6 +80,7 @@ namespace Audit.Work.Directory
         private void ChildCountDirectoryCheck(string target, Dictionary<string, string> dictionary, int count)
         {
             dictionary[$"directory_{count}"] = target;
+            string targetName = "directory";
 
             int[] ret = MonitorChildCount.GetDirectoryChildCount(target);
 
@@ -87,24 +88,24 @@ namespace Audit.Work.Directory
             {
                 if (_DirectoryCount == ret[0])
                 {
-                    dictionary[$"directory_{count}_DirectoryCount_Match"] = ret[0].ToString();
+                    dictionary[$"{targetName}_{count}_DirectoryCount_Match"] = ret[0].ToString();
                 }
                 else
                 {
                     Success = false;
-                    dictionary[$"directory_{count}_DirectoryCount_NotMatch"] = $"Check:{_DirectoryCount} != Result:{ret[0]}";
+                    dictionary[$"{targetName}_{count}_DirectoryCount_NotMatch"] = $"Check:{_DirectoryCount} != Result:{ret[0]}";
                 }
             }
             if (_FileCount != null)
             {
                 if (_FileCount == ret[1])
                 {
-                    dictionary[$"directory_{count}_FileCount_Match"] = ret[1].ToString();
+                    dictionary[$"{targetName}_{count}_FileCount_Match"] = ret[1].ToString();
                 }
                 else
                 {
                     Success = false;
-                    dictionary[$"directory_{count}_FileCount_NotMatch"] = $"Check:{_FileCount} != Result:{ret[1]}";
+                    dictionary[$"{targetName}_{count}_FileCount_NotMatch"] = $"Check:{_FileCount} != Result:{ret[1]}";
                 }
             }
             if (_IsEmpty != null)
@@ -112,12 +113,12 @@ namespace Audit.Work.Directory
                 bool retIsEmpty = ret[0] == 0 && ret[1] == 0;
                 if (retIsEmpty && (bool)_IsEmpty)
                 {
-                    dictionary[$"directory_{count}_Match_IsEmpty"] = retIsEmpty ? "Empty" : "NotEmpty";
+                    dictionary[$"{targetName}_{count}_Match_IsEmpty"] = retIsEmpty ? "Empty" : "NotEmpty";
                 }
                 else
                 {
                     Success = false;
-                    dictionary[$"directory_{count}_NotMatch_IsEmpty"] = retIsEmpty ? "Empty" : "NotEmpty";
+                    dictionary[$"{targetName}_{count}_NotMatch_IsEmpty"] = retIsEmpty ? "Empty" : "NotEmpty";
                 }
             }
         }
