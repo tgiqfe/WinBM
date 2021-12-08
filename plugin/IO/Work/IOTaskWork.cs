@@ -38,7 +38,9 @@ namespace IO.Work
                     if (!System.IO.Directory.Exists(parent))
                     {
                         Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", parent);
-                        return;
+                        Success = false;
+                        continue;
+                        //  ↑returnにするかを検討中。恐らくこのままだが、一応変更する可能性があるのでコメントだけ残す。
                     }
 
                     //  ワイルドカード指定
@@ -54,7 +56,9 @@ namespace IO.Work
                     if (!System.IO.File.Exists(path))
                     {
                         Manager.WriteLog(LogLevel.Warn, "Target is Missing. \"{0}\"", path);
-                        return;
+                        Success = false;
+                        continue;
+                        //  ↑returnにするかを検討中。恐らくこのままだが、一応変更する可能性があるのでコメントだけ残す。
                     }
 
                     targetFileAction(path);
@@ -81,7 +85,9 @@ namespace IO.Work
                     if (!System.IO.Directory.Exists(parent))
                     {
                         Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", parent);
-                        return;
+                        Success = false;
+                        continue;
+                        //  ↑returnにするかを検討中。恐らくこのままだが、一応変更する可能性があるのでコメントだけ残す。
                     }
 
                     System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(source);
@@ -96,7 +102,9 @@ namespace IO.Work
                     if (!System.IO.File.Exists(source))
                     {
                         Manager.WriteLog(LogLevel.Error, "Source target is Missing. \"{0}\"", source);
-                        return;
+                        Success = false;
+                        continue;
+                        //  ↑returnにするかを検討中。恐らくこのままだが、一応変更する可能性があるのでコメントだけ残す。
                     }
 
                     srcDstFileAction(source, destinationPath);
@@ -122,7 +130,9 @@ namespace IO.Work
                     if (!System.IO.Directory.Exists(parent))
                     {
                         Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", parent);
-                        return;
+                        Success = false;
+                        continue;
+                        //  ↑returnにするかを検討中。恐らくこのままだが、一応変更する可能性があるのでコメントだけ残す。
                     }
 
                     //  ワイルドカード指定
@@ -138,7 +148,9 @@ namespace IO.Work
                     if (!System.IO.Directory.Exists(path))
                     {
                         Manager.WriteLog(LogLevel.Warn, "Target is Missing. \"{0}\"", path);
-                        return;
+                        Success = false;
+                        continue;
+                        //  ↑returnにするかを検討中。恐らくこのままだが、一応変更する可能性があるのでコメントだけ残す。
                     }
 
                     targetDirectoryAction(path);
@@ -166,7 +178,9 @@ namespace IO.Work
                     if (!System.IO.Directory.Exists(parent))
                     {
                         Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", parent);
-                        return;
+                        Success = false;
+                        continue;
+                        //  ↑returnにするかを検討中。恐らくこのままだが、一応変更する可能性があるのでコメントだけ残す。
                     }
 
                     System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(source);
@@ -181,7 +195,9 @@ namespace IO.Work
                     if (!System.IO.Directory.Exists(source))
                     {
                         Manager.WriteLog(LogLevel.Error, "Source target is Missing. \"{0}\"", source);
-                        return;
+                        Success = false;
+                        continue;
+                        //  ↑returnにするかを検討中。恐らくこのままだが、一応変更する可能性があるのでコメントだけ残す。
                     }
 
                     srcDstDirectoryAction(source, destinationPath);

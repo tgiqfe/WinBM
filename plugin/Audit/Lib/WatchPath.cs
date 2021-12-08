@@ -68,7 +68,5 @@ namespace Audit.Lib
         {
             PathType = pathType;
         }
-
-        public WatchPath() { }
     }
 }

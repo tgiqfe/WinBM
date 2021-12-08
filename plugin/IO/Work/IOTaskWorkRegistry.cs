@@ -40,7 +40,9 @@ namespace IO.Work
                         if (parentKey == null)
                         {
                             Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", parent);
-                            return;
+                            Success = false;
+                            continue;
+                            //  ↑returnにするかを検討中。恐らくこのままだが、一応変更する可能性があるのでコメントだけ残す。
                         }
 
                         //  ワイルドカード指定
@@ -63,7 +65,9 @@ namespace IO.Work
                         if (regKey == null)
                         {
                             Manager.WriteLog(LogLevel.Warn, "Target is Missing. \"{0}\"", path);
-                            return;
+                            Success = false;
+                            continue;
+                            //  ↑returnにするかを検討中。恐らくこのままだが、一応変更する可能性があるのでコメントだけ残す。
                         }
 
                         targetRegistryKeyAction(regKey);
@@ -87,6 +91,7 @@ namespace IO.Work
                 if (parentKey == null)
                 {
                     Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", parentKey.Name);
+                    Success = false;
                     return;
                 }
 
@@ -132,7 +137,9 @@ namespace IO.Work
                         if (parentKey == null)
                         {
                             Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", parent);
-                            return;
+                            Success = false;
+                            continue;
+                            //  ↑returnにするかを検討中。恐らくこのままだが、一応変更する可能性があるのでコメントだけ残す。
                         }
 
                         System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(sourceKeyName);
@@ -160,7 +167,9 @@ namespace IO.Work
                         if (sourceKey == null)
                         {
                             Manager.WriteLog(LogLevel.Error, "Source target is Missing. \"{0}\"", source);
-                            return;
+                            Success = false;
+                            continue;
+                            //  ↑returnにするかを検討中。恐らくこのままだが、一応変更する可能性があるのでコメントだけ残す。
                         }
 
                         using (RegistryKey destinationKey = RegistryControl.GetRegistryKey(destinationPath, true, true))
@@ -188,6 +197,7 @@ namespace IO.Work
                 if (parentKey == null)
                 {
                     Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", sourcePath);
+                    Success = false;
                     return;
                 }
 
@@ -221,7 +231,6 @@ namespace IO.Work
                         {
                             srcDstRegistryValueAction(parentKey, destinationKey, name, destinationName);
                         }
-
                     }
                 }
             }

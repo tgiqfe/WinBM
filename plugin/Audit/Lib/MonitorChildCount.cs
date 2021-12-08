@@ -11,6 +11,11 @@ namespace Audit.Lib
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class MonitorChildCount
     {
+        #region Compare method
+
+
+
+        #endregion
         #region Watch method
 
         public static bool WatchDirectory(

@@ -10,6 +10,26 @@ namespace Audit.Lib
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class MonitorSize
     {
+        #region Compare method
+
+        public static bool CompareFile(ComparePath compare, Dictionary<string, string> dictionary, int serial, string fileA, string fileB)
+        {
+            if (compare.IsSize ?? false)
+            {
+                string pathType = "file";
+                string checkTarget = "Size";
+
+                long ret_fileA = new System.IO.FileInfo(fileA).Length;
+                long ret_fileB = new System.IO.FileInfo(fileB).Length;
+
+                dictionary[$"{pathType}A_{checkTarget}_{serial}"] = string.Format("{0} ({1})", ret_fileA, ToReadable(ret_fileA));
+                dictionary[$"{pathType}B_{checkTarget}_{serial}"] = string.Format("{0} ({1})", ret_fileB, ToReadable(ret_fileB));
+                return ret_fileA == ret_fileB;
+            }
+            return true;
+        }
+
+        #endregion
         #region Watch method
 
         public static bool WatchFile(
@@ -22,13 +42,13 @@ namespace Audit.Lib
                 {
                     long ret_long = info.Length;
                     ret = ret_long != watch.Size;
-                    if(watch.Size != null)
+                    if (watch.Size != null)
                     {
                         string pathType = "file";
                         string checkTarget = "Size";
                         dictionary[$"{pathType}_{checkTarget}_{serial}"] = ret ?
-                            $"{watch.Size} -> {ret_long}" :
-                            ret_long.ToString();
+                            string.Format("{0} -> {1} ({2})", watch.Size, ret_long, ToReadable(ret_long)) :
+                            string.Format("{0} ({1})", ret_long, ToReadable(ret_long));
                     }
                     watch.Size = ret_long;
                 }
