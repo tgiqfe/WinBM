@@ -9,21 +9,21 @@ namespace OSVersion.Lib
     /// <summary>
     /// OSバージョン比較用
     /// </summary>
-    internal class MinMaxOSVersion
+    internal class MinMaxOSVersionInfo
     {
-        public OSInfo Min { get; set; }
-        public OSInfo Max { get; set; }
+        public OSVersionInfo Min { get; set; }
+        public OSVersionInfo Max { get; set; }
         public bool Enabled { get; set; }
 
         private const char DELIMITER = '~';
 
         private OSFamily _family = OSFamily.Windows;
 
-        public MinMaxOSVersion(string text)
+        public MinMaxOSVersionInfo(string text)
         {
             if (!string.IsNullOrEmpty(text))
             {
-                if (OSInfo.TryParse(text, _family, out OSInfo info))
+                if (OSVersionInfo.TryParse(text, _family, out OSVersionInfo info))
                 {
                     this.Min = info;
                     this.Max = info;
@@ -33,14 +33,14 @@ namespace OSVersion.Lib
                 {
                     string minStr = text.Substring(0, text.IndexOf(DELIMITER));
                     string maxStr = text.Substring(text.IndexOf(DELIMITER) + 1);
-                    OSInfo tempMin = minStr == "" ?
-                        OSInfo.GetMinVersion() :
-                        OSInfo.TryParse(minStr, _family, out OSInfo outTempMin) ?
+                    OSVersionInfo tempMin = minStr == "" ?
+                        OSVersionInfo.GetMinVersion() :
+                        OSVersionInfo.TryParse(minStr, _family, out OSVersionInfo outTempMin) ?
                             outTempMin :
                             null;
-                    OSInfo tempMax = maxStr == "" ?
-                        OSInfo.GetMaxVersion() :
-                        OSInfo.TryParse(maxStr, _family, out OSInfo outTempMax) ?
+                    OSVersionInfo tempMax = maxStr == "" ?
+                        OSVersionInfo.GetMaxVersion() :
+                        OSVersionInfo.TryParse(maxStr, _family, out OSVersionInfo outTempMax) ?
                             outTempMax :
                             null;
 
@@ -54,7 +54,7 @@ namespace OSVersion.Lib
             }
         }
 
-        public bool Within(OSInfo info)
+        public bool Within(OSVersionInfo info)
         {
             return Enabled && Min <= info && Max >= info;
         }
@@ -64,9 +64,9 @@ namespace OSVersion.Lib
             if (Enabled)
             {
                 return string.Format("{0}{1}{2}",
-                    Min == OSInfo.GetMinVersion() ? "" : Min.ToString(),
+                    Min == OSVersionInfo.GetMinVersion() ? "" : Min.ToString(),
                     DELIMITER,
-                    Max == OSInfo.GetMaxVersion() ? "" : Max.ToString());
+                    Max == OSVersionInfo.GetMaxVersion() ? "" : Max.ToString());
             }
             return null;
         }

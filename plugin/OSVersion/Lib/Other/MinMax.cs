@@ -8,9 +8,9 @@ namespace OSVersion.Lib.Other
 {
     internal class MinMax
     {
-        public static OSInfo CreateMinimum()
+        public static OSVersionInfo CreateMinimum()
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "MinVersion",
                 OSFamily = OSFamily.Any,
@@ -25,9 +25,9 @@ namespace OSVersion.Lib.Other
             };
         }
 
-        public static OSInfo CreateMaximum()
+        public static OSVersionInfo CreateMaximum()
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "MaxVersion",
                 OSFamily = OSFamily.Any,

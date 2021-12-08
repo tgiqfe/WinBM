@@ -11,8 +11,8 @@ namespace OSVersion.Config.Prepare
     internal class Setting : TaskConfig
     {
         [TaskParameter(ResolvEnv = true)]
-        [Keys("osinfodbfile", "osinfodb")]
-        protected string _OSInfoDBFile { get; set; }
+        [Keys("osversioninfodbfile", "osvinfodbfile", "osvinfodb")]
+        protected string _OSVersionInfoDBFile { get; set; }
 
         [TaskParameter]
         [Keys("persistent", "persist")]
@@ -22,9 +22,9 @@ namespace OSVersion.Config.Prepare
         {
             Manager.Setting.PluginParam ??= new Dictionary<string, string>();
 
-            if (!string.IsNullOrEmpty(_OSInfoDBFile))
+            if (!string.IsNullOrEmpty(_OSVersionInfoDBFile))
             {
-                Manager.Setting.PluginParam[Item.OSVERSION_OSINFODBFILE] = this._OSInfoDBFile;
+                Manager.Setting.PluginParam[Item.OSVERSION_OSINFODBFILE] = this._OSVersionInfoDBFile;
             }
 
             if (_Persistent)

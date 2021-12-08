@@ -67,7 +67,7 @@ namespace OSVersion.Lib
 
         #endregion
 
-        public static OSInfo GetCurrent(OSInfoCollection collection)
+        public static OSVersionInfo GetCurrent(OSVersionInfoCollection collection)
         {
             var mo = new ManagementClass("Win32_OperatingSystem").
                 GetInstances().

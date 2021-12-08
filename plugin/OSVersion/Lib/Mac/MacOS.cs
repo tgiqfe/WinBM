@@ -8,9 +8,9 @@ namespace OSVersion.Lib.Mac
 {
     internal class MacOS
     {
-        public static OSInfo Create1011()
+        public static OSVersionInfo Create1011()
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "OS X",
                 OSFamily = OSFamily.Mac,
@@ -24,9 +24,9 @@ namespace OSVersion.Lib.Mac
             };
         }
 
-        public static OSInfo Create1012()
+        public static OSVersionInfo Create1012()
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "macOS",
                 OSFamily = OSFamily.Mac,
@@ -40,9 +40,9 @@ namespace OSVersion.Lib.Mac
             };
         }
 
-        public static OSInfo Create1013()
+        public static OSVersionInfo Create1013()
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "macOS",
                 OSFamily = OSFamily.Mac,
@@ -56,9 +56,9 @@ namespace OSVersion.Lib.Mac
             };
         }
 
-        public static OSInfo Create1014()
+        public static OSVersionInfo Create1014()
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "macOS",
                 OSFamily = OSFamily.Mac,
@@ -72,9 +72,9 @@ namespace OSVersion.Lib.Mac
             };
         }
 
-        public static OSInfo Create1015()
+        public static OSVersionInfo Create1015()
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "macOS",
                 OSFamily = OSFamily.Mac,
@@ -88,9 +88,9 @@ namespace OSVersion.Lib.Mac
             };
         }
 
-        public static OSInfo Create11()
+        public static OSVersionInfo Create11()
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "macOS",
                 OSFamily = OSFamily.Mac,
@@ -104,9 +104,9 @@ namespace OSVersion.Lib.Mac
             };
         }
 
-        public static OSInfo Create12()
+        public static OSVersionInfo Create12()
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "macOS",
                 OSFamily = OSFamily.Mac,

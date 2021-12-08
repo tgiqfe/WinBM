@@ -8,9 +8,9 @@ namespace OSVersion.Lib.Linux
 {
     internal class UbuntuDesktop
     {
-        public static OSInfo Create1804()
+        public static OSVersionInfo Create1804()
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Ubuntu Desktop",
                 OSFamily = OSFamily.Linux,
@@ -26,9 +26,9 @@ namespace OSVersion.Lib.Linux
             };
         }
 
-        public static OSInfo Create1810()
+        public static OSVersionInfo Create1810()
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Ubuntu Desktop",
                 OSFamily = OSFamily.Linux,
@@ -44,9 +44,9 @@ namespace OSVersion.Lib.Linux
             };
         }
 
-        public static OSInfo Create1904()
+        public static OSVersionInfo Create1904()
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Ubuntu Desktop",
                 OSFamily = OSFamily.Linux,
@@ -62,9 +62,9 @@ namespace OSVersion.Lib.Linux
             };
         }
 
-        public static OSInfo Create1910()
+        public static OSVersionInfo Create1910()
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Ubuntu Desktop",
                 OSFamily = OSFamily.Linux,
@@ -81,9 +81,9 @@ namespace OSVersion.Lib.Linux
         }
 
 
-        public static OSInfo Create2004()
+        public static OSVersionInfo Create2004()
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Ubuntu Desktop",
                 OSFamily = OSFamily.Linux,
@@ -99,9 +99,9 @@ namespace OSVersion.Lib.Linux
             };
         }
 
-        public static OSInfo Create2010()
+        public static OSVersionInfo Create2010()
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Ubuntu Desktop",
                 OSFamily = OSFamily.Linux,
@@ -117,9 +117,9 @@ namespace OSVersion.Lib.Linux
             };
         }
 
-        public static OSInfo Create2104()
+        public static OSVersionInfo Create2104()
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Ubuntu Desktop",
                 OSFamily = OSFamily.Linux,

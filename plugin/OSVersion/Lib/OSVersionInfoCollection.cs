@@ -10,13 +10,13 @@ using System.IO;
 
 namespace OSVersion.Lib
 {
-    internal class OSInfoCollection : List<OSInfo>
+    internal class OSVersionInfoCollection : List<OSVersionInfo>
     {
         #region Constructor
 
-        public OSInfoCollection() { }
+        public OSVersionInfoCollection() { }
 
-        public OSInfoCollection(bool loadDefault)
+        public OSVersionInfoCollection(bool loadDefault)
         {
             if (loadDefault)
             {
@@ -198,21 +198,21 @@ namespace OSVersion.Lib
         #endregion
         #region Load/Save
 
-        public static OSInfoCollection Load(string dbPath)
+        public static OSVersionInfoCollection Load(string dbPath)
         {
-            OSInfoCollection result = null;
+            OSVersionInfoCollection result = null;
             try
             {
                 using (var sr = new StreamReader(dbPath, Encoding.UTF8))
                 {
-                    result = JsonSerializer.Deserialize<OSInfoCollection>(sr.ReadToEnd());
+                    result = JsonSerializer.Deserialize<OSVersionInfoCollection>(sr.ReadToEnd());
                 }
             }
             catch { }
 
             if (result == null)
             {
-                result = new OSInfoCollection(loadDefault: true);
+                result = new OSVersionInfoCollection(loadDefault: true);
                 result.Save(dbPath);
             }
 

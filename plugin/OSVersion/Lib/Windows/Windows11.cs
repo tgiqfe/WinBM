@@ -8,9 +8,9 @@ namespace OSVersion.Lib.Windows
 {
     internal class Windows11
     {
-        public static OSInfo Create21H2(Edition? edition)
+        public static OSVersionInfo Create21H2(Edition? edition)
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows 11",
                 OSFamily = OSFamily.Windows,

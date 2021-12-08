@@ -10,6 +10,6 @@ namespace OSVersion.Lib
     {
         //  後回し
 
-        public static OSInfo GetOSInfo() { return null; }
+        public static OSVersionInfo GetOSInfo() { return null; }
     }
 }

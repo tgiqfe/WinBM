@@ -8,7 +8,7 @@ using OSVersion.Lib.Linux;
 
 namespace OSVersion.Lib
 {
-    internal class OSInfo : Arithmetic
+    internal class OSVersionInfo : Arithmetic
     {
         #region Class Paramter
 
@@ -114,7 +114,7 @@ namespace OSVersion.Lib
         /// <summary>
         /// 引数無しコンストラクタ
         /// </summary>
-        public OSInfo() { }
+        public OSVersionInfo() { }
 
         /// <summary>
         /// 文字列化
@@ -137,21 +137,21 @@ namespace OSVersion.Lib
         /// <param name="family"></param>
         /// <param name="result"></param>
         /// <returns></returns>
-        public static bool TryParse(string s, OSFamily family, out OSInfo result)
+        public static bool TryParse(string s, OSFamily family, out OSVersionInfo result)
         {
             result = family switch
             {
                 OSFamily.Windows =>
-                    OSInfo.GetWindows(s) ??
-                    OSInfo.GetWindowsServer(s),
-                OSFamily.Mac => OSInfo.GetMac(s),
-                OSFamily.Linux => OSInfo.GetLinux(s),
+                    OSVersionInfo.GetWindows(s) ??
+                    OSVersionInfo.GetWindowsServer(s),
+                OSFamily.Mac => OSVersionInfo.GetMac(s),
+                OSFamily.Linux => OSVersionInfo.GetLinux(s),
                 _ => null,
             };
             return result is not null;
         }
 
-        public static OSInfo GetMinVersion()
+        public static OSVersionInfo GetMinVersion()
         {
             return OSVersion.Lib.Other.MinMax.CreateMinimum();
             /*
@@ -165,7 +165,7 @@ namespace OSVersion.Lib
             */
         }
 
-        public static OSInfo GetMaxVersion()
+        public static OSVersionInfo GetMaxVersion()
         {
             return OSVersion.Lib.Other.MinMax.CreateMaximum();
             /*
@@ -185,12 +185,12 @@ namespace OSVersion.Lib
         /// 現在実行しているコンピュータのOSInfo
         /// </summary>
         /// <returns></returns>
-        public static OSInfo GetCurrent()
+        public static OSVersionInfo GetCurrent()
         {
-            return GetCurrent(new OSInfoCollection(loadDefault: true));
+            return GetCurrent(new OSVersionInfoCollection(loadDefault: true));
         }
 
-        public static OSInfo GetCurrent(OSInfoCollection collection)
+        public static OSVersionInfo GetCurrent(OSVersionInfoCollection collection)
         {
             if (OperatingSystem.IsWindows())
             {
@@ -210,10 +210,10 @@ namespace OSVersion.Lib
         #endregion
         #region GetWindows
 
-        public static OSInfo GetWindows(int versionSerial, OSInfoCollection collection)
+        public static OSVersionInfo GetWindows(int versionSerial, OSVersionInfoCollection collection)
         {
             var windowsCollection = collection.Where(x => x.OSFamily == OSFamily.Windows).Where(x => !x.IsServer);
-            OSInfo result = windowsCollection.FirstOrDefault(x => x.Serial == versionSerial);
+            OSVersionInfo result = windowsCollection.FirstOrDefault(x => x.Serial == versionSerial);
             if (result is not null)
             {
                 result.Edition = null;
@@ -223,12 +223,12 @@ namespace OSVersion.Lib
             return result;
         }
 
-        public static OSInfo GetWindows(int versionSerial)
+        public static OSVersionInfo GetWindows(int versionSerial)
         {
-            return GetWindows(versionSerial, new OSInfoCollection(loadDefault: true));
+            return GetWindows(versionSerial, new OSVersionInfoCollection(loadDefault: true));
         }
 
-        public static OSInfo GetWindows(string versionName, OSInfoCollection collection)
+        public static OSVersionInfo GetWindows(string versionName, OSVersionInfoCollection collection)
         {
             if (int.TryParse(versionName, out int tempInt))
             {
@@ -236,7 +236,7 @@ namespace OSVersion.Lib
             }
 
             var windowsCollection = collection.Where(x => x.OSFamily == OSFamily.Windows).Where(x => !x.IsServer);
-            OSInfo result =
+            OSVersionInfo result =
                 windowsCollection.FirstOrDefault(x => x.VersionName.Equals(versionName, StringComparison.OrdinalIgnoreCase)) ??
                 windowsCollection.FirstOrDefault(x => x.Alias.Any(y => y.Equals(versionName, StringComparison.OrdinalIgnoreCase))) ??
                 windowsCollection.FirstOrDefault(x => x.Version.Equals(versionName)) ??
@@ -250,15 +250,15 @@ namespace OSVersion.Lib
             return result;
         }
 
-        public static OSInfo GetWindows(string versionName)
+        public static OSVersionInfo GetWindows(string versionName)
         {
-            return GetWindows(versionName, new OSInfoCollection(loadDefault: true));
+            return GetWindows(versionName, new OSVersionInfoCollection(loadDefault: true));
         }
 
-        public static OSInfo GetWindowsServer(int versionSerial, OSInfoCollection collection)
+        public static OSVersionInfo GetWindowsServer(int versionSerial, OSVersionInfoCollection collection)
         {
             var winSVCollection = collection.Where(x => x.OSFamily == OSFamily.Windows).Where(x => x.IsServer);
-            OSInfo result = winSVCollection.FirstOrDefault(x => x.Serial == versionSerial);
+            OSVersionInfo result = winSVCollection.FirstOrDefault(x => x.Serial == versionSerial);
             if (result is not null)
             {
                 result.Edition = null;
@@ -268,12 +268,12 @@ namespace OSVersion.Lib
             return result;
         }
 
-        public static OSInfo GetWindowsServer(int versionSerial)
+        public static OSVersionInfo GetWindowsServer(int versionSerial)
         {
-            return GetWindowsServer(versionSerial, new OSInfoCollection(loadDefault: true));
+            return GetWindowsServer(versionSerial, new OSVersionInfoCollection(loadDefault: true));
         }
 
-        public static OSInfo GetWindowsServer(string versionName, OSInfoCollection collection)
+        public static OSVersionInfo GetWindowsServer(string versionName, OSVersionInfoCollection collection)
         {
             if (int.TryParse(versionName, out int tempInt))
             {
@@ -281,7 +281,7 @@ namespace OSVersion.Lib
             }
 
             var winSVCollection = collection.Where(x => x.OSFamily == OSFamily.Windows).Where(x => x.IsServer);
-            OSInfo result =
+            OSVersionInfo result =
                 winSVCollection.FirstOrDefault(x => x.VersionName.Equals(versionName, StringComparison.OrdinalIgnoreCase)) ??
                 winSVCollection.FirstOrDefault(x => x.Alias.Any(y => y.Equals(versionName, StringComparison.OrdinalIgnoreCase))) ??
                 winSVCollection.FirstOrDefault(x => x.Version.Equals(versionName));
@@ -294,27 +294,27 @@ namespace OSVersion.Lib
             return result;
         }
 
-        public static OSInfo GetWindowsServer(string versionName)
+        public static OSVersionInfo GetWindowsServer(string versionName)
         {
-            return GetWindowsServer(versionName, new OSInfoCollection(loadDefault: true));
+            return GetWindowsServer(versionName, new OSVersionInfoCollection(loadDefault: true));
         }
 
         #endregion
         #region GetMac
 
-        public static OSInfo GetMac(int versionSerial, OSInfoCollection collection)
+        public static OSVersionInfo GetMac(int versionSerial, OSVersionInfoCollection collection)
         {
             var macCollection = collection.Where(x => x.OSFamily == OSFamily.Mac);
-            OSInfo result = macCollection.FirstOrDefault(x => x.Serial == versionSerial);
+            OSVersionInfo result = macCollection.FirstOrDefault(x => x.Serial == versionSerial);
             return result;
         }
 
-        public static OSInfo GetMac(int versionSerial)
+        public static OSVersionInfo GetMac(int versionSerial)
         {
-            return GetMac(versionSerial, new OSInfoCollection(loadDefault: true));
+            return GetMac(versionSerial, new OSVersionInfoCollection(loadDefault: true));
         }
 
-        public static OSInfo GetMac(string versionName, OSInfoCollection collection)
+        public static OSVersionInfo GetMac(string versionName, OSVersionInfoCollection collection)
         {
             if (int.TryParse(versionName, out int tempInt))
             {
@@ -322,34 +322,34 @@ namespace OSVersion.Lib
             }
 
             var macCollection = collection.Where(x => x.OSFamily == OSFamily.Mac);
-            OSInfo result =
+            OSVersionInfo result =
                 macCollection.FirstOrDefault(x => x.VersionName.Equals(versionName, StringComparison.OrdinalIgnoreCase)) ??
                 macCollection.FirstOrDefault(x => x.Alias.Any(y => y.Equals(versionName, StringComparison.OrdinalIgnoreCase))) ??
                 macCollection.FirstOrDefault(x => x.Version.Equals(versionName));
             return result;
         }
 
-        public static OSInfo GetMac(string versionName)
+        public static OSVersionInfo GetMac(string versionName)
         {
-            return GetMac(versionName, new OSInfoCollection(loadDefault: true));
+            return GetMac(versionName, new OSVersionInfoCollection(loadDefault: true));
         }
 
         #endregion
         #region GetLinux
 
-        public static OSInfo GetLinux(int versionSerial, OSInfoCollection collection)
+        public static OSVersionInfo GetLinux(int versionSerial, OSVersionInfoCollection collection)
         {
             var macCollection = collection.Where(x => x.OSFamily == OSFamily.Linux);
-            OSInfo result = macCollection.FirstOrDefault(x => x.Serial == versionSerial);
+            OSVersionInfo result = macCollection.FirstOrDefault(x => x.Serial == versionSerial);
             return result;
         }
 
-        public static OSInfo GetLinux(int versionSerial)
+        public static OSVersionInfo GetLinux(int versionSerial)
         {
-            return GetLinux(versionSerial, new OSInfoCollection(loadDefault: true));
+            return GetLinux(versionSerial, new OSVersionInfoCollection(loadDefault: true));
         }
 
-        public static OSInfo GetLinux(string versionName, OSInfoCollection collection)
+        public static OSVersionInfo GetLinux(string versionName, OSVersionInfoCollection collection)
         {
             if (int.TryParse(versionName, out int tempInt))
             {
@@ -357,31 +357,31 @@ namespace OSVersion.Lib
             }
 
             var linuxCollection = collection.Where(x => x.OSFamily == OSFamily.Linux);
-            OSInfo result =
+            OSVersionInfo result =
                 linuxCollection.FirstOrDefault(x => x.VersionName.Equals(versionName, StringComparison.OrdinalIgnoreCase)) ??
                 linuxCollection.FirstOrDefault(x => x.Alias.Any(y => y.Equals(versionName, StringComparison.OrdinalIgnoreCase))) ??
                 linuxCollection.FirstOrDefault(x => x.Version.Equals(versionName));
             return result;
         }
 
-        public static OSInfo GetLinux(string versionName)
+        public static OSVersionInfo GetLinux(string versionName)
         {
-            return GetLinux(versionName, new OSInfoCollection(loadDefault: true));
+            return GetLinux(versionName, new OSVersionInfoCollection(loadDefault: true));
         }
 
-        public static OSInfo GetLinux(int versionSerial, Linux.Distribution distribution, OSInfoCollection collection)
+        public static OSVersionInfo GetLinux(int versionSerial, Linux.Distribution distribution, OSVersionInfoCollection collection)
         {
             var linuxCollection = collection.Where(x => x.OSFamily == OSFamily.Linux).Where(x => x.Distribution == distribution);
-            OSInfo result = linuxCollection.FirstOrDefault(x => x.Serial == versionSerial);
+            OSVersionInfo result = linuxCollection.FirstOrDefault(x => x.Serial == versionSerial);
             return result;
         }
 
-        public static OSInfo GetLinux(int versionSerial, Linux.Distribution distribution)
+        public static OSVersionInfo GetLinux(int versionSerial, Linux.Distribution distribution)
         {
-            return GetLinux(versionSerial, distribution, new OSInfoCollection(loadDefault: true));
+            return GetLinux(versionSerial, distribution, new OSVersionInfoCollection(loadDefault: true));
         }
 
-        public static OSInfo GetLinux(string versionName, Linux.Distribution distribution, OSInfoCollection collection)
+        public static OSVersionInfo GetLinux(string versionName, Linux.Distribution distribution, OSVersionInfoCollection collection)
         {
             if (int.TryParse(versionName, out int tempInt))
             {
@@ -389,16 +389,16 @@ namespace OSVersion.Lib
             }
 
             var linuxCollection = collection.Where(x => x.OSFamily == OSFamily.Linux).Where(x => x.Distribution == distribution);
-            OSInfo result =
+            OSVersionInfo result =
                 linuxCollection.FirstOrDefault(x => x.VersionName.Equals(versionName, StringComparison.OrdinalIgnoreCase)) ??
                 linuxCollection.FirstOrDefault(x => x.Alias.Any(y => y.Equals(versionName, StringComparison.OrdinalIgnoreCase))) ??
                 linuxCollection.FirstOrDefault(x => x.Version.Equals(versionName));
             return result;
         }
 
-        public static OSInfo GetLinux(string versionName, Linux.Distribution distribution)
+        public static OSVersionInfo GetLinux(string versionName, Linux.Distribution distribution)
         {
-            return GetLinux(versionName, distribution, new OSInfoCollection(loadDefault: true));
+            return GetLinux(versionName, distribution, new OSVersionInfoCollection(loadDefault: true));
         }
 
         #endregion

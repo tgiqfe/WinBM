@@ -8,9 +8,9 @@ namespace OSVersion.Lib.Windows
 {
     internal class Windows10
     {
-        public static OSInfo Create1507(Edition? edition)
+        public static OSVersionInfo Create1507(Edition? edition)
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows 10",
                 OSFamily = OSFamily.Windows,
@@ -36,9 +36,9 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create1511(Edition? edition)
+        public static OSVersionInfo Create1511(Edition? edition)
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows 10",
                 OSFamily = OSFamily.Windows,
@@ -64,9 +64,9 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create1607(Edition? edition)
+        public static OSVersionInfo Create1607(Edition? edition)
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows 10",
                 OSFamily = OSFamily.Windows,
@@ -92,9 +92,9 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create1703(Edition? edition)
+        public static OSVersionInfo Create1703(Edition? edition)
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows 10",
                 OSFamily = OSFamily.Windows,
@@ -120,9 +120,9 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create1709(Edition? edition)
+        public static OSVersionInfo Create1709(Edition? edition)
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows 10",
                 OSFamily = OSFamily.Windows,
@@ -148,9 +148,9 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create1803(Edition? edition)
+        public static OSVersionInfo Create1803(Edition? edition)
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows 10",
                 OSFamily = OSFamily.Windows,
@@ -176,9 +176,9 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create1809(Edition? edition)
+        public static OSVersionInfo Create1809(Edition? edition)
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows 10",
                 OSFamily = OSFamily.Windows,
@@ -204,9 +204,9 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create1903(Edition? edition)
+        public static OSVersionInfo Create1903(Edition? edition)
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows 10",
                 OSFamily = OSFamily.Windows,
@@ -232,9 +232,9 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create1909(Edition? edition)
+        public static OSVersionInfo Create1909(Edition? edition)
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows 10",
                 OSFamily = OSFamily.Windows,
@@ -260,9 +260,9 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create2004(Edition? edition)
+        public static OSVersionInfo Create2004(Edition? edition)
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows 10",
                 OSFamily = OSFamily.Windows,
@@ -288,9 +288,9 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create20H2(Edition? edition)
+        public static OSVersionInfo Create20H2(Edition? edition)
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows 10",
                 OSFamily = OSFamily.Windows,
@@ -316,9 +316,9 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create21H1(Edition? edition)
+        public static OSVersionInfo Create21H1(Edition? edition)
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows 10",
                 OSFamily = OSFamily.Windows,
@@ -344,9 +344,9 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create21H2(Edition? edition)
+        public static OSVersionInfo Create21H2(Edition? edition)
         {
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows 10",
                 OSFamily = OSFamily.Windows,

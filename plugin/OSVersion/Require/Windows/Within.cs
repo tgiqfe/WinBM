@@ -21,14 +21,14 @@ namespace OSVersion.Require.Windows
 
         public override void MainProcess()
         {
-            OSInfoCollection collection = LoadOSInfoDB();
+            OSVersionInfoCollection collection = LoadOSInfoDB();
 
-            OSInfo thisPC = OSInfo.GetCurrent(collection);
+            OSVersionInfo thisPC = OSVersionInfo.GetCurrent(collection);
 
             //  現在実行中のOSが、_Rangeのいずれかの範囲に含まれていたらSuccess
             foreach (string range in _Range)
             {
-                MinMaxOSVersion minMax = new MinMaxOSVersion(range);
+                MinMaxOSVersionInfo minMax = new MinMaxOSVersionInfo(range);
                 Success |= minMax.Within(thisPC);
             }
 

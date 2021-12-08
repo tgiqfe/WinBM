@@ -13,7 +13,7 @@ namespace OSVersion.Require
     {
         private static string _OSInfoDBFile = null;
 
-        protected OSInfoCollection LoadOSInfoDB()
+        protected OSVersionInfoCollection LoadOSInfoDB()
         {
             if (_OSInfoDBFile == null)
             {
@@ -27,7 +27,7 @@ namespace OSVersion.Require
                     _OSInfoDBFile = Item.GetDefaultOSInfoDbFile();
                 }
             }
-            return OSInfoCollection.Load(_OSInfoDBFile);
+            return OSVersionInfoCollection.Load(_OSInfoDBFile);
         }
     }
 }

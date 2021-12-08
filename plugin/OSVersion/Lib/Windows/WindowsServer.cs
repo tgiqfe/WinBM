@@ -8,11 +8,11 @@ namespace OSVersion.Lib.Windows
 {
     internal class WindowsServer
     {
-        public static OSInfo Create2000(Edition? edition)
+        public static OSVersionInfo Create2000(Edition? edition)
         {
             //  エディション
             //  Professional, Server, Advanced Server, Datacenter Server
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows Server 2000",
                 OSFamily = OSFamily.Windows,
@@ -28,11 +28,11 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create2003(Edition? edition)
+        public static OSVersionInfo Create2003(Edition? edition)
         {
             //  エディション
             //  Web, Standard, Enterprise, Datacenter, Compute Cluster, Small Business, Storage Server
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows Server 2003",
                 OSFamily = OSFamily.Windows,
@@ -47,11 +47,11 @@ namespace OSVersion.Lib.Windows
                 IsEmbedded = false
             };
         }
-        public static OSInfo Create2003R2(Edition? edition)
+        public static OSVersionInfo Create2003R2(Edition? edition)
         {
             //  エディション
             //  Web, Standard, Enterprise, Datacenter, Compute Cluster, Small Business, Storage Server
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows Server 2003R2",
                 OSFamily = OSFamily.Windows,
@@ -67,11 +67,11 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create2008(Edition? edition)
+        public static OSVersionInfo Create2008(Edition? edition)
         {
             //  エディション
             //  Standard, Enterprise, Datacenter, Web, Storage Server, Small Business, Foundation
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows Server 2008",
                 OSFamily = OSFamily.Windows,
@@ -87,11 +87,11 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create2008R2(Edition? edition)
+        public static OSVersionInfo Create2008R2(Edition? edition)
         {
             //  エディション
             //  Web, Foundation, Standard, Enterprise, Datacenter
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows Server 2008R2",
                 OSFamily = OSFamily.Windows,
@@ -107,11 +107,11 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create2012(Edition? edition)
+        public static OSVersionInfo Create2012(Edition? edition)
         {
             //  エディション
             //  Foundation, Essentials, Standard, Datacenter
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows Server 2012",
                 OSFamily = OSFamily.Windows,
@@ -127,11 +127,11 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create2012R2(Edition? edition)
+        public static OSVersionInfo Create2012R2(Edition? edition)
         {
             //  エディション
             //  Essentials, Standard, Datacenter
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows Server 2012R2",
                 OSFamily = OSFamily.Windows,
@@ -147,11 +147,11 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create2016(Edition? edition)
+        public static OSVersionInfo Create2016(Edition? edition)
         {
             //  エディション
             //  Essentials, Standard, Datacenter
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows Server 2016",
                 OSFamily = OSFamily.Windows,
@@ -167,11 +167,11 @@ namespace OSVersion.Lib.Windows
             };
         }
 
-        public static OSInfo Create2019(Edition? edition)
+        public static OSVersionInfo Create2019(Edition? edition)
         {
             //  エディション
             //  Essentials, Standard, Datacenter
-            return new OSInfo()
+            return new OSVersionInfo()
             {
                 Name = "Windows Server 2019",
                 OSFamily = OSFamily.Windows,
