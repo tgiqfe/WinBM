@@ -24,7 +24,7 @@ namespace OSVersion.Config.Prepare
 
             if (!string.IsNullOrEmpty(_OSVersionInfoDBFile))
             {
-                Manager.Setting.PluginParam[Item.OSVERSION_OSINFODBFILE] = this._OSVersionInfoDBFile;
+                Manager.Setting.PluginParam[Item.OSVERSION_OSVERSIONINFODBFILE] = this._OSVersionInfoDBFile;
             }
 
             if (_Persistent)

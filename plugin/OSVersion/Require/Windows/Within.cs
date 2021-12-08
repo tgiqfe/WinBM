@@ -21,7 +21,7 @@ namespace OSVersion.Require.Windows
 
         public override void MainProcess()
         {
-            OSVersionInfoCollection collection = LoadOSInfoDB();
+            OSVersionInfoCollection collection = LoadOSVersionInfoDB();
 
             OSVersionInfo thisPC = OSVersionInfo.GetCurrent(collection);
 

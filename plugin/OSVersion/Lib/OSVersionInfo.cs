@@ -154,35 +154,17 @@ namespace OSVersion.Lib
         public static OSVersionInfo GetMinVersion()
         {
             return OSVersion.Lib.Other.MinMax.CreateMinimum();
-            /*
-            return family switch
-            {
-                OSFamily.Windows => Windows.MinMax.CreateMinimum(),
-                OSFamily.Mac => Mac.MinMax.CreateMinimum(),
-                OSFamily.Linux => Linux.MinMax.CreateMinimum(),
-                _ => null,
-            };
-            */
         }
 
         public static OSVersionInfo GetMaxVersion()
         {
             return OSVersion.Lib.Other.MinMax.CreateMaximum();
-            /*
-            return family switch
-            {
-                OSFamily.Windows => Windows.MinMax.CreateMaximum(),
-                OSFamily.Mac => Mac.MinMax.CreateMaximum(),
-                OSFamily.Linux => Linux.MinMax.CreateMaximum(),
-                _ => null,
-            };
-            */
         }
 
         #region GetCurrent method
 
         /// <summary>
-        /// 現在実行しているコンピュータのOSInfo
+        /// 現在実行しているコンピュータのOSVersionInfo
         /// </summary>
         /// <returns></returns>
         public static OSVersionInfo GetCurrent()
@@ -198,11 +180,11 @@ namespace OSVersion.Lib
             }
             else if (OperatingSystem.IsMacOS())
             {
-                return FindMac.GetOSInfo();
+                return FindMac.GetOSVersionInfo();
             }
             else if (OperatingSystem.IsLinux())
             {
-                return FindLinux.GetOSInfo();
+                return FindLinux.GetOSVersionInfo();
             }
             return null;
         }

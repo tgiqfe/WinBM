@@ -11,23 +11,23 @@ namespace OSVersion.Require
 {
     internal class OSVersionTaskRequire : TaskJob
     {
-        private static string _OSInfoDBFile = null;
+        private static string _OSVersionInfoDBFile = null;
 
-        protected OSVersionInfoCollection LoadOSInfoDB()
+        protected OSVersionInfoCollection LoadOSVersionInfoDB()
         {
-            if (_OSInfoDBFile == null)
+            if (_OSVersionInfoDBFile == null)
             {
-                if ((Manager.Setting.PluginParam?.ContainsKey(Item.OSVERSION_OSINFODBFILE) ?? false) &&
-                    !string.IsNullOrEmpty(Manager.Setting.PluginParam[Item.OSVERSION_OSINFODBFILE]))
+                if ((Manager.Setting.PluginParam?.ContainsKey(Item.OSVERSION_OSVERSIONINFODBFILE) ?? false) &&
+                    !string.IsNullOrEmpty(Manager.Setting.PluginParam[Item.OSVERSION_OSVERSIONINFODBFILE]))
                 {
-                    _OSInfoDBFile = Manager.Setting.PluginParam[Item.OSVERSION_OSINFODBFILE];
+                    _OSVersionInfoDBFile = Manager.Setting.PluginParam[Item.OSVERSION_OSVERSIONINFODBFILE];
                 }
                 else
                 {
-                    _OSInfoDBFile = Item.GetDefaultOSInfoDbFile();
+                    _OSVersionInfoDBFile = Item.GetDefaultOSVersionInfoDbFile();
                 }
             }
-            return OSVersionInfoCollection.Load(_OSInfoDBFile);
+            return OSVersionInfoCollection.Load(_OSVersionInfoDBFile);
         }
     }
 }
