@@ -87,15 +87,9 @@ job:
   - task: IO/File/Delete
     param:
       path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample*'
-  - task: Audit/File/Exists
+  - task: Audit/Directory/ChildCount
     param:
-      invert: true
-      path: |-
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample04.txt
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample05.txt
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample06.txt
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample07.txt
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample08.txt
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample09.txt
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample10.txt
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01'
+      empty: true
+
 
