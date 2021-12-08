@@ -34,12 +34,12 @@ namespace OSVersion.Lib
                     string minStr = text.Substring(0, text.IndexOf(DELIMITER));
                     string maxStr = text.Substring(text.IndexOf(DELIMITER) + 1);
                     OSInfo tempMin = minStr == "" ?
-                        OSInfo.GetMinVersion(_family) :
+                        OSInfo.GetMinVersion() :
                         OSInfo.TryParse(minStr, _family, out OSInfo outTempMin) ?
                             outTempMin :
                             null;
                     OSInfo tempMax = maxStr == "" ?
-                        OSInfo.GetMaxVersion(_family) :
+                        OSInfo.GetMaxVersion() :
                         OSInfo.TryParse(maxStr, _family, out OSInfo outTempMax) ?
                             outTempMax :
                             null;
@@ -64,9 +64,9 @@ namespace OSVersion.Lib
             if (Enabled)
             {
                 return string.Format("{0}{1}{2}",
-                    Min == OSInfo.GetMinVersion(_family) ? "" : Min.ToString(),
+                    Min == OSInfo.GetMinVersion() ? "" : Min.ToString(),
                     DELIMITER,
-                    Max == OSInfo.GetMaxVersion(_family) ? "" : Max.ToString());
+                    Max == OSInfo.GetMaxVersion() ? "" : Max.ToString());
             }
             return null;
         }

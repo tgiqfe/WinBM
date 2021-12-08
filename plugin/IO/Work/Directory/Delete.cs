@@ -73,14 +73,18 @@ namespace IO.Work.Directory
                 try
                 {
                     //  対話モードでない場合はゴミ箱に移動しない。
-                    RecycleOption recycleOption = Manager.Interactive && _Recycle ?
-                        RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently;
-
-                    FileSystem.DeleteDirectory(
-                        target,
-                        UIOption.OnlyErrorDialogs,
-                        recycleOption,
-                        UICancelOption.DoNothing);
+                    if (Manager.Interactive && _Recycle)
+                    {
+                        FileSystem.DeleteDirectory(
+                            target,
+                            UIOption.OnlyErrorDialogs,
+                            RecycleOption.SendToRecycleBin,
+                            UICancelOption.DoNothing);
+                    }
+                    else
+                    {
+                        System.IO.Directory.Delete(target);
+                    }
                     if (_Clear)
                     {
                         System.IO.Directory.CreateDirectory(target);

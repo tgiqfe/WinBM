@@ -67,11 +67,21 @@ namespace IO.Work.File
                 {
                     Manager.WriteLog(LogLevel.Info, "Remove readonly attribute: \"{0}\"", target);
                     new FileInfo(target).IsReadOnly = false;
-                    FileSystem.DeleteFile(
-                        target,
-                        UIOption.OnlyErrorDialogs,
-                        _Recycle ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently,
-                        UICancelOption.DoNothing);
+
+                    if (Manager.Interactive && _Recycle)
+                    {
+                        //  ゴミ箱に移動する場合。(読み取り専用でも移動可)
+                        FileSystem.DeleteFile(
+                            target,
+                            UIOption.OnlyErrorDialogs,
+                            RecycleOption.SendToRecycleBin,
+                            UICancelOption.DoNothing);
+                    }
+                    else
+                    {
+                        //  ゴミ箱に移動しない場合
+                        System.IO.File.Delete(target);
+                    }
                 }
             }
             catch (Exception e)

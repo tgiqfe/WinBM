@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+/*
 namespace OSVersion.Lib.Windows
 {
     internal class MinMax
@@ -45,3 +46,4 @@ namespace OSVersion.Lib.Windows
         }
     }
 }
+*/

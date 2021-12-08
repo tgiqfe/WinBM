@@ -151,8 +151,10 @@ namespace OSVersion.Lib
             return result is not null;
         }
 
-        public static OSInfo GetMinVersion(OSFamily family)
+        public static OSInfo GetMinVersion()
         {
+            return OSVersion.Lib.Other.MinMax.CreateMinimum();
+            /*
             return family switch
             {
                 OSFamily.Windows => Windows.MinMax.CreateMinimum(),
@@ -160,10 +162,13 @@ namespace OSVersion.Lib
                 OSFamily.Linux => Linux.MinMax.CreateMinimum(),
                 _ => null,
             };
+            */
         }
 
-        public static OSInfo GetMaxVersion(OSFamily family)
+        public static OSInfo GetMaxVersion()
         {
+            return OSVersion.Lib.Other.MinMax.CreateMaximum();
+            /*
             return family switch
             {
                 OSFamily.Windows => Windows.MinMax.CreateMaximum(),
@@ -171,6 +176,7 @@ namespace OSVersion.Lib
                 OSFamily.Linux => Linux.MinMax.CreateMaximum(),
                 _ => null,
             };
+            */
         }
 
         #region GetCurrent method
