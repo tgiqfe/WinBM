@@ -79,7 +79,6 @@ namespace OSVersion.Lib
 
             if (IsWindowsServer())
             {
-                //  Windows Serverのチェックをここで
                 return collection.
                     Where(x => x.OSFamily == OSFamily.Windows).
                     Where(x => x.IsServer).
