@@ -1,0 +1,96 @@
+---
+kind: Config
+metadata:
+  name: Configure
+  priority: 100
+config:
+  spec:
+  - task: Standard/Prepare/Setting
+    param:
+      plugins: |-
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Audit\bin\Debug\net6.0\Audit.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\IO\bin\Debug\net6.0\IO.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\OSVersion\bin\Debug\net6.0\OSVersion.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Standard\bin\Debug\net6.0\Standard.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Web\bin\Debug\net6.0\Web.dll
+
+---
+kind: Output
+metadata:
+  name: StandardOutput
+  priority: 100
+output:
+  spec:
+  - task: Standard/Console/StdOut
+  - task: Standard/Console/Log
+
+---
+kind: Job
+metadata:
+  name: OSVersionTest
+  description: OSVersionテスト
+  priority: 100
+job:
+  require:
+  - task: OSVersion/Windows/Within
+    failed: Abort
+    param:
+      range: 1903~
+  work:
+  - task: Standard/Execute/Command
+    param:
+      cmd: cmd
+      args: /c echo aaaa
+
+---
+kind: Job
+metadata:
+  name: TestRegCopy
+  description: ExcludeKeyのテスト
+  priority: 101
+job:
+  work:
+  - task: IO/Registry/Delete
+    param:
+      patah: 'HKEY_CURRENT_USER\SOFTWARE\Test\test_copy01'
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\test_copy01\Aaaa\SamSamSam'
+      name: Sample1
+      value: testtesttest
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\test_copy01\Aaaa\DomDomDom'
+      name: Sample2
+      value: 1234
+      type: REG_DWORD
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\test_copy01\Aaaa\KorKorKor'
+      name: Sample3
+      value: 5678
+      type: REG_QWORD
+  - task: IO/Registry/Copy
+    description: 除外キーを設定
+    param:
+      src: 'HKEY_CURRENT_USER\SOFTWARE\Test\test_copy01\Aaaa'
+      dst: 'HKEY_CURRENT_USER\SOFTWARE\Test\test_copy01\Aaaa_cp01'
+      exclude: 'HKEY_CURRENT_USER\SOFTWARE\Test\test_copy01\Aaaa\DomDomDom'
+  - task: IO/Registry/Copy
+    description: 除外キーは設定しない
+    param:
+      src: 'HKEY_CURRENT_USER\SOFTWARE\Test\test_copy01\Aaaa'
+      dst: 'HKEY_CURRENT_USER\SOFTWARE\Test\test_copy01\Aaaa_cp02'
+  - task: Audit/Registry/Compare
+    param:
+      src: 'HKEY_CURRENT_USER\SOFTWARE\Test\test_copy01\Aaaa'
+      dst: 'HKEY_CURRENT_USER\SOFTWARE\Test\test_copy01\Aaaa_cp01'
+      md5: true
+      invert: true
+  - task: Audit/Registry/Compare
+    param:
+      src: 'HKEY_CURRENT_USER\SOFTWARE\Test\test_copy01\Aaaa'
+      dst: 'HKEY_CURRENT_USER\SOFTWARE\Test\test_copy01\Aaaa_cp02'
+      md5: true
+
