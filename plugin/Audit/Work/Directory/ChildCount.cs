@@ -82,7 +82,7 @@ namespace Audit.Work.Directory
             dictionary[$"directory_{count}"] = target;
             string targetName = "directory";
 
-            int[] ret = MonitorChildCount.GetDirectoryChildCount(target);
+            int[] ret = Audit.Lib.Monitor.MonitorFunctions.GetDirectoryChildCount(target);
 
             if (_DirectoryCount != null)
             {

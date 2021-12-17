@@ -10,6 +10,7 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Security.Cryptography;
 using IO.Lib;
+using Audit.Lib.Monitor;
 
 namespace Audit.Work.File
 {
@@ -17,12 +18,12 @@ namespace Audit.Work.File
     internal class Compare : AuditTaskWork
     {
         [TaskParameter(Mandatory = true, ResolvEnv = true)]
-        [Keys("filea", "file1", "sourcepath", "srcpath", "src", "source", "path", "filepath")]
-        protected string _FileA { get; set; }
+        [Keys("filea", "file1", "sourcepath", "srcpath", "src", "source", "path", "filepath", "patha")]
+        protected string _PathA { get; set; }
 
         [TaskParameter(Mandatory = true, ResolvEnv = true)]
-        [Keys("fileb", "file2", "destinationpath", "dstpath", "dst", "destination")]
-        protected string _FileB { get; set; }
+        [Keys("fileb", "file2", "destinationpath", "dstpath", "dst", "destination", "pathb")]
+        protected string _PathB { get; set; }
 
         //  ################################
 
@@ -98,35 +99,91 @@ namespace Audit.Work.File
         [Keys("invert", "not", "no", "none")]
         protected bool _Invert { get; set; }
 
-        private int _serial = 0;
+        private int _serial = 1;
+
+        private MonitorTarget CreateForFile(string path, string pathTypeName)
+        {
+            return new MonitorTarget(IO.Lib.PathType.File, path)
+            {
+                PathTypeName = pathTypeName,
+                IsCreationTime = _IsCreationTime,
+                IsLastWriteTime = _IsLastWriteTime,
+                IsLastAccessTime = _IsLastAccessTime,
+                IsAccess = _IsAccess,
+                IsOwner = _IsOwner,
+                IsInherited = _IsInherited,
+                IsAttributes = _IsAttributes,
+                IsMD5Hash = _IsMD5Hash,
+                IsSHA256Hash = _IsSHA256Hash,
+                IsSHA512Hash = _IsSHA512Hash,
+                IsSize = _IsSize,
+                IsDateOnly = _IsDateOnly,
+                IsTimeOnly = _IsTimeOnly,
+            };
+        }
 
         public override void MainProcess()
         {
             var dictionary = new Dictionary<string, string>();
-            dictionary["fileA"] = _FileA;
-            dictionary["fileB"] = _FileB;
+            dictionary["fileA"] = _PathA;
+            dictionary["fileB"] = _PathB;
+            this.Success = true;
 
-            if (System.IO.File.Exists(_FileA) && System.IO.File.Exists(_FileB))
+            MonitorTarget targetA = CreateForFile(_PathA, "fileA");
+            MonitorTarget targetB = CreateForFile(_PathB, "fileB");
+            targetA.CheckExists();
+            targetB.CheckExists();
+
+            if ((targetA.Exists ?? false) && (targetB.Exists ?? false))
+            {
+                dictionary["fileA_Exists"] = _PathA;
+                dictionary["fileB_Exists"] = _PathB;
+                Success &= CompareFunctions.CheckFile(targetA, targetB, dictionary, _serial);
+            }
+            else
+            {
+                if (!targetA.Exists ?? false)
+                {
+                    dictionary["fileA_NotExists"] = _PathA;
+                    Success = false;
+                }
+                if (!targetB.Exists ?? false)
+                {
+                    dictionary["fileB_NotExists"] = _PathB;
+                    Success = false;
+                }
+            }
+        }
+
+
+        /*
+        public override void MainProcess()
+        {
+            var dictionary = new Dictionary<string, string>();
+            dictionary["fileA"] = _PathA;
+            dictionary["fileB"] = _PathB;
+
+            if (System.IO.File.Exists(_PathA) && System.IO.File.Exists(_PathB))
             {
                 this.Success = true;
 
                 _serial++;
-                if (_IsCreationTime ?? false) { Success &= CompareTimeStamp(_FileA, _FileB, dictionary, "creation"); }
-                if (_IsLastWriteTime ?? false) { Success &= CompareTimeStamp(_FileA, _FileB, dictionary, "lastwrite"); }
-                if (_IsLastAccessTime ?? false) { Success &= CompareTimeStamp(_FileA, _FileB, dictionary, "lastaccess"); }
-                if (_IsAccess ?? false) { Success &= CompareAccess(_FileA, _FileB, dictionary); }
-                if (_IsOwner ?? false) { Success &= CompareOwner(_FileA, _FileB, dictionary); }
-                if (_IsInherited ?? false) { Success &= ComparekInherited(_FileA, _FileB, dictionary); }
-                if (_IsAttributes ?? false) { Success &= CompareAttributes(_FileA, _FileB, dictionary); }
-                if (_IsMD5Hash ?? false) { Success &= ComparekHash(_FileA, _FileB, dictionary, "md5"); }
-                if (_IsSHA256Hash ?? false) { Success &= ComparekHash(_FileA, _FileB, dictionary, "sha256"); }
-                if (_IsSHA512Hash ?? false) { Success &= ComparekHash(_FileA, _FileB, dictionary, "sha512"); }
-                if (_IsSize ?? false) { Success &= CompareSize(_FileA, _FileB, dictionary); }
+                if (_IsCreationTime ?? false) { Success &= CompareTimeStamp(_PathA, _PathB, dictionary, "creation"); }
+                if (_IsLastWriteTime ?? false) { Success &= CompareTimeStamp(_PathA, _PathB, dictionary, "lastwrite"); }
+                if (_IsLastAccessTime ?? false) { Success &= CompareTimeStamp(_PathA, _PathB, dictionary, "lastaccess"); }
+                if (_IsAccess ?? false) { Success &= CompareAccess(_PathA, _PathB, dictionary); }
+                if (_IsOwner ?? false) { Success &= CompareOwner(_PathA, _PathB, dictionary); }
+                if (_IsInherited ?? false) { Success &= ComparekInherited(_PathA, _PathB, dictionary); }
+                if (_IsAttributes ?? false) { Success &= CompareAttributes(_PathA, _PathB, dictionary); }
+                if (_IsMD5Hash ?? false) { Success &= ComparekHash(_PathA, _PathB, dictionary, "md5"); }
+                if (_IsSHA256Hash ?? false) { Success &= ComparekHash(_PathA, _PathB, dictionary, "sha256"); }
+                if (_IsSHA512Hash ?? false) { Success &= ComparekHash(_PathA, _PathB, dictionary, "sha512"); }
+                if (_IsSize ?? false) { Success &= CompareSize(_PathA, _PathB, dictionary); }
             }
             else
             {
-                dictionary["NotExists_fileA"] = _FileA;
-                dictionary["NotExists_fileB"] = _FileB;
+                dictionary["NotExists_fileA"] = _PathA;
+                dictionary["NotExists_fileB"] = _PathB;
             }
 
             AddAudit(dictionary, this._Invert);
@@ -202,15 +259,6 @@ namespace Audit.Work.File
         /// <returns></returns>
         private bool CompareAccess(string fileA, string fileB, Dictionary<string, string> dictionary)
         {
-            /*
-            FileSecurity securityA = new System.IO.FileInfo(fileA).GetAccessControl();
-            FileSecurity securityB = new System.IO.FileInfo(fileB).GetAccessControl();
-
-            string ret_fileA = FileControl.AccessRulesToString(
-                securityA.GetAccessRules(true, false, typeof(NTAccount)));
-            string ret_fileB = FileControl.AccessRulesToString(
-                securityB.GetAccessRules(true, false, typeof(NTAccount)));
-            */
             string ret_fileA = AccessRuleSummary.FileToAccessString(fileA);
             string ret_fileB = AccessRuleSummary.FileToAccessString(fileB);
 
@@ -375,5 +423,6 @@ namespace Audit.Work.File
         }
 
         #endregion
+        */
     }
 }

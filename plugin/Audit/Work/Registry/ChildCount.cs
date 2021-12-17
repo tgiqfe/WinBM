@@ -92,7 +92,7 @@ namespace Audit.Work.Registry
             dictionary[$"directory_{count}"] = target.Name;
             string targetName = "registryKey";
 
-            int[] ret = MonitorChildCount.GetRegistryKeyChildCount(target);
+            int[] ret = Audit.Lib.Monitor.MonitorFunctions.GetRegistryKeyChildCount(target);
 
             if (_DirectoryCount != null)
             {

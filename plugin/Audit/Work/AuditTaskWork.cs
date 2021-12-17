@@ -8,6 +8,7 @@ using WinBM;
 using System.Diagnostics;
 using System.IO;
 using System.Text.Json;
+using Audit.Lib.Monitor;
 
 namespace Audit.Work
 {
@@ -173,6 +174,24 @@ namespace Audit.Work
         #endregion
         #region Load/Save WatchDB
 
+        protected string GetWatchDBDirectory()
+        {
+            if (_WatchDBDir == null)
+            {
+                if ((Manager.Setting.PluginParam?.ContainsKey(Item.AUDIT_WATCHDBDIR) ?? false) &&
+                    !string.IsNullOrEmpty(Manager.Setting.PluginParam[Item.AUDIT_WATCHDBDIR]))
+                {
+                    _WatchDBDir = Manager.Setting.PluginParam[Item.AUDIT_WATCHDBDIR];
+                }
+                else
+                {
+                    _WatchDBDir = Item.GetDefaultWatchDBDir();
+                }
+            }
+            return _WatchDBDir;
+        }
+
+        /*
         protected Audit.Lib.WatchPathCollection LoadWatchDB(string id)
         {
             if (_WatchDBDir == null)
@@ -191,7 +210,9 @@ namespace Audit.Work
             }
             return Audit.Lib.WatchPathCollection.Load(_WatchDBDir, id);
         }
+        */
 
+        /*
         protected void SaveWatchDB(Audit.Lib.WatchPathCollection collection, string id)
         {
             if (_WatchDBDir == null)
@@ -210,6 +231,7 @@ namespace Audit.Work
             }
             collection.Save(_WatchDBDir, id);
         }
+        */
 
         #endregion
     }

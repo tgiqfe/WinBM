@@ -10,6 +10,7 @@ using System.Security.Principal;
 using System.Security.AccessControl;
 using System.Security.Cryptography;
 using IO.Lib;
+using Audit.Lib.Monitor;
 
 namespace Audit.Work.Directory
 {
@@ -17,12 +18,12 @@ namespace Audit.Work.Directory
     internal class Compare : AuditTaskWork
     {
         [TaskParameter(Mandatory = true, ResolvEnv = true)]
-        [Keys("directorya", "directory1", "dira", "dir2", "sourcepath", "srcpath", "src", "source", "path", "directorypath")]
-        protected string _DirectoryA { get; set; }
+        [Keys("directorya", "directory1", "dira", "dir2", "sourcepath", "srcpath", "src", "source", "path", "directorypath", "patha")]
+        protected string _PathA { get; set; }
 
         [TaskParameter(Mandatory = true, ResolvEnv = true)]
-        [Keys("directoryb", "directory2", "dirb", "dir2", "destinationpath", "dstpath", "dst", "destination")]
-        protected string _DirectoryB { get; set; }
+        [Keys("directoryb", "directory2", "dirb", "dir2", "destinationpath", "dstpath", "dst", "destination", "pathb")]
+        protected string _PathB { get; set; }
 
         //  ################################
 
@@ -107,6 +108,47 @@ namespace Audit.Work.Directory
         protected bool _Invert { get; set; }
 
         private int _serial = 0;
+        private string _checkingPathA;
+        private string _checkingPathB;
+
+        private MonitorTarget CreateForFile(string path, string pathTypeName)
+        {
+            return new MonitorTarget(PathType.File, path)
+            {
+                PathTypeName = pathTypeName,
+                IsCreationTime = _IsCreationTime,
+                IsLastWriteTime = _IsLastWriteTime,
+                IsLastAccessTime = _IsLastAccessTime,
+                IsAccess = _IsAccess,
+                IsOwner = _IsOwner,
+                IsInherited = _IsInherited,
+                IsAttributes = _IsAttributes,
+                IsMD5Hash = _IsMD5Hash,
+                IsSHA256Hash = _IsSHA256Hash,
+                IsSHA512Hash = _IsSHA512Hash,
+                IsSize = _IsSize,
+                IsDateOnly = _IsDateOnly,
+                IsTimeOnly = _IsTimeOnly,
+            };
+        }
+
+        private MonitorTarget CreateForDirectory(string path, string pathTypeName)
+        {
+            return new MonitorTarget(PathType.File, path)
+            {
+                PathTypeName = pathTypeName,
+                IsCreationTime = _IsCreationTime,
+                IsLastWriteTime = _IsLastWriteTime,
+                IsLastAccessTime = _IsLastAccessTime,
+                IsAccess = _IsAccess,
+                IsOwner = _IsOwner,
+                IsInherited = _IsInherited,
+                IsAttributes = _IsAttributes,
+                IsChildCount = _IsChildCount,
+                IsDateOnly = _IsDateOnly,
+                IsTimeOnly = _IsTimeOnly,
+            };
+        }
 
         public override void MainProcess()
         {
@@ -114,18 +156,98 @@ namespace Audit.Work.Directory
             _MaxDepth ??= 5;
 
             var dictionary = new Dictionary<string, string>();
-            dictionary["DirectoryA"] = _DirectoryA;
-            dictionary["DirectoryB"] = _DirectoryB;
+            dictionary["directoryA"] = _PathA;
+            dictionary["directoryB"] = _PathB;
+            this.Success = true;
 
-            if (System.IO.Directory.Exists(_DirectoryA) && System.IO.Directory.Exists(_DirectoryB))
+            _checkingPathA = _PathA;
+            _checkingPathB = _PathB;
+            Success &= RecursiveTree(_PathA, _PathB, dictionary, 0);
+        }
+
+        private bool RecursiveTree(string pathA, string pathB, Dictionary<string, string> dictionary, int depth)
+        {
+            bool ret = true;
+
+            _serial++;
+            MonitorTarget targetA = CreateForDirectory(pathA, "directoryA");
+            MonitorTarget targetB = CreateForDirectory(pathB, "directoryB");
+            targetA.CheckExists();
+            targetB.CheckExists();
+            if ((targetA.Exists ?? false) && (targetB.Exists ?? false))
             {
-                this.Success = true;
-                RecursiveTree(_DirectoryA, _DirectoryB, dictionary, 0);
+                dictionary[$"directoryA_Exists_{_serial}"] = _PathA;
+                dictionary[$"directoryB_Exists_{_serial}"] = _PathB;
+                ret &= CompareFunctions.CheckDirectory(targetA, targetB, dictionary, _serial, depth);
+
+                if (depth < _MaxDepth)
+                {
+                    foreach (string childPathA in System.IO.Directory.GetFiles(pathA))
+                    {
+                        _serial++;
+                        string childPathB = Path.Combine(pathB, Path.GetFileName(childPathA));
+                        MonitorTarget targetA_leaf = CreateForFile(childPathA, "file");
+                        MonitorTarget targetB_leaf = CreateForFile(childPathB, "file");
+                        targetA_leaf.CheckExists();
+                        targetB_leaf.CheckExists();
+
+                        if (targetB_leaf.Exists ?? false)
+                        {
+                            ret &= CompareFunctions.CheckFile(targetA_leaf, targetB_leaf, dictionary, _serial);
+                        }
+                        else
+                        {
+                            dictionary[$"fileB_NotExists_{_serial}"] = childPathB;
+                            ret = false;
+                        }
+                    }
+                    foreach (string childPath in System.IO.Directory.GetDirectories(pathA))
+                    {
+                        RecursiveTree(
+                            childPath,
+                            Path.Combine(pathB, Path.GetFileName(childPath)),
+                            dictionary,
+                            _serial);
+                    }
+                }
             }
             else
             {
-                dictionary["NotExists_directoryA"] = _DirectoryA;
-                dictionary["NotExists_directoryB"] = _DirectoryB;
+                if (!targetA.Exists ?? false)
+                {
+                    dictionary[$"directoryA_NotExists_{_serial}"] = pathA;
+                    ret = false;
+                }
+                if (!targetB.Exists ?? false)
+                {
+                    dictionary[$"directoryB_NotExists_{_serial}"] = pathB;
+                    ret = false;
+                }
+            }
+
+            return ret;
+        }
+
+
+        /*
+        public override void MainProcess()
+        {
+            //  MaxDepth無指定の場合は[5]をセット
+            _MaxDepth ??= 5;
+
+            var dictionary = new Dictionary<string, string>();
+            dictionary["DirectoryA"] = _PathA;
+            dictionary["DirectoryB"] = _PathB;
+
+            if (System.IO.Directory.Exists(_PathA) && System.IO.Directory.Exists(_PathB))
+            {
+                this.Success = true;
+                RecursiveTree(_PathA, _PathB, dictionary, 0);
+            }
+            else
+            {
+                dictionary["NotExists_directoryA"] = _PathA;
+                dictionary["NotExists_directoryB"] = _PathB;
             }
 
             AddAudit(dictionary, this._Invert);
@@ -134,7 +256,7 @@ namespace Audit.Work.Directory
         private void RecursiveTree(string targetDirA, string targetDirB, Dictionary<string, string> dictionary, int depth)
         {
             //  ディレクトリ情報の比較
-            string checkPath = targetDirA.Replace(_DirectoryA, "");
+            string checkPath = targetDirA.Replace(_PathA, "");
             _serial++;
             dictionary[$"Directory_{_serial}"] = checkPath;
 
@@ -156,7 +278,7 @@ namespace Audit.Work.Directory
                 foreach (string pathA in System.IO.Directory.GetFiles(targetDirA))
                 {
                     string pathB = Path.Combine(targetDirB, Path.GetFileName(pathA));
-                    string checkFilePath = pathA.Replace(_DirectoryA, "");
+                    string checkFilePath = pathA.Replace(_PathA, "");
 
                     _serial++;
                     dictionary[$"File_{_serial}"] = checkFilePath;
@@ -326,15 +448,6 @@ namespace Audit.Work.Directory
         /// <returns></returns>
         private bool CompareAccess_dir(string dirA, string dirB, Dictionary<string, string> dictionary)
         {
-            /*
-            DirectorySecurity securityA = new System.IO.DirectoryInfo(dirA).GetAccessControl();
-            DirectorySecurity securityB = new System.IO.DirectoryInfo(dirB).GetAccessControl();
-
-            string ret_dirA = DirectoryControl.AccessRulesToString(
-                securityA.GetAccessRules(true, false, typeof(NTAccount)));
-            string ret_dirB = DirectoryControl.AccessRulesToString(
-                securityB.GetAccessRules(true, false, typeof(NTAccount)));
-            */
             string ret_dirA = AccessRuleSummary.DirectoryToAccessString(dirA);
             string ret_dirB = AccessRuleSummary.DirectoryToAccessString(dirB);
 
@@ -346,15 +459,6 @@ namespace Audit.Work.Directory
 
         private bool CompareAccess(string fileA, string fileB, Dictionary<string, string> dictionary)
         {
-            /*
-            FileSecurity securityA = new System.IO.FileInfo(fileA).GetAccessControl();
-            FileSecurity securityB = new System.IO.FileInfo(fileB).GetAccessControl();
-
-            string ret_fileA = FileControl.AccessRulesToString(
-                securityA.GetAccessRules(true, false, typeof(NTAccount)));
-            string ret_fileB = FileControl.AccessRulesToString(
-                securityB.GetAccessRules(true, false, typeof(NTAccount)));
-            */
             string ret_fileA = AccessRuleSummary.FileToAccessString(fileA);
             string ret_fileB = AccessRuleSummary.FileToAccessString(fileB);
 
@@ -589,5 +693,7 @@ namespace Audit.Work.Directory
         }
 
         #endregion
+
+        */
     }
 }

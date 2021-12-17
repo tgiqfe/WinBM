@@ -10,6 +10,7 @@ using IO.Lib;
 using System.Security.Cryptography;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using Audit.Lib.Monitor;
 
 namespace Audit.Work.Registry
 {
@@ -17,20 +18,20 @@ namespace Audit.Work.Registry
     internal class Compare : AuditTaskWork
     {
         [TaskParameter(Mandatory = true, ResolvEnv = true)]
-        [Keys("keya", "key1", "registrykeya", "registrykey2", "registrya", "registry1", "rega", "reg1", "sourcepath", "srcpath", "src", "source", "path", "registrypath")]
-        protected string _RegistryPathA { get; set; }
+        [Keys("keya", "key1", "registrykeya", "registrykey2", "registrya", "registry1", "rega", "reg1", "sourcepath", "srcpath", "src", "source", "path", "registrypath", "patha")]
+        protected string _PathA { get; set; }
 
         [TaskParameter(Mandatory = true, ResolvEnv = true)]
-        [Keys("keyb", "key2", "registrykeyb", "registrykey2", "registryb", "registry2", "regb", "reg2", "destinationpath", "dstpath", "dst", "destination")]
-        protected string _RegistryPathB { get; set; }
+        [Keys("keyb", "key2", "registrykeyb", "registrykey2", "registryb", "registry2", "regb", "reg2", "destinationpath", "dstpath", "dst", "destination", "pathb")]
+        protected string _PathB { get; set; }
 
         [TaskParameter(ResolvEnv = true)]
         [Keys("namea", "name1", "sourcename", "srcname", "registryname", "regname", "paramname")]
-        protected string _RegistryNameA { get; set; }
+        protected string _NameA { get; set; }
 
         [TaskParameter(ResolvEnv = true)]
         [Keys("nameb", "name2", "destinationname", "dstname")]
-        protected string _RegistryNameB { get; set; }
+        protected string _NameB { get; set; }
 
         //  ################################
 
@@ -84,6 +85,143 @@ namespace Audit.Work.Registry
         protected bool _Invert { get; set; }
 
         private int _serial = 0;
+        private string _checkingPathA;
+        private string _checkingPathB;
+
+        private MonitorTarget CreateForRegistryKey(RegistryKey key, string pathTypeName)
+        {
+            return new MonitorTarget(PathType.Registry, key)
+            {
+                PathTypeName = pathTypeName,
+                IsAccess = _IsAccess,
+                IsOwner = _IsOwner,
+                IsInherited = _IsInherited,
+                IsChildCount = _IsChildCount,
+            };
+        }
+
+        private MonitorTarget CreateForRegistryValue(RegistryKey key, string name, string pathTypeName)
+        {
+            return new MonitorTarget(PathType.Registry, key, name)
+            {
+                PathTypeName = pathTypeName,
+                IsMD5Hash = _IsMD5Hash,
+                IsSHA256Hash = _IsSHA256Hash,
+                IsSHA512Hash = _IsSHA512Hash,
+                IsRegistryType = _IsRegistryType,
+            };
+        }
+
+        public override void MainProcess()
+        {
+            //  MaxDepth無指定の場合は[5]をセット
+            _MaxDepth ??= 5;
+
+            var dictionary = new Dictionary<string, string>();
+            this.Success = true;
+
+            if (_NameA != null && _NameB != null)
+            {
+                _serial++;
+                using (RegistryKey keyA = RegistryControl.GetRegistryKey(_PathA, false, false))
+                using (RegistryKey keyB = RegistryControl.GetRegistryKey(_PathB, false, false))
+                {
+                    MonitorTarget targetA = CreateForRegistryValue(keyA, _NameA, "registryA");
+                    MonitorTarget targetB = CreateForRegistryValue(keyB, _NameB, "registryB");
+                    targetA.CheckExists();
+                    targetB.CheckExists();
+
+                    if ((targetA.Exists ?? false) && (targetB.Exists ?? false))
+                    {
+                        dictionary["registryA_Exists"] = _PathA + "\\" + _NameA;
+                        dictionary["registryB_Exists"] = _PathB + "\\" + _NameB;
+                        Success &= CompareFunctions.CheckRegistryValue(targetA, targetB, dictionary, _serial);
+                    }
+                    else
+                    {
+                        if (!targetA.Exists ?? false)
+                        {
+                            dictionary["registryA_NotExists"] = _PathA;
+                            Success = false;
+                        }
+                        if (!targetB.Exists ?? false)
+                        {
+                            dictionary["registryB_NotExists"] = _PathB;
+                            Success = false;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                _checkingPathA = _PathA;
+                _checkingPathB = _PathB;
+                using (RegistryKey keyA = RegistryControl.GetRegistryKey(_PathA, false, false))
+                using (RegistryKey keyB = RegistryControl.GetRegistryKey(_PathB, false, false))
+                {
+                    Success &= RecursiveTree(keyA, keyB, dictionary, 0);
+                }
+            }
+        }
+
+        private bool RecursiveTree(RegistryKey keyA, RegistryKey keyB, Dictionary<string, string> dictionary, int depth)
+        {
+            bool ret = false;
+
+            _serial++;
+            MonitorTarget targetA = CreateForRegistryKey(keyA, "registryA");
+            MonitorTarget targetB = CreateForRegistryKey(keyB, "registryB");
+            targetA.CheckExists();
+            targetB.CheckExists();
+            if ((targetA.Exists ?? false) && (targetB.Exists ?? false))
+            {
+                dictionary[$"registryA_Exists_{_serial}"] = keyA.Name;
+                dictionary[$"registryB_Exists_{_serial}"] = keyB.Name;
+                ret &= CompareFunctions.CheckRegistryKey(targetA, targetB, dictionary, _serial, depth);
+
+                if (depth < _MaxDepth)
+                {
+                    foreach (string childName in keyA.GetValueNames())
+                    {
+                        _serial++;
+                        MonitorTarget targetA_leaf = CreateForRegistryValue(keyA, childName, "registryA");
+                        MonitorTarget targetB_leaf = CreateForRegistryValue(keyB, childName, "registryB");
+                        targetA_leaf.CheckExists();
+                        targetB_leaf.CheckExists();
+
+                        if (targetB_leaf.Exists ?? false)
+                        {
+                            dictionary["registryA_Exists"] = targetA_leaf.Path + "\\" + targetA_leaf.Name;
+                            dictionary["registryB_Exists"] = targetB_leaf.Path + "\\" + targetB_leaf.Name;
+                            ret &= CompareFunctions.CheckRegistryValue(targetA_leaf, targetB_leaf, dictionary, _serial);
+                        }
+                        else
+                        {
+                            dictionary[$"registryB_NotExists_{_serial}"] = keyB.Name + "\\" + childName;
+                            ret = false;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (!targetA.Exists ?? false)
+                {
+                    dictionary[$"registryA_NotExists_{_serial}"] = keyA.Name;
+                    ret = false;
+                }
+                if (!targetB.Exists ?? false)
+                {
+                    dictionary[$"registryB_NotExists_{_serial}"] = keyB.Name;
+                    ret = false;
+                }
+            }
+
+            return ret;
+        }
+
+
+        /*
 
         public override void MainProcess()
         {
@@ -91,33 +229,33 @@ namespace Audit.Work.Registry
             _MaxDepth ??= 5;
 
             var dictionary = new Dictionary<string, string>();
-            dictionary["keyA"] = _RegistryPathA;
-            dictionary["keyB"] = _RegistryPathB;
-            if (!string.IsNullOrEmpty(_RegistryNameA))
+            dictionary["keyA"] = _PathA;
+            dictionary["keyB"] = _PathB;
+            if (!string.IsNullOrEmpty(_NameA))
             {
-                _RegistryNameB ??= _RegistryNameA;
-                dictionary["nameA"] = _RegistryNameA;
-                dictionary["nameB"] = _RegistryNameB;
+                _NameB ??= _NameA;
+                dictionary["nameA"] = _NameA;
+                dictionary["nameB"] = _NameB;
             }
 
-            using (var regKeyA = RegistryControl.GetRegistryKey(_RegistryPathA, false, false))
-            using (var regKeyB = RegistryControl.GetRegistryKey(_RegistryPathB, false, false))
+            using (var regKeyA = RegistryControl.GetRegistryKey(_PathA, false, false))
+            using (var regKeyB = RegistryControl.GetRegistryKey(_PathB, false, false))
             {
                 bool bothExist = true;
                 if (regKeyA == null)
                 {
-                    dictionary["NotExists_keyA"] = _RegistryPathA;
+                    dictionary["NotExists_keyA"] = _PathA;
                     bothExist = false;
                 }
                 if (regKeyB == null)
                 {
-                    dictionary["NotExists_keyB"] = _RegistryPathB;
+                    dictionary["NotExists_keyB"] = _PathB;
                     bothExist = false;
                 }
                 if (bothExist)
                 {
                     this.Success = true;
-                    if (string.IsNullOrEmpty(_RegistryNameA))
+                    if (string.IsNullOrEmpty(_NameA))
                     {
                         //  レジストリキーチェック
                         RecursiveTree(regKeyA, regKeyB, dictionary, 0);
@@ -125,19 +263,19 @@ namespace Audit.Work.Registry
                     else
                     {
                         //  レジストリ値のみチェック
-                        if (regKeyA.GetValueNames().Any(x => x.Equals(_RegistryNameA)) &&
-                            regKeyB.GetValueNames().Any(x => x.Equals(_RegistryNameB)))
+                        if (regKeyA.GetValueNames().Any(x => x.Equals(_NameA)) &&
+                            regKeyB.GetValueNames().Any(x => x.Equals(_NameB)))
                         {
                             _serial++;
-                            if (_IsRegistryType ?? false) { Success &= CompareType(regKeyA, regKeyB, _RegistryNameA, _RegistryNameB, dictionary); }
-                            if (_IsMD5Hash ?? false) { Success &= CompareHash(regKeyA, regKeyB, _RegistryNameA, _RegistryNameB, dictionary, "md5"); }
-                            if (_IsSHA256Hash ?? false) { Success &= CompareHash(regKeyA, regKeyB, _RegistryNameA, _RegistryNameB, dictionary, "sha256"); }
-                            if (_IsSHA512Hash ?? false) { Success &= CompareHash(regKeyA, regKeyB, _RegistryNameA, _RegistryNameB, dictionary, "sha512"); }
+                            if (_IsRegistryType ?? false) { Success &= CompareType(regKeyA, regKeyB, _NameA, _NameB, dictionary); }
+                            if (_IsMD5Hash ?? false) { Success &= CompareHash(regKeyA, regKeyB, _NameA, _NameB, dictionary, "md5"); }
+                            if (_IsSHA256Hash ?? false) { Success &= CompareHash(regKeyA, regKeyB, _NameA, _NameB, dictionary, "sha256"); }
+                            if (_IsSHA512Hash ?? false) { Success &= CompareHash(regKeyA, regKeyB, _NameA, _NameB, dictionary, "sha512"); }
                         }
                         else
                         {
-                            dictionary["NotExists_nameA"] = _RegistryNameA;
-                            dictionary["NotExists_nameB"] = _RegistryNameB;
+                            dictionary["NotExists_nameA"] = _NameA;
+                            dictionary["NotExists_nameB"] = _NameB;
                         }
                     }
                 }
@@ -149,7 +287,7 @@ namespace Audit.Work.Registry
         private void RecursiveTree(RegistryKey targetKeyA, RegistryKey targetKeyB, Dictionary<string, string> dictionary, int depth)
         {
             //  レジストリキー情報の比較
-            string checkKeyPath = targetKeyA.Name.Replace(_RegistryPathA, "");
+            string checkKeyPath = targetKeyA.Name.Replace(_PathA, "");
             _serial++;
             dictionary[$"RegistryKey_{_serial}"] = checkKeyPath;
 
@@ -217,16 +355,6 @@ namespace Audit.Work.Registry
         /// <returns></returns>
         private bool CompareAccess(RegistryKey regKeyA, RegistryKey regKeyB, Dictionary<string, string> dictionary)
         {
-            /*
-            RegistrySecurity securityA = regKeyA.GetAccessControl();
-            RegistrySecurity securityB = regKeyB.GetAccessControl();
-
-            string ret_keyA = RegistryControl.AccessRulesToString(
-                securityA.GetAccessRules(true, false, typeof(NTAccount)));
-            string ret_keyB = RegistryControl.AccessRulesToString(
-                securityB.GetAccessRules(true, false, typeof(NTAccount)));
-            */
-
             string ret_keyA = AccessRuleSummary.RegistryKeyToAccessString(regKeyA);
             string ret_keyB = AccessRuleSummary.RegistryKeyToAccessString(regKeyB);
 
@@ -394,5 +522,7 @@ namespace Audit.Work.Registry
         }
 
         #endregion
+
+        */
     }
 }

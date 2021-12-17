@@ -7,6 +7,7 @@ using Audit.Lib;
 using WinBM;
 using WinBM.Task;
 using IO.Lib;
+using Audit.Lib.Monitor;
 
 namespace Audit.Work.File
 {
@@ -23,53 +24,49 @@ namespace Audit.Work.File
 
         //  ################################
 
-        [TaskParameter(MandatoryAny = 1)]
+        [TaskParameter]
         [Keys("iscreationtime", "creationtime", "creation", "iscreationdate", "creationdate")]
         protected bool? _IsCreationTime { get; set; }
 
-        [TaskParameter(MandatoryAny = 2)]
+        [TaskParameter]
         [Keys("islastwritetime", "lastwritetime", "lastwrite", "islastwritedate", "lastwritedate", "modifytime", "modifydate", "modtime", "moddate")]
         protected bool? _IsLastWriteTime { get; set; }
 
-        [TaskParameter(MandatoryAny = 3)]
+        [TaskParameter]
         [Keys("islastaccesstime", "lastaccesstime", "lastaccess", "lastaccessdate", "lastaccess")]
         protected bool? _IsLastAccessTime { get; set; }
 
-        [TaskParameter(MandatoryAny = 4)]
+        [TaskParameter]
         [Keys("isaccess", "access", "acl")]
         protected bool? _IsAccess { get; set; }
 
-        [TaskParameter(MandatoryAny = 5)]
+        [TaskParameter]
         [Keys("isowner", "owner", "own")]
         protected bool? _IsOwner { get; set; }
 
-        [TaskParameter(MandatoryAny = 6)]
+        [TaskParameter]
         [Keys("isinherited", "inherited", "inherit", "inheritance")]
         protected bool? _IsInherited { get; set; }
 
-        [TaskParameter(MandatoryAny = 7)]
+        [TaskParameter]
         [Keys("isattributes", "isattribute", "attributes", "attribute", "attribs", "attrib", "attrs", "attr")]
         protected bool? _IsAttributes { get; set; }
 
-        [TaskParameter(MandatoryAny = 8)]
+        [TaskParameter]
         [Keys("ismd5hash", "md5hash", "md5")]
         protected bool? _IsMD5Hash { get; set; }
 
-        [TaskParameter(MandatoryAny = 9)]
+        [TaskParameter]
         [Keys("issha256hash", "sha256hash", "sha256", "hash")]
         protected bool? _IsSHA256Hash { get; set; }
 
-        [TaskParameter(MandatoryAny = 10)]
+        [TaskParameter]
         [Keys("issha512hash", "sha512hash", "sha512")]
         protected bool? _IsSHA512Hash { get; set; }
 
-        [TaskParameter(MandatoryAny = 11)]
+        [TaskParameter]
         [Keys("issize", "size")]
         protected bool? _IsSize { get; set; }
-
-        [TaskParameter(MandatoryAny = 12)]
-        [Keys("isexists", "exists", "exist")]
-        protected bool? _IsExists { get; set; }
 
         //  ################################
 
@@ -89,8 +86,58 @@ namespace Audit.Work.File
         [Keys("invert", "not", "no", "none")]
         protected bool _Invert { get; set; }
 
-        private int _serial;
+        private int _serial = 1;
 
+        private MonitorTarget CreateForFile(string path, string pathTypeName)
+        {
+            return new MonitorTarget(IO.Lib.PathType.File, path)
+            {
+                PathTypeName = pathTypeName,
+                IsCreationTime = _IsCreationTime,
+                IsLastWriteTime = _IsLastWriteTime,
+                IsLastAccessTime = _IsLastAccessTime,
+                IsAccess = _IsAccess,
+                IsOwner = _IsOwner,
+                IsInherited = _IsInherited,
+                IsAttributes = _IsAttributes,
+                IsMD5Hash = _IsMD5Hash,
+                IsSHA256Hash = _IsSHA256Hash,
+                IsSHA512Hash = _IsSHA512Hash,
+                IsSize = _IsSize,
+                IsDateOnly = _IsDateOnly,
+                IsTimeOnly = _IsTimeOnly,
+            };
+        }
+
+        public override void MainProcess()
+        {
+            var dictionary = new Dictionary<string, string>();
+            var collection = MonitorTargetCollection.Load(GetWatchDBDirectory(), _Id);
+
+            foreach (string path in _Path)
+            {
+                _serial++;
+                dictionary[$"file_{_serial}"] = path;
+                MonitorTarget target_db = _Begin ?
+                    CreateForFile(path, "file") :
+                    collection.GetMonitoredTarget(path) ?? CreateForFile(path, "file");
+
+                MonitorTarget target_monitor = CreateForFile(path, "file");
+                target_monitor.Merge_is_Property(target_db);
+                target_monitor.CheckExists();
+
+                if (target_monitor.Exists ?? false)
+                {
+                    Success |= WatchFunctions.CheckFile(target_monitor, target_db, dictionary, _serial);
+                }
+                collection.SetMonitoredTarget(path, target_monitor);
+            }
+            collection.Save(GetWatchDBDirectory(), _Id);
+        }
+
+
+
+        /*
         public override void MainProcess()
         {
             var dictionary = new Dictionary<string, string>();
@@ -206,5 +253,7 @@ namespace Audit.Work.File
         }
 
         #endregion
+
+        */
     }
 }
