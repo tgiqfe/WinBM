@@ -120,7 +120,7 @@ namespace Audit.Work.Directory
 
         private MonitorTarget CreateForDirectory(string path, string pathTypeName)
         {
-            return new MonitorTarget(PathType.File, path)
+            return new MonitorTarget(PathType.Directory, path)
             {
                 PathTypeName = pathTypeName,
                 IsCreationTime = _IsCreationTime,

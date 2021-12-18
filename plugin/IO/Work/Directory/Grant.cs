@@ -35,7 +35,7 @@ namespace IO.Work.Directory
         protected FileSystemRights? _Rights { get; set; }
 
         [TaskParameter]
-        [Keys("accesscontrol", "acccontrol", "accctrl", "accessctrl", "acl")]
+        [Keys("accesscontrol", "acccontrol", "accctrl", "accessctrl", "acl", "accesscontroltype", "acltype")]
         [Values("allow,arrow", "deny,denied")]
         protected AccessControlType _AccessControl { get; set; }
 
@@ -177,5 +177,13 @@ namespace IO.Work.Directory
                 this.Success = false;
             }
         }
+    }
+
+    /// <summary>
+    /// Grantへのエイリアス
+    /// </summary>
+    internal class Access : Grant
+    {
+        protected override bool IsAlias { get { return true; } }
     }
 }

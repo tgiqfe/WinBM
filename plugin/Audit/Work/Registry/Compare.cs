@@ -70,7 +70,7 @@ namespace Audit.Work.Registry
         /// <summary>
         /// 存在チェックのみに使用するパラメータ。その他の比較処理の過程で確認できる為、Exists用の特別な作業は無し
         /// </summary>
-        [TaskParameter(MandatoryAny = 8)]
+        [TaskParameter(MandatoryAny = 9)]
         [Keys("isexists", "exists", "exist")]
         protected bool? _IsExists { get; set; }
 
@@ -85,8 +85,6 @@ namespace Audit.Work.Registry
         protected bool _Invert { get; set; }
 
         private int _serial = 0;
-        private string _checkingPathA;
-        private string _checkingPathB;
 
         private MonitorTarget CreateForRegistryKey(RegistryKey key, string pathTypeName)
         {
@@ -154,8 +152,6 @@ namespace Audit.Work.Registry
             }
             else
             {
-                _checkingPathA = _PathA;
-                _checkingPathB = _PathB;
                 using (RegistryKey keyA = RegistryControl.GetRegistryKey(_PathA, false, false))
                 using (RegistryKey keyB = RegistryControl.GetRegistryKey(_PathB, false, false))
                 {
@@ -177,8 +173,8 @@ namespace Audit.Work.Registry
             targetB.CheckExists();
             if ((targetA.Exists ?? false) && (targetB.Exists ?? false))
             {
-                dictionary[$"registryA_Exists_{_serial}"] = keyA.Name;
-                dictionary[$"registryB_Exists_{_serial}"] = keyB.Name;
+                dictionary[$"{_serial}_registryA_Exists"] = keyA.Name;
+                dictionary[$"{_serial}_registryB_Exists"] = keyB.Name;
                 ret &= CompareFunctions.CheckRegistryKey(targetA, targetB, dictionary, _serial, depth);
 
                 if (depth < _MaxDepth)
@@ -199,8 +195,16 @@ namespace Audit.Work.Registry
                         }
                         else
                         {
-                            dictionary[$"registryB_NotExists_{_serial}"] = keyB.Name + "\\" + childName;
+                            dictionary[$"{_serial}_registryB_NotExists"] = keyB.Name + "\\" + childName;
                             ret = false;
+                        }
+                    }
+                    foreach (string keyPath in keyA.GetSubKeyNames())
+                    {
+                        using (RegistryKey subRegKeyA = keyA.OpenSubKey(keyPath, false))
+                        using (RegistryKey subRegKeyB = keyB.OpenSubKey(keyPath, false))
+                        {
+                            ret &= RecursiveTree(subRegKeyA, subRegKeyB, dictionary, depth + 1);
                         }
                     }
                 }
@@ -209,12 +213,12 @@ namespace Audit.Work.Registry
             {
                 if (!targetA.Exists ?? false)
                 {
-                    dictionary[$"registryA_NotExists_{_serial}"] = keyA.Name;
+                    dictionary[$"{_serial}_registryA_NotExists"] = keyA.Name;
                     ret = false;
                 }
                 if (!targetB.Exists ?? false)
                 {
-                    dictionary[$"registryB_NotExists_{_serial}"] = keyB.Name;
+                    dictionary[$"{_serial}_registryB_NotExists"] = keyB.Name;
                     ret = false;
                 }
             }

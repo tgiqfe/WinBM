@@ -78,7 +78,7 @@ namespace Audit.Work.Directory
         /// <summary>
         /// 存在チェックのみに使用するパラメータ。その他の比較処理の過程で確認できる為、Exists用の特別な作業は無し
         /// </summary>
-        [TaskParameter(MandatoryAny = 12)]
+        [TaskParameter(MandatoryAny = 13)]
         [Keys("isexists", "exists", "exist")]
         protected bool? _IsExists { get; set; }
 
@@ -108,8 +108,6 @@ namespace Audit.Work.Directory
         protected bool _Invert { get; set; }
 
         private int _serial = 0;
-        private string _checkingPathA;
-        private string _checkingPathB;
 
         private MonitorTarget CreateForFile(string path, string pathTypeName)
         {
@@ -134,7 +132,7 @@ namespace Audit.Work.Directory
 
         private MonitorTarget CreateForDirectory(string path, string pathTypeName)
         {
-            return new MonitorTarget(PathType.File, path)
+            return new MonitorTarget(PathType.Directory, path)
             {
                 PathTypeName = pathTypeName,
                 IsCreationTime = _IsCreationTime,
@@ -160,8 +158,6 @@ namespace Audit.Work.Directory
             dictionary["directoryB"] = _PathB;
             this.Success = true;
 
-            _checkingPathA = _PathA;
-            _checkingPathB = _PathB;
             Success &= RecursiveTree(_PathA, _PathB, dictionary, 0);
 
             AddAudit(dictionary, this._Invert);
@@ -178,8 +174,8 @@ namespace Audit.Work.Directory
             targetB.CheckExists();
             if ((targetA.Exists ?? false) && (targetB.Exists ?? false))
             {
-                dictionary[$"directoryA_Exists_{_serial}"] = _PathA;
-                dictionary[$"directoryB_Exists_{_serial}"] = _PathB;
+                dictionary[$"{_serial}_directoryA_Exists"] = pathA;
+                dictionary[$"{_serial}_directoryB_Exists"] = pathB;
                 ret &= CompareFunctions.CheckDirectory(targetA, targetB, dictionary, _serial, depth);
 
                 if (depth < _MaxDepth)
@@ -188,8 +184,8 @@ namespace Audit.Work.Directory
                     {
                         _serial++;
                         string childPathB = Path.Combine(pathB, Path.GetFileName(childPathA));
-                        MonitorTarget targetA_leaf = CreateForFile(childPathA, "file");
-                        MonitorTarget targetB_leaf = CreateForFile(childPathB, "file");
+                        MonitorTarget targetA_leaf = CreateForFile(childPathA, "fileA");
+                        MonitorTarget targetB_leaf = CreateForFile(childPathB, "fileB");
                         targetA_leaf.CheckExists();
                         targetB_leaf.CheckExists();
 
@@ -199,17 +195,17 @@ namespace Audit.Work.Directory
                         }
                         else
                         {
-                            dictionary[$"fileB_NotExists_{_serial}"] = childPathB;
+                            dictionary[$"{_serial}_fileB_NotExists"] = childPathB;
                             ret = false;
                         }
                     }
                     foreach (string childPath in System.IO.Directory.GetDirectories(pathA))
                     {
-                        RecursiveTree(
+                        ret &= RecursiveTree(
                             childPath,
                             Path.Combine(pathB, Path.GetFileName(childPath)),
                             dictionary,
-                            _serial);
+                            depth + 1);
                     }
                 }
             }
@@ -217,12 +213,12 @@ namespace Audit.Work.Directory
             {
                 if (!targetA.Exists ?? false)
                 {
-                    dictionary[$"directoryA_NotExists_{_serial}"] = pathA;
+                    dictionary[$"{_serial}_directoryA_NotExists"] = pathA;
                     ret = false;
                 }
                 if (!targetB.Exists ?? false)
                 {
-                    dictionary[$"directoryB_NotExists_{_serial}"] = pathB;
+                    dictionary[$"{_serial}_directoryB_NotExists"] = pathB;
                     ret = false;
                 }
             }

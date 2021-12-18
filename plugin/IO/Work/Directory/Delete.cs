@@ -57,6 +57,10 @@ namespace IO.Work.Directory
                     proc.StartInfo.FileName = "robocopy.exe";
                     proc.StartInfo.Arguments = $"\"{emptyDirPath}\" \"{target}\" /MIR /COPY:DAT /XJD /XJF /R:0 /W:0 /NP";
                     proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    
+                    proc.StartInfo.UseShellExecute = false;
+                    proc.StartInfo.CreateNoWindow = true;
+                    
                     proc.Start();
                     proc.WaitForExit();
                 }
@@ -90,8 +94,41 @@ namespace IO.Work.Directory
                         System.IO.Directory.CreateDirectory(target);
                     }
                 }
+                catch (UnauthorizedAccessException uae)
+                {
+                    Manager.WriteLog(LogLevel.Debug, "{0} {1}", this.TaskName, uae.Message);
+
+                    if (_Force)
+                    {
+                        Manager.WriteLog(LogLevel.Info, "Remove readonly attribute: \"{0}\"", target);
+                        System.IO.Directory.GetFiles(target, "*", System.IO.SearchOption.AllDirectories).
+                            ToList().
+                            ForEach(x => new FileInfo(x).IsReadOnly = false);
+                        System.IO.Directory.GetDirectories(target, "*", System.IO.SearchOption.AllDirectories).
+                            ToList().
+                            ForEach(x => new DirectoryInfo(x).Attributes &= ~FileAttributes.ReadOnly);
+
+                        if (Manager.Interactive && _Recycle)
+                        {
+                            FileSystem.DeleteDirectory(
+                                target,
+                                UIOption.OnlyErrorDialogs,
+                                RecycleOption.SendToRecycleBin,
+                                UICancelOption.DoNothing);
+                        }
+                        else
+                        {
+                            System.IO.Directory.Delete(target, recursive: true);
+                        }
+                        if (_Clear)
+                        {
+                            System.IO.Directory.CreateDirectory(target);
+                        }
+                    }
+                }
                 catch (Exception e)
                 {
+                    Console.WriteLine(e);
                     Manager.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
                     Manager.WriteLog(LogLevel.Debug, e.ToString());
                     this.Success = false;

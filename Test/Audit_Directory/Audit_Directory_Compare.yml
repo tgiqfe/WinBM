@@ -1,0 +1,292 @@
+---
+kind: Job
+metadata:
+  name: ディレクトリCompare
+  description: テスト[準備]
+  priority: 101
+job:
+  work:
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare'
+      force: true
+  - task: IO/Directory/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample03
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample04
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample05
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample06
+
+---
+kind: Job
+metadata:
+  description: ディレクトリ存在確認
+  priority: 102
+job:
+  work:
+  - task: Audit/Directory/Compare
+    description: 両方exists
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02'
+      exists: true
+  - task: Audit/Directory/Compare
+    description: 02がnotExists
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02_null'
+      exists: true
+      invert: true
+  - task: Audit/Directory/Compare
+    description: 01がnotExists
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01_null'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02'
+      exists: true
+      invert: true
+  - task: Audit/Directory/Compare
+    description: 両方notExists
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01_null'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02_null'
+      exists: true
+      invert: true
+
+---
+kind: Job
+metadata:
+  description: タイムスタンプチェック
+  priority: 103
+job:
+  work:
+  - task: Audit/Directory/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02'
+      creation: true
+      lastWrite: true
+      lastAccess: true
+  - task: IO/File/Create
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01\sample01.txt'
+  - task: Audit/Directory/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02'
+      creation: false
+      lastWrite: true
+      lastAccess: false
+      invert: true
+
+---
+kind: Job
+metadata:
+  description: 配下に対してタイムスタンプチェック
+  priority: 104
+job:
+  work:
+  - task: IO/File/Create
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01\Example\aaaa.txt'
+  - task: IO/Directory/Copy
+    param:
+      src: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01'
+      dst: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02'
+      force: true
+  - task: Audit/Directory/Compare
+    description: 作成日時のみチェック。変更/アクセス日時は、どうしてもこの時点で変わってしまっているので
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02'
+      creation: true
+  - task: Standard/Execute/Sleep
+    param:
+      seconds: 1
+  - task: IO/File/Write
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01\Example\aaaa.txt'
+      text: testtesttesttest
+  - task: Audit/Directory/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02'
+      creation: false
+      lastWrite: true
+      lastAccess: false
+      invert: true
+
+---
+kind: Job
+metadata:
+  description: Accessチェック。所有者変更を含むので、管理者実行時のみ
+  priority: 105
+job:
+  require:
+  - task: Standard/Computer/Admin
+  work:
+  - task: Audit/Directory/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02'
+      access: true
+      owner: true
+      inherited: true
+  - task: IO/Directory/Grant
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01'
+      account: Administrator
+      rights: FullControl
+      accessControlType: allow
+      inherited: disable
+  - task: IO/Directory/Owner
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01'
+      account: Administrator
+  - task: Audit/Directory/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02'
+      access: true
+      invert: true
+  - task: Audit/Directory/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02'
+      owner: true
+      invert: true
+  - task: Audit/Directory/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02'
+      inherited: true
+      invert: true
+
+---
+kind: Job
+metadata:
+  description: Accessチェック。配下も含めてチェック
+  priority: 106
+job:
+  work:
+  - task: IO/File/Create
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample03\Example\bbbb.txt'
+  - task: IO/Directory/Copy
+    param:
+      src: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample03'
+      dst: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample04'
+      force: true
+  - task: Audit/Directory/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample03'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample04'
+      access: true
+  - task: IO/File/Grant
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample03\Example\bbbb.txt'
+      access: 'Administrator;ReadOnly;Deny'
+  - task: Audit/Directory/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample03'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample04'
+      access: true
+      invert: true
+
+---
+kind: Job
+metadata:
+  description: Hashチェック
+  priority: 107
+job:
+  work:
+  - task: IO/File/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample05\aaaa.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample06\aaaa.txt
+  - task: IO/File/Write
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample05\aaaa.txt'
+      text: samplesample
+  - task: IO/File/Write
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample06\aaaa.txt'
+      text: samplesample
+  - task: Audit/Directory/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample05'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample06'
+      md5: true
+      sha256: true
+      sha512: true
+  - task: IO/File/Write
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample05\aaaa.txt'
+      text: samplesample
+      append: true
+  - task: Audit/Directory/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample05'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample06'
+      md5: true
+      sha256: true
+      sha512: true
+      invert: true
+
+---
+kind: Job
+metadata:
+  description: 属性チェック
+  priority: 108
+job:
+  work:
+  - task: Audit/Directory/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample03'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample04'
+      attrib: true
+  - task: IO/Directory/Attributes
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample03'
+      attrib: +ReadOnly
+  - task: IO/Directory/Attributes
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample03\Example'
+      attrib: +Hidden
+  - task: IO/File/Attributes
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample03\Example\bbbb.txt'
+      attrib: +Hidden,+ReadOnly
+  - task: Audit/Directory/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample03'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample04'
+      attrib: true
+      invert: true
+
+---
+kind: Job
+metadata:
+  description: ChildCountチェック
+  priority: 109
+job:
+  work:
+  - task: Audit/Directory/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02'
+      childCount: true
+  - task: IO/Directory/Copy
+    param:
+      src: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample03'
+      dst: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01\Example02'
+      force: true
+  - task: Audit/Directory/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02'
+      childCount: true
+      invert: true
