@@ -398,6 +398,7 @@ namespace WinBM
                     return null;
                 case 2:
                     //  Taskの値が2つのみの場合は、組み込みクラスを使用する。Namespaceでの判定は若干不安ですが・・・
+                    //  [WinBM/category/class]のような形式になるはず。正し、現在は組み込みクラスは未実装である為、今後この仕様は廃止の可能性大
                     types = new string[3] { this.GetType().Namespace, types[0], types[1] };
                     break;
             }
