@@ -107,7 +107,7 @@ namespace Audit.Lib.Monitor
                 targetB.CheckSize();
                 dictionary[$"{serial}_{targetA.PathTypeName}_Size"] = targetA.Size.ToString();
                 dictionary[$"{serial}_{targetB.PathTypeName}_Size"] = targetB.Size.ToString();
-                ret &= targetA.SHA512Hash == targetB.SHA512Hash;
+                ret &= targetA.Size == targetB.Size;
             }
 
             return ret;
