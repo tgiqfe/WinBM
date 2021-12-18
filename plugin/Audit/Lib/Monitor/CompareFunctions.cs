@@ -65,9 +65,9 @@ namespace Audit.Lib.Monitor
             {
                 targetA.CheckInherited();
                 targetB.CheckInherited();
-                dictionary[$"{serial}_{targetA.PathTypeName}_Owner"] = targetA.Inherited.ToString();
-                dictionary[$"{serial}_{targetB.PathTypeName}_Owner"] = targetB.Inherited.ToString();
-                ret &= targetA.Owner == targetB.Owner;
+                dictionary[$"{serial}_{targetA.PathTypeName}_Inherited"] = targetA.Inherited.ToString();
+                dictionary[$"{serial}_{targetB.PathTypeName}_Inherited"] = targetB.Inherited.ToString();
+                ret &= targetA.Inherited == targetB.Inherited;
             }
             if (targetA.IsAttributes ?? false)
             {
@@ -123,7 +123,7 @@ namespace Audit.Lib.Monitor
         /// <returns></returns>
         internal static bool CheckDirectory(MonitorTarget targetA, MonitorTarget targetB, Dictionary<string, string> dictionary, int serial, int depth)
         {
-            bool ret = false;
+            bool ret = true;
 
             if (targetA.IsCreationTime ?? false)
             {
@@ -169,9 +169,9 @@ namespace Audit.Lib.Monitor
             {
                 targetA.CheckInherited();
                 targetB.CheckInherited();
-                dictionary[$"{serial}_{targetA.PathTypeName}_Owner"] = targetA.Inherited.ToString();
-                dictionary[$"{serial}_{targetB.PathTypeName}_Owner"] = targetB.Inherited.ToString();
-                ret &= targetA.Owner == targetB.Owner;
+                dictionary[$"{serial}_{targetA.PathTypeName}_Inherited"] = targetA.Inherited.ToString();
+                dictionary[$"{serial}_{targetB.PathTypeName}_Inherited"] = targetB.Inherited.ToString();
+                ret &= targetA.Inherited == targetB.Inherited;
             }
             if (targetA.IsAttributes ?? false)
             {
@@ -203,7 +203,7 @@ namespace Audit.Lib.Monitor
         /// <returns></returns>
         internal static bool CheckRegistryKey(MonitorTarget targetA, MonitorTarget targetB, Dictionary<string, string> dictionary, int serial, int depth)
         {
-            bool ret = false;
+            bool ret = true;
 
             if (targetA.IsAccess ?? false)
             {
@@ -225,9 +225,9 @@ namespace Audit.Lib.Monitor
             {
                 targetA.CheckInherited();
                 targetB.CheckInherited();
-                dictionary[$"{serial}_{targetA.PathTypeName}_Owner"] = targetA.Inherited.ToString();
-                dictionary[$"{serial}_{targetB.PathTypeName}_Owner"] = targetB.Inherited.ToString();
-                ret &= targetA.Owner == targetB.Owner;
+                dictionary[$"{serial}_{targetA.PathTypeName}_Inherited"] = targetA.Inherited.ToString();
+                dictionary[$"{serial}_{targetB.PathTypeName}_Inherited"] = targetB.Inherited.ToString();
+                ret &= targetA.Inherited == targetB.Inherited;
             }
             if ((targetA.IsChildCount ?? false) && depth == 0)
             {
@@ -251,7 +251,7 @@ namespace Audit.Lib.Monitor
         /// <returns></returns>
         internal static bool CheckRegistryValue(MonitorTarget targetA, MonitorTarget targetB, Dictionary<string, string> dictionary, int serial)
         {
-            bool ret = false;
+            bool ret = true;
 
             if (targetA.IsMD5Hash ?? false)
             {
@@ -286,7 +286,7 @@ namespace Audit.Lib.Monitor
                 ret &= targetA.RegistryType == targetB.RegistryType;
             }
 
-            return false;
+            return ret;
         }
     }
 }

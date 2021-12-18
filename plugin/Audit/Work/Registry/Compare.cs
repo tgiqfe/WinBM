@@ -162,6 +162,8 @@ namespace Audit.Work.Registry
                     Success &= RecursiveTree(keyA, keyB, dictionary, 0);
                 }
             }
+
+            AddAudit(dictionary, this._Invert);
         }
 
         private bool RecursiveTree(RegistryKey keyA, RegistryKey keyB, Dictionary<string, string> dictionary, int depth)

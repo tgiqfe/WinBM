@@ -155,6 +155,8 @@ namespace Audit.Work.Directory
                 Success = true;
             }
             collection.Save(GetWatchDBDirectory(), _Id);
+
+            AddAudit(dictionary, this._Invert);
         }
 
         private bool RecursiveTree(MonitorTargetCollection collection, Dictionary<string, string> dictionary, string path, int depth)

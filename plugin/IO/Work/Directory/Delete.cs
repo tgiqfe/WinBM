@@ -83,7 +83,7 @@ namespace IO.Work.Directory
                     }
                     else
                     {
-                        System.IO.Directory.Delete(target);
+                        System.IO.Directory.Delete(target, recursive: true);
                     }
                     if (_Clear)
                     {

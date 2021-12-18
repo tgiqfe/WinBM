@@ -26,24 +26,106 @@ metadata:
 job:
   work:
   - task: Audit/File/Compare
+    description: 両ファイルが存在
     param:
       pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01.txt'
       pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02.txt'
       exists: true
   - task: Audit/File/Compare
+    description: pathBが存在しない
+    param:
       pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01.txt'
       pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02_null.txt'
       exists: true
       invert: true
   - task: Audit/File/Compare
+    description: pathAが存在しない
+    param:
       pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01_null.txt'
       pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02.txt'
       exists: true
       invert: true
   - task: Audit/File/Compare
+    description: 両ファイルが存在しない
+    param:
       pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01_null.txt'
       pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02_null.txt'
       exists: true
       invert: true
 
+---
+kind: Job
+metadata:
+  description: タイムスタンプチェック
+  priority: 103
+job:
+  work:
+  - task: Audit/File/Compare
+    description: 作成/更新/アクセス - 一致確認
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01.txt'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02.txt'
+      creation: true
+      lastWrite: true
+      lastAccess: true
+  - task: IO/File/Write
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01.txt'
+      text: さんぷるさんぷる
+  - task: Audit/File/Compare
+    description: 作成/更新/アクセス - 不一致確認
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01.txt'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02.txt'
+      creation: false
+      lastWrite: true
+      lastAccess: false
+      invert: true
+
+---
+kind: Job
+metadata:
+  description: Accessチェック
+  priority: 104
+job:
+  work:
+  - task: Audit/File/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01.txt'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02.txt'
+      access: true
+      owner: true
+      inherited: true
+  - task: IO/File/Grant
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01.txt'
+      access: 'Administrators;FullControl;Allow'
+      inherited: disable
+  - task: IO/File/Owner
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01.txt'
+      owner: '%USERNAME%'
+  - task: Audit/File/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01.txt'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02.txt'
+      access: true
+      invert: true
+  - task: Audit/File/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01.txt'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02.txt'
+      owner: true
+      invert: true
+  - task: Audit/File/Compare
+    param:
+      pathA: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample01.txt'
+      pathB: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Compare\Sample02.txt'
+      inherited: true
+      invert: true
+
+
+# Attributes
+# Hash
+# Size
 

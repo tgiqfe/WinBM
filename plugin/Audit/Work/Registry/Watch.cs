@@ -152,6 +152,8 @@ namespace Audit.Work.Registry
                 }
             }
             collection.Save(GetWatchDBDirectory(), _Id);
+
+            AddAudit(dictionary, this._Invert);
         }
 
         private bool RecursiveTree(MonitorTargetCollection collection, Dictionary<string, string> dictionary, RegistryKey regKey, int depth)

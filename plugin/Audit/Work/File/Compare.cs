@@ -153,6 +153,8 @@ namespace Audit.Work.File
                     Success = false;
                 }
             }
+
+            AddAudit(dictionary, this._Invert);
         }
     }
 }

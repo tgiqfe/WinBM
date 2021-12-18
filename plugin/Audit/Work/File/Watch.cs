@@ -133,6 +133,8 @@ namespace Audit.Work.File
                 collection.SetMonitoredTarget(path, target_monitor);
             }
             collection.Save(GetWatchDBDirectory(), _Id);
+
+            AddAudit(dictionary, this._Invert);
         }
     }
 }

@@ -45,6 +45,16 @@ namespace IO.Work.File
             }
             catch (InvalidOperationException ioe)
             {
+                //  一度所有者変更を失敗した後、管理者権限で動作していないならば終了
+                AppDomain.CurrentDomain.SetPrincipalPolicy(PrincipalPolicy.WindowsPrincipal);
+                WindowsPrincipal wp = (WindowsPrincipal)System.Threading.Thread.CurrentPrincipal;
+                bool isAdmin = wp.IsInRole(WindowsBuiltInRole.Administrator);
+                if (!isAdmin)
+                {
+                    Manager.WriteLog(LogLevel.Info, "The process is not running as a Trusted user.");
+                    return;
+                }
+
                 Manager.WriteLog(LogLevel.Debug, "{0} {1}", this.TaskName, ioe.Message);
                 Manager.WriteLog(LogLevel.Info, "Get TokenManipulator SE_RESTORE_NAME.");
 

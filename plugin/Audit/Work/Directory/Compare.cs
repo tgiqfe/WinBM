@@ -163,6 +163,8 @@ namespace Audit.Work.Directory
             _checkingPathA = _PathA;
             _checkingPathB = _PathB;
             Success &= RecursiveTree(_PathA, _PathB, dictionary, 0);
+
+            AddAudit(dictionary, this._Invert);
         }
 
         private bool RecursiveTree(string pathA, string pathB, Dictionary<string, string> dictionary, int depth)
