@@ -52,7 +52,6 @@ namespace Audit.Lib.Monitor
 
         #region Target path
 
-
         [JsonIgnore]
         public string PathTypeName { get; set; }
         [JsonIgnore]
@@ -99,13 +98,13 @@ namespace Audit.Lib.Monitor
         public MonitorTarget(PathType pathType, RegistryKey key)
         {
             this.PathType = pathType;
-            this.Path = key.Name;
+            this.Path = key?.Name;
             this.Key = key;
         }
         public MonitorTarget(PathType pathType, RegistryKey key, string name)
         {
             this.PathType = pathType;
-            this.Path = key.Name;
+            this.Path = key?.Name;
             this.Key = key;
             this.Name = name;
         }

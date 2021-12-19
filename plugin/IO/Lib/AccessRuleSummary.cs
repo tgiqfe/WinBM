@@ -46,11 +46,11 @@ namespace IO.Lib
 
         private static string[] candidate_containerInherit = new string[]
         {
-            "containerinherit", "container inherit", "containerinheritance", "container inheritance"
+            "containerinherit", "container inherit", "containerinheritance", "container inheritance", "containerinherited", "container inherited"
         };
         private static string[] candidate_objectInherit = new string[]
         {
-            "objectinherit", "object inherit", "objectinheritance", "object inheritance"
+            "objectinherit", "object inherit", "objectinheritance", "object inheritance", "objectinherited", "object inherited"
         };
         private static string[] candidate_none = new string[]
         {

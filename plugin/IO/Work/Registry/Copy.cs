@@ -13,12 +13,6 @@ namespace IO.Work.Registry
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Copy : IOTaskWorkRegistry
     {
-        /*
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
-        [Keys("sourcepath", "srcpath", "src", "source", "sourcekey", "srckey", "path", "keypath")]
-        protected string _SourcePath2 { get; set; }
-        */
-
         [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
         [Keys("sourcepath", "srcpath", "src", "source", "sourcekey", "srckey", "path", "keypath")]
         protected string[] _SourcePath { get; set; }

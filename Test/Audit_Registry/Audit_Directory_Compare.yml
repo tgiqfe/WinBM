@@ -1,0 +1,209 @@
+---
+kind: Job
+metadata:
+  name: RegistryCompare
+  description: テスト[準備]
+  priority: 101
+job:
+  work:
+  - task: IO/Registry/Delete
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare'
+      force: true
+  - task: IO/Registry/Create
+    param:
+      path: |-
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample01
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample02
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample03
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample04
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample05
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample06
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample01'
+      name: 'aaaa'
+      value: '1234'
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample02'
+      name: 'aaaa'
+      value: '1234'
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample03'
+      name: 'aaaa'
+      value: '1234'
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample04'
+      name: 'aaaa'
+      value: '1234'
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample05'
+      name: 'bbbb'
+      value: 1234
+      type: REG_DWORD
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample06'
+      name: 'bbbb'
+      value: 1234
+      type: REG_DWORD
+
+---
+kind: Job
+metadata:
+  description: レジストリ値チェック(ハッシュ、レジストリタイプ)
+  priority: 102
+job:
+  work:
+  - task: Audit/Registry/Compare
+    param:
+      pathA: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample01'
+      pathB: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample02'
+      nameA: 'aaaa'
+      nameB: 'aaaa'
+      md5: true
+      sha256: true
+      sha512: true
+      registryType: true
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample01'
+      name: 'aaaa'
+      value: 'testtesttest'
+      type: REG_EXPAND_SZ
+  - task: Audit/Registry/Compare
+    param:
+      pathA: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample01'
+      pathB: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample02'
+      nameA: 'aaaa'
+      nameB: 'aaaa'
+      md5: true
+      invert: true
+  - task: Audit/Registry/Compare
+    param:
+      pathA: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample01'
+      pathB: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample02'
+      nameA: 'aaaa'
+      nameB: 'aaaa'
+      registryType: true
+      invert: true
+  - task: IO/Registry/Delete
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample02'
+      name: 'aaaa'
+  - task: Audit/Registry/Compare
+    param:
+      pathA: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample01'
+      pathB: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample02'
+      nameA: 'aaaa'
+      nameB: 'aaaa'
+      exists: true
+      invert: true
+
+---
+kind: Job
+metadata:
+  description: レジストリキーチェック(Access,Inherited)
+  priority: 103
+job:
+  work:
+  - task: Audit/Registry/Compare
+    param:
+      pathA: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample03'
+      pathB: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample04'
+      access: true
+      owner: true
+      inherited: true
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample03\Example'
+      name: 'cccc'
+      value: 0
+      type: REG_DWORD
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample04\Example'
+      name: 'cccc'
+      value: 0
+      type: REG_DWORD
+  - task: IO/Registry/Grant
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample03\Example'
+      access: 'Administrator;FullControl;ContainerInherit;None;Allow'
+      inherited: disable
+  - task: IO/Registry/Grant
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample04\Example'
+      account: Administrator
+      rights: FullControl
+      accessControlType: Allow
+      inherited: disable
+  - task: Audit/Registry/Compare
+    param:
+      pathA: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample03'
+      pathB: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample04'
+      access: true
+      inherited: true
+
+---
+kind: Job
+metadata:
+  description: ChildCountチェック
+  priority: 104
+job:
+  work:
+  - task: IO/Registry/Create
+    param:
+      path: |-
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample05\aaaa01
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample05\aaaa02
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample05\aaaa03
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample05\aaaa04
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample05\aaaa05
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample05\aaaa06
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample05\aaaa01'
+      name: 'test01'
+      value: 'aaaa'
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample05\aaaa01'
+      name: 'test02'
+      value: 'aaaa'
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample05\aaaa01'
+      name: 'test03'
+      value: 'aaaa'
+      type: REG_SZ
+  - task: Audit/Registry/Compare
+    param:
+      pathA: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample05'
+      pathB: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample06'
+      childCount: true
+      invert: true
+  - task: IO/Registry/Copy
+    param:
+      src: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample05'
+      dst: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample06'
+      force: true
+  - task: Audit/Registry/Compare
+    param:
+      pathA: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample05'
+      pathB: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Compare\Sample06'
+      childCount: true
+
+
+
+

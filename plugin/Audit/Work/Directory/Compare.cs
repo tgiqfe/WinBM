@@ -191,6 +191,8 @@ namespace Audit.Work.Directory
 
                         if (targetB_leaf.Exists ?? false)
                         {
+                            dictionary[$"{_serial}_fileA_Exists"] = childPathA;
+                            dictionary[$"{_serial}_fileB_Exists"] = childPathB;
                             ret &= CompareFunctions.CheckFile(targetA_leaf, targetB_leaf, dictionary, _serial);
                         }
                         else

@@ -118,6 +118,12 @@ namespace Audit.Work.Registry
             var dictionary = new Dictionary<string, string>();
             this.Success = true;
 
+            if ((_NameA == null && _NameB != null) || (_NameA != null && _NameB == null))
+            {
+                Manager.WriteLog(LogLevel.Error, "Failed parameter, Both name parameter required.");
+                return;
+            }
+
             if (_NameA != null && _NameB != null)
             {
                 _serial++;
@@ -164,7 +170,7 @@ namespace Audit.Work.Registry
 
         private bool RecursiveTree(RegistryKey keyA, RegistryKey keyB, Dictionary<string, string> dictionary, int depth)
         {
-            bool ret = false;
+            bool ret = true;
 
             _serial++;
             MonitorTarget targetA = CreateForRegistryKey(keyA, "registryA");
@@ -189,8 +195,8 @@ namespace Audit.Work.Registry
 
                         if (targetB_leaf.Exists ?? false)
                         {
-                            dictionary["registryA_Exists"] = targetA_leaf.Path + "\\" + targetA_leaf.Name;
-                            dictionary["registryB_Exists"] = targetB_leaf.Path + "\\" + targetB_leaf.Name;
+                            dictionary[$"{_serial}_registryA_Exists"] = targetA_leaf.Path + "\\" + targetA_leaf.Name;
+                            dictionary[$"{_serial}_registryB_Exists"] = targetB_leaf.Path + "\\" + targetB_leaf.Name;
                             ret &= CompareFunctions.CheckRegistryValue(targetA_leaf, targetB_leaf, dictionary, _serial);
                         }
                         else
@@ -213,12 +219,12 @@ namespace Audit.Work.Registry
             {
                 if (!targetA.Exists ?? false)
                 {
-                    dictionary[$"{_serial}_registryA_NotExists"] = keyA.Name;
+                    dictionary[$"{_serial}_registryA_NotExists"] = keyA?.Name ?? "(キー無し)";  //  Recurseする時にMonitorTargetで渡す方式に変更しないと、ここでパスを取得できない。後日変更
                     ret = false;
                 }
                 if (!targetB.Exists ?? false)
                 {
-                    dictionary[$"{_serial}_registryB_NotExists"] = keyB.Name;
+                    dictionary[$"{_serial}_registryB_NotExists"] = keyB?.Name ?? "(キー無し)";
                     ret = false;
                 }
             }
