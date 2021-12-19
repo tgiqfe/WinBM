@@ -1,0 +1,151 @@
+---
+kind: Job
+metadata:
+  name: TestAudit_file_watch
+  description: テスト[準備]
+  priority: 201
+job:
+  work:
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch'
+      force: true
+  - task: IO/File/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample03.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample04.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample05.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample06.txt
+
+---
+kind: Job
+metadata:
+  description: タイムスタンプをwatch
+  priority: 202
+job:
+  work:
+  - task: Audit/File/Watch
+    param:
+      id: audit_file_watch
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample03.txt
+      begin: true
+      creation: true
+      lastWrite: true
+      lastAccess: true
+  - task: Standard/Execute/Sleep
+    param:
+      seconds: 1
+  - task: IO/File/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample03.txt'
+  - task: IO/File/Create
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample03.txt'
+  - task: Audit/File/Watch
+    param:
+      id: audit_file_watch
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample03.txt
+  - task: IO/File/Write
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02.txt'
+      text: samplesample
+  - task: Audit/File/Watch
+    param:
+      id: audit_file_watch
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample03.txt
+
+---
+kind: Job
+metadata:
+  description: アクセス権Watch
+  priority: 203
+job:
+  require:
+  - task: Standard/Computer/Admin
+  work:
+  - task: Audit/File/Watch
+    param:
+      id: audit_file_watch02
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample03.txt
+      begin: true
+      access: true
+      owner: true
+      inherited: true
+  - task: IO/File/Grant
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample01.txt'
+      access: 'Administrator;FullControl;Allow'
+      inherited: disable
+  - task: IO/File/Owner
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02.txt'
+      owner: Administrators
+  - task: Audit/File/Watch
+    param:
+      id: audit_file_watch02
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample03.txt
+
+---
+kind: Job
+metadata:
+  description: Attributes,Hash,SizeのWatch
+  priority: 204
+job:
+  work:
+  - task: Audit/File/Watch
+    param:
+      id: audit_file_watch03
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample04.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample05.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample06.txt
+      begin: true
+      md5: true
+      sha256: true
+      sha512: true
+      attributes: true
+      size: true
+  - task: IO/File/Write
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample04.txt'
+      text: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+  - task: Audit/File/Watch
+    param:
+      id: audit_file_watch03
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample04.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample05.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample06.txt
+  - task: IO/File/Attributes
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample05.txt'
+      attrib: +ReadOnly
+  - task: Audit/File/Watch
+    param:
+      id: audit_file_watch03
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample04.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample05.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample06.txt
+
+
+
+

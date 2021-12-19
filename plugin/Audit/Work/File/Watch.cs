@@ -86,7 +86,7 @@ namespace Audit.Work.File
         [Keys("invert", "not", "no", "none")]
         protected bool _Invert { get; set; }
 
-        private int _serial = 1;
+        private int _serial = 0;
 
         private MonitorTarget CreateForFile(string path, string pathTypeName)
         {
@@ -117,7 +117,7 @@ namespace Audit.Work.File
             foreach (string path in _Path)
             {
                 _serial++;
-                dictionary[$"file_{_serial}"] = path;
+                dictionary[$"{_serial}_file"] = path;
                 MonitorTarget target_db = _Begin ?
                     CreateForFile(path, "file") :
                     collection.GetMonitoredTarget(path) ?? CreateForFile(path, "file");
