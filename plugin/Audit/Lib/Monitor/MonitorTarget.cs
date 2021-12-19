@@ -95,21 +95,6 @@ namespace Audit.Lib.Monitor
             this.PathType = pathType;
             this.Path = path;
         }
-        /*
-        public MonitorTarget(PathType pathType, RegistryKey key)
-        {
-            this.PathType = pathType;
-            this.Path = key?.Name;
-            this.Key = key;
-        }
-        public MonitorTarget(PathType pathType, RegistryKey key, string name)
-        {
-            this.PathType = pathType;
-            this.Path = key?.Name;
-            this.Key = key;
-            this.Name = name;
-        }
-        */
         public MonitorTarget(PathType pathType, string path, RegistryKey key)
         {
             //  keyがnullだった場合、pathに値を入れることができなくなる為、文字列パスとRegistryKeyの両方を指定
@@ -124,8 +109,6 @@ namespace Audit.Lib.Monitor
             this.Key = key;
             this.Name = name;
         }
-
-
 
         #region Check method
 

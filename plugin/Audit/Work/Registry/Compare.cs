@@ -86,32 +86,6 @@ namespace Audit.Work.Registry
 
         private int _serial = 0;
 
-        /*
-        private MonitorTarget CreateForRegistryKey(RegistryKey key, string pathTypeName)
-        {
-            return new MonitorTarget(PathType.Registry, key)
-            {
-                PathTypeName = pathTypeName,
-                IsAccess = _IsAccess,
-                IsOwner = _IsOwner,
-                IsInherited = _IsInherited,
-                IsChildCount = _IsChildCount,
-            };
-        }
-
-        private MonitorTarget CreateForRegistryValue(RegistryKey key, string name, string pathTypeName)
-        {
-            return new MonitorTarget(PathType.Registry, key, name)
-            {
-                PathTypeName = pathTypeName,
-                IsMD5Hash = _IsMD5Hash,
-                IsSHA256Hash = _IsSHA256Hash,
-                IsSHA512Hash = _IsSHA512Hash,
-                IsRegistryType = _IsRegistryType,
-            };
-        }
-        */
-
         private MonitorTarget CreateForRegistryKey(string path, RegistryKey key, string pathTypeName)
         {
             return new MonitorTarget(PathType.Registry, path, key)
@@ -230,7 +204,7 @@ namespace Audit.Work.Registry
                         }
                         else
                         {
-                            dictionary[$"{_serial}_registryB_NotExists"] = targetB.Path + "\\" + childName;
+                            dictionary[$"{_serial}_registryB_NotExists"] = targetB_leaf.Path + "\\" + targetB_leaf.Name;
                             ret = false;
                         }
                     }
@@ -241,7 +215,7 @@ namespace Audit.Work.Registry
                         {
                             ret &= RecursiveTree(
                                 CreateForRegistryKey(Path.Combine(targetA.Path, keyPath), subRegKeyA, "registryA"),
-                                CreateForRegistryKey(Path.Combine(targetB.Path, keyPath), subRegKeyA, "registryB"),
+                                CreateForRegistryKey(Path.Combine(targetB.Path, keyPath), subRegKeyB, "registryB"),
                                 dictionary,
                                 depth + 1);
                         }
@@ -264,71 +238,5 @@ namespace Audit.Work.Registry
 
             return ret;
         }
-
-        /*
-        private bool RecursiveTree(RegistryKey keyA, RegistryKey keyB, Dictionary<string, string> dictionary, int depth)
-        {
-            bool ret = true;
-
-            _serial++;
-            MonitorTarget targetA = CreateForRegistryKey(keyA, "registryA");
-            MonitorTarget targetB = CreateForRegistryKey(keyB, "registryB");
-            targetA.CheckExists();
-            targetB.CheckExists();
-            if ((targetA.Exists ?? false) && (targetB.Exists ?? false))
-            {
-                dictionary[$"{_serial}_registryA_Exists"] = keyA.Name;
-                dictionary[$"{_serial}_registryB_Exists"] = keyB.Name;
-                ret &= CompareFunctions.CheckRegistryKey(targetA, targetB, dictionary, _serial, depth);
-
-                if (depth < _MaxDepth)
-                {
-                    foreach (string childName in keyA.GetValueNames())
-                    {
-                        _serial++;
-                        MonitorTarget targetA_leaf = CreateForRegistryValue(keyA, childName, "registryA");
-                        MonitorTarget targetB_leaf = CreateForRegistryValue(keyB, childName, "registryB");
-                        targetA_leaf.CheckExists();
-                        targetB_leaf.CheckExists();
-
-                        if (targetB_leaf.Exists ?? false)
-                        {
-                            dictionary[$"{_serial}_registryA_Exists"] = targetA_leaf.Path + "\\" + targetA_leaf.Name;
-                            dictionary[$"{_serial}_registryB_Exists"] = targetB_leaf.Path + "\\" + targetB_leaf.Name;
-                            ret &= CompareFunctions.CheckRegistryValue(targetA_leaf, targetB_leaf, dictionary, _serial);
-                        }
-                        else
-                        {
-                            dictionary[$"{_serial}_registryB_NotExists"] = keyB.Name + "\\" + childName;
-                            ret = false;
-                        }
-                    }
-                    foreach (string keyPath in keyA.GetSubKeyNames())
-                    {
-                        using (RegistryKey subRegKeyA = keyA.OpenSubKey(keyPath, false))
-                        using (RegistryKey subRegKeyB = keyB.OpenSubKey(keyPath, false))
-                        {
-                            ret &= RecursiveTree(subRegKeyA, subRegKeyB, dictionary, depth + 1);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                if (!targetA.Exists ?? false)
-                {
-                    dictionary[$"{_serial}_registryA_NotExists"] = keyA?.Name ?? "(キー無し)";  //  Recurseする時にMonitorTargetで渡す方式に変更しないと、ここでパスを取得できない。後日変更
-                    ret = false;
-                }
-                if (!targetB.Exists ?? false)
-                {
-                    dictionary[$"{_serial}_registryB_NotExists"] = keyB?.Name ?? "(キー無し)";
-                    ret = false;
-                }
-            }
-
-            return ret;
-        }
-        */
     }
 }

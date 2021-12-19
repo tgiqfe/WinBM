@@ -216,58 +216,5 @@ namespace Audit.Work.Directory
 
             return ret;
         }
-
-        /*
-        private bool RecursiveTree(MonitorTargetCollection collection, Dictionary<string, string> dictionary, string path, int depth)
-        {
-            bool ret = false;
-
-            _serial++;
-            dictionary[$"{_serial}_directory"] = (path == _checkingPath) ?
-                path :
-                path.Replace(_checkingPath, "");
-            MonitorTarget target_db = _Begin ?
-                CreateForDirectory(path, "directory") :
-                collection.GetMonitoredTarget(path) ?? CreateForDirectory(path, "directory");
-
-            MonitorTarget target_monitor = CreateForDirectory(path, "directory");
-            target_monitor.Merge_is_Property(target_db);
-            target_monitor.CheckExists();
-
-            if (target_monitor.Exists ?? false)
-            {
-                ret |= WatchFunctions.CheckDirectory(target_monitor, target_db, dictionary, _serial, depth);
-            }
-            collection.SetMonitoredTarget(path, target_monitor);
-
-            if (depth < _MaxDepth && (target_monitor.Exists ?? false))
-            {
-                foreach (string filePath in System.IO.Directory.GetFiles(path))
-                {
-                    _serial++;
-                    dictionary[$"{_serial}_file"] = filePath.Replace(_checkingPath, "");
-                    MonitorTarget target_db_leaf = _Begin ?
-                        CreateForFile(filePath, "file") :
-                        collection.GetMonitoredTarget(filePath) ?? CreateForFile(path, "file");
-
-                    MonitorTarget target_monitor_leaf = CreateForDirectory(filePath, "file");
-                    target_monitor_leaf.Merge_is_Property(target_db_leaf);
-                    target_monitor_leaf.CheckExists();
-
-                    if (target_monitor_leaf.Exists ?? false)
-                    {
-                        ret |= WatchFunctions.CheckFile(target_monitor_leaf, target_db_leaf, dictionary, _serial);
-                    }
-                    collection.SetMonitoredTarget(filePath, target_monitor_leaf);
-                }
-                foreach (string dirPath in System.IO.Directory.GetDirectories(path))
-                {
-                    ret |= RecursiveTree(collection, dictionary, dirPath, depth + 1);
-                }
-            }
-
-            return ret;
-        }
-        */
     }
 }

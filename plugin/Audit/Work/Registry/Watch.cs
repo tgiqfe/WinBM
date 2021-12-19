@@ -78,31 +78,6 @@ namespace Audit.Work.Registry
         private int _serial;
         private string _checkingPath;
 
-        /*
-        private MonitorTarget CreateForRegistryKey(RegistryKey key, string pathTypeName)
-        {
-            return new MonitorTarget(PathType.Registry, key)
-            {
-                PathTypeName = pathTypeName,
-                IsAccess = _IsAccess,
-                IsOwner = _IsOwner,
-                IsInherited = _IsInherited,
-                IsChildCount = _IsChildCount,
-            };
-        }
-
-        private MonitorTarget CreateForRegistryValue(RegistryKey key, string name, string pathTypeName)
-        {
-            return new MonitorTarget(PathType.Registry, key, name)
-            {
-                PathTypeName = pathTypeName,
-                IsMD5Hash = _IsMD5Hash,
-                IsSHA256Hash = _IsSHA256Hash,
-                IsSHA512Hash = _IsSHA512Hash,
-                IsRegistryType = _IsRegistryType,
-            };
-        }
-        */
         private MonitorTarget CreateForRegistryKey(string path, RegistryKey key, string pathTypeName)
         {
             return new MonitorTarget(PathType.Registry, path, key)
@@ -241,62 +216,5 @@ namespace Audit.Work.Registry
 
             return ret;
         }
-
-        /*
-        private bool RecursiveTree(MonitorTargetCollection collection, Dictionary<string, string> dictionary, RegistryKey regKey, int depth)
-        {
-            bool ret = false;
-
-            _serial++;
-            dictionary[$"{_serial}_registry"] = (regKey.Name == _checkingPath) ?
-                regKey.Name :
-                regKey.Name.Replace(_checkingPath, "");
-            MonitorTarget target_db = _Begin ?
-                CreateForRegistryKey(regKey, "registry") :
-                collection.GetMonitoredTarget(regKey) ?? CreateForRegistryKey(regKey, "registry");
-
-            MonitorTarget target_monitor = CreateForRegistryKey(regKey, "registry");
-            target_monitor.Merge_is_Property(target_db);
-            target_monitor.CheckExists();
-
-            if (target_monitor.Exists ?? false)
-            {
-                ret |= WatchFunctions.CheckRegistrykey(target_monitor, target_db, dictionary, _serial, depth);
-            }
-            collection.SetMonitoredTarget(regKey, target_monitor);
-
-            if (depth < _MaxDepth && (target_monitor.Exists ?? false))
-            {
-                foreach (string name in regKey.GetValueNames())
-                {
-                    _serial++;
-                    dictionary[$"{_serial}_registry"] = (regKey.Name + "\\" + name).Replace(_checkingPath, "");
-                    MonitorTarget target_db_leaf = _Begin ?
-                        CreateForRegistryValue(regKey, name, "registry") :
-                        collection.GetMonitoredTarget(regKey, name) ?? CreateForRegistryValue(regKey, name, "registry");
-
-                    MonitorTarget target_monitor_leaf = CreateForRegistryValue(regKey, name, "registry");
-                    target_monitor_leaf.Merge_is_Property(target_db_leaf);
-                    target_monitor_leaf.CheckExists();
-
-                    if (target_monitor_leaf.Exists ?? false)
-                    {
-                        ret |= WatchFunctions.CheckRegistryValue(target_monitor_leaf, target_db_leaf, dictionary, _serial);
-                    }
-                    collection.SetMonitoredTarget(regKey, name, target_monitor_leaf);
-                }
-                foreach (string keyPath in regKey.GetSubKeyNames())
-                {
-                    using (RegistryKey subRegKey = regKey.OpenSubKey(keyPath, false))
-                    {
-                        ret |= RecursiveTree(collection, dictionary, subRegKey, depth + 1);
-                    }
-
-                }
-            }
-
-            return ret;
-        }
-        */
     }
 }

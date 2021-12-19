@@ -33,26 +33,6 @@ namespace Audit.Lib.Monitor
             return matchKey == null ? null : this[matchKey];
         }
 
-
-
-        /*
-        public MonitorTarget GetMonitoredTarget(RegistryKey regKey)
-        {
-            string matchKey = this.Keys.FirstOrDefault(x => x.Equals(regKey.Name, StringComparison.OrdinalIgnoreCase));
-            return matchKey == null ? null : this[matchKey];
-        }
-
-        public MonitorTarget GetMonitoredTarget(RegistryKey regKey, string name)
-        {
-            string regPath = REGPATH_PREFIX + regKey.Name + "\\" + name;
-            string matchKey = this.Keys.FirstOrDefault(x => x.Equals(regPath, StringComparison.OrdinalIgnoreCase));
-            return matchKey == null ? null : this[matchKey];
-        }
-        */
-
-
-
-
         public void SetMonitoredTarget(string path, MonitorTarget target)
         {
             target.FullPath = path;
@@ -67,23 +47,6 @@ namespace Audit.Lib.Monitor
             this[regPath] = target;
             this._CheckedKeys.Add(regPath);
         }
-
-        /*
-        public void SetMonitoredTarget(RegistryKey regKey, MonitorTarget target)
-        {
-            target.FullPath = regKey.Name;
-            this[regKey.Name] = target;
-            this._CheckedKeys.Add(regKey.Name);
-        }
-
-        public void SetMonitoredTarget(RegistryKey regKey, string name, MonitorTarget target)
-        {
-            string regPath = REGPATH_PREFIX + regKey.Name + "\\" + name;
-            target.FullPath = regPath;
-            this[regPath] = target;
-            this._CheckedKeys.Add(regPath);
-        }
-        */
 
         #endregion
 
