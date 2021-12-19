@@ -86,6 +86,7 @@ namespace Audit.Work.Registry
 
         private int _serial = 0;
 
+        /*
         private MonitorTarget CreateForRegistryKey(RegistryKey key, string pathTypeName)
         {
             return new MonitorTarget(PathType.Registry, key)
@@ -101,6 +102,31 @@ namespace Audit.Work.Registry
         private MonitorTarget CreateForRegistryValue(RegistryKey key, string name, string pathTypeName)
         {
             return new MonitorTarget(PathType.Registry, key, name)
+            {
+                PathTypeName = pathTypeName,
+                IsMD5Hash = _IsMD5Hash,
+                IsSHA256Hash = _IsSHA256Hash,
+                IsSHA512Hash = _IsSHA512Hash,
+                IsRegistryType = _IsRegistryType,
+            };
+        }
+        */
+
+        private MonitorTarget CreateForRegistryKey(string path, RegistryKey key, string pathTypeName)
+        {
+            return new MonitorTarget(PathType.Registry, path, key)
+            {
+                PathTypeName = pathTypeName,
+                IsAccess = _IsAccess,
+                IsOwner = _IsOwner,
+                IsInherited = _IsInherited,
+                IsChildCount = _IsChildCount,
+            };
+        }
+
+        private MonitorTarget CreateForRegistryValue(string path, RegistryKey key, string name, string pathTypeName)
+        {
+            return new MonitorTarget(PathType.Registry, path, key, name)
             {
                 PathTypeName = pathTypeName,
                 IsMD5Hash = _IsMD5Hash,
@@ -130,8 +156,8 @@ namespace Audit.Work.Registry
                 using (RegistryKey keyA = RegistryControl.GetRegistryKey(_PathA, false, false))
                 using (RegistryKey keyB = RegistryControl.GetRegistryKey(_PathB, false, false))
                 {
-                    MonitorTarget targetA = CreateForRegistryValue(keyA, _NameA, "registryA");
-                    MonitorTarget targetB = CreateForRegistryValue(keyB, _NameB, "registryB");
+                    MonitorTarget targetA = CreateForRegistryValue(_PathA, keyA, _NameA, "registryA");
+                    MonitorTarget targetB = CreateForRegistryValue(_PathB, keyB, _NameB, "registryB");
                     targetA.CheckExists();
                     targetB.CheckExists();
 
@@ -161,13 +187,85 @@ namespace Audit.Work.Registry
                 using (RegistryKey keyA = RegistryControl.GetRegistryKey(_PathA, false, false))
                 using (RegistryKey keyB = RegistryControl.GetRegistryKey(_PathB, false, false))
                 {
-                    Success &= RecursiveTree(keyA, keyB, dictionary, 0);
+                    Success &= RecursiveTree(
+                        CreateForRegistryKey(_PathA, keyA, "registryA"),
+                        CreateForRegistryKey(_PathB, keyB, "registryB"),
+                         dictionary,
+                         0);
                 }
             }
 
             AddAudit(dictionary, this._Invert);
         }
 
+
+        private bool RecursiveTree(MonitorTarget targetA, MonitorTarget targetB, Dictionary<string, string> dictionary, int depth)
+        {
+            bool ret = true;
+
+            _serial++;
+            targetA.CheckExists();
+            targetB.CheckExists();
+            if ((targetA.Exists ?? false) && (targetB.Exists ?? false))
+            {
+                dictionary[$"{_serial}_registryA_Exists"] = targetA.Path;
+                dictionary[$"{_serial}_registryB_Exists"] = targetB.Path;
+                ret &= CompareFunctions.CheckRegistryKey(targetA, targetB, dictionary, _serial, depth);
+
+                if (depth < _MaxDepth)
+                {
+                    foreach (string childName in targetA.Key.GetValueNames())
+                    {
+                        _serial++;
+                        MonitorTarget targetA_leaf = CreateForRegistryValue(targetA.Path, targetA.Key, childName, "registryA");
+                        MonitorTarget targetB_leaf = CreateForRegistryValue(targetB.Path, targetB.Key, childName, "registryB");
+                        targetA_leaf.CheckExists();
+                        targetB_leaf.CheckExists();
+
+                        if (targetB_leaf.Exists ?? false)
+                        {
+                            dictionary[$"{_serial}_registryA_Exists"] = targetA_leaf.Path + "\\" + targetA_leaf.Name;
+                            dictionary[$"{_serial}_registryB_Exists"] = targetB_leaf.Path + "\\" + targetB_leaf.Name;
+                            ret &= CompareFunctions.CheckRegistryValue(targetA_leaf, targetB_leaf, dictionary, _serial);
+                        }
+                        else
+                        {
+                            dictionary[$"{_serial}_registryB_NotExists"] = targetB.Path + "\\" + childName;
+                            ret = false;
+                        }
+                    }
+                    foreach (string keyPath in targetA.Key.GetSubKeyNames())
+                    {
+                        using (RegistryKey subRegKeyA = targetA.Key.OpenSubKey(keyPath, false))
+                        using (RegistryKey subRegKeyB = targetB.Key.OpenSubKey(keyPath, false))
+                        {
+                            ret &= RecursiveTree(
+                                CreateForRegistryKey(Path.Combine(targetA.Path, keyPath), subRegKeyA, "registryA"),
+                                CreateForRegistryKey(Path.Combine(targetB.Path, keyPath), subRegKeyA, "registryB"),
+                                dictionary,
+                                depth + 1);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if (!targetA.Exists ?? false)
+                {
+                    dictionary[$"{_serial}_registryA_NotExists"] = targetA.Path;
+                    ret = false;
+                }
+                if (!targetB.Exists ?? false)
+                {
+                    dictionary[$"{_serial}_registryB_NotExists"] = targetB.Path;
+                    ret = false;
+                }
+            }
+
+            return ret;
+        }
+
+        /*
         private bool RecursiveTree(RegistryKey keyA, RegistryKey keyB, Dictionary<string, string> dictionary, int depth)
         {
             bool ret = true;
@@ -231,5 +329,6 @@ namespace Audit.Work.Registry
 
             return ret;
         }
+        */
     }
 }

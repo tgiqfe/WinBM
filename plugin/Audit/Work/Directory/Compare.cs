@@ -158,11 +158,83 @@ namespace Audit.Work.Directory
             dictionary["directoryB"] = _PathB;
             this.Success = true;
 
-            Success &= RecursiveTree(_PathA, _PathB, dictionary, 0);
+            Success &= RecursiveTree(
+                CreateForDirectory(_PathA, "directoryA"),
+                CreateForDirectory(_PathB, "directoryB"),
+                dictionary,
+                0);
+
+            //Success &= RecursiveTree(_PathA, _PathB, dictionary, 0);
 
             AddAudit(dictionary, this._Invert);
         }
 
+        private bool RecursiveTree(MonitorTarget targetA, MonitorTarget targetB, Dictionary<string, string> dictionary, int depth)
+        {
+            bool ret = true;
+
+            _serial++;
+            targetA.CheckExists();
+            targetB.CheckExists();
+            if ((targetA.Exists ?? false) && (targetB.Exists ?? false))
+            {
+                dictionary[$"{_serial}_directoryA_Exists"] = targetA.Path;
+                dictionary[$"{_serial}_directoryB_Exists"] = targetB.Path;
+                ret &= CompareFunctions.CheckDirectory(targetA, targetB, dictionary, _serial, depth);
+
+                if (depth < _MaxDepth)
+                {
+                    foreach (string childPathA in System.IO.Directory.GetFiles(targetA.Path))
+                    {
+                        _serial++;
+                        string childPathB = Path.Combine(targetB.Path, Path.GetFileName(childPathA));
+                        MonitorTarget targetA_leaf = CreateForFile(childPathA, "fileA");
+                        MonitorTarget targetB_leaf = CreateForFile(childPathB, "fileB");
+                        targetA_leaf.CheckExists();
+                        targetB_leaf.CheckExists();
+
+                        if (targetB_leaf.Exists ?? false)
+                        {
+                            dictionary[$"{_serial}_fileA_Exists"] = childPathA;
+                            dictionary[$"{_serial}_fileB_Exists"] = childPathB;
+                            ret &= CompareFunctions.CheckFile(targetA_leaf, targetB_leaf, dictionary, _serial);
+                        }
+                        else
+                        {
+                            dictionary[$"{_serial}_fileB_NotExists"] = childPathB;
+                            ret = false;
+                        }
+                    }
+                    foreach (string childPath in System.IO.Directory.GetDirectories(targetA.Path))
+                    {
+                        ret &= RecursiveTree(
+                            CreateForDirectory(childPath, "directoryA"),
+                            CreateForDirectory(Path.Combine(targetB.Path, Path.GetFileName(childPath)), "directoryB"),
+                            dictionary,
+                            depth + 1);
+                    }
+                }
+            }
+            else
+            {
+                if (!targetA.Exists ?? false)
+                {
+                    dictionary[$"{_serial}_directoryA_NotExists"] = targetA.Path;
+                    ret = false;
+                }
+                if (!targetB.Exists ?? false)
+                {
+                    dictionary[$"{_serial}_directoryB_NotExists"] = targetB.Path;
+                    ret = false;
+                }
+            }
+
+
+
+            return ret;
+        }
+
+        /*
         private bool RecursiveTree(string pathA, string pathB, Dictionary<string, string> dictionary, int depth)
         {
             bool ret = true;
@@ -227,5 +299,6 @@ namespace Audit.Work.Directory
 
             return ret;
         }
+        */
     }
 }

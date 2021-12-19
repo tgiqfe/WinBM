@@ -145,7 +145,11 @@ namespace Audit.Work.Directory
             foreach (string path in _Path)
             {
                 _checkingPath = path;
-                Success |= RecursiveTree(collection, dictionary, path, 0);
+                Success |= RecursiveTree(
+                    collection,
+                    CreateForDirectory(path, "directory"),
+                    dictionary,
+                    0);
             }
             foreach (string uncheckedPath in collection.GetUncheckedKeys())
             {
@@ -159,6 +163,61 @@ namespace Audit.Work.Directory
             AddAudit(dictionary, this._Invert);
         }
 
+        private bool RecursiveTree(MonitorTargetCollection collection, MonitorTarget target_monitor, Dictionary<string, string> dictionary, int depth)
+        {
+            bool ret = false;
+
+            _serial++;
+            dictionary[$"{_serial}_directory"] = (target_monitor.Path == _checkingPath) ?
+                target_monitor.Path :
+                target_monitor.Path.Replace(_checkingPath, "");
+            MonitorTarget target_db = _Begin ?
+                CreateForDirectory(target_monitor.Path, "directory") :
+                collection.GetMonitoredTarget(target_monitor.Path) ?? CreateForDirectory(target_monitor.Path, "directory");
+
+            target_monitor.Merge_is_Property(target_db);
+            target_monitor.CheckExists();
+
+            if (target_monitor.Exists ?? false)
+            {
+                ret |= WatchFunctions.CheckDirectory(target_monitor, target_db, dictionary, _serial, depth);
+            }
+            collection.SetMonitoredTarget(target_monitor.Path, target_monitor);
+
+            if (depth < _MaxDepth && (target_monitor.Exists ?? false))
+            {
+                foreach (string filePath in System.IO.Directory.GetFiles(target_monitor.Path))
+                {
+                    _serial++;
+                    dictionary[$"{_serial}_file"] = filePath.Replace(_checkingPath, "");
+                    MonitorTarget target_db_leaf = _Begin ?
+                        CreateForFile(filePath, "file") :
+                        collection.GetMonitoredTarget(filePath) ?? CreateForFile(filePath, "file");
+
+                    MonitorTarget target_monitor_leaf = CreateForDirectory(filePath, "file");
+                    target_monitor_leaf.Merge_is_Property(target_db_leaf);
+                    target_monitor_leaf.CheckExists();
+
+                    if (target_monitor_leaf.Exists ?? false)
+                    {
+                        ret |= WatchFunctions.CheckFile(target_monitor_leaf, target_db_leaf, dictionary, _serial);
+                    }
+                    collection.SetMonitoredTarget(filePath, target_monitor_leaf);
+                }
+                foreach (string dirPath in System.IO.Directory.GetDirectories(target_monitor.Path))
+                {
+                    ret |= RecursiveTree(
+                        collection,
+                        CreateForDirectory(dirPath, "directory"),
+                        dictionary,
+                        depth + 1);
+                }
+            }
+
+            return ret;
+        }
+
+        /*
         private bool RecursiveTree(MonitorTargetCollection collection, Dictionary<string, string> dictionary, string path, int depth)
         {
             bool ret = false;
@@ -209,5 +268,6 @@ namespace Audit.Work.Directory
 
             return ret;
         }
+        */
     }
 }
