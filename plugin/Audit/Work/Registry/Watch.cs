@@ -120,8 +120,12 @@ namespace Audit.Work.Registry
                     {
                         _serial++;
                         dictionary[$"{_serial}_registry"] = regKey.Name + "\\" + name;
+                        /*
                         MonitorTarget target_dbfs = _Begin ?
                             CreateForRegistryValue(keyPath, regKey, name, "registry") :
+                            collection.GetMonitorTarget(keyPath, name) ?? CreateForRegistryValue(keyPath, regKey, name, "registry");
+                        */
+                        MonitorTarget target_dbfs =
                             collection.GetMonitorTarget(keyPath, name) ?? CreateForRegistryValue(keyPath, regKey, name, "registry");
 
                         MonitorTarget target_monitorfs = CreateForRegistryValue(keyPath, regKey, name, "registry");

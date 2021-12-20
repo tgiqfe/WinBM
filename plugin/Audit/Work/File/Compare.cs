@@ -86,14 +86,14 @@ namespace Audit.Work.File
         /// </summary>
         [TaskParameter]
         [Keys("dateonly", "date")]
-        protected bool _IsDateOnly { get; set; }
+        protected bool? _IsDateOnly { get; set; }
 
         /// IsCreationTime,IsLastWriteTime,IsAccessTimeのいずれかを指定した場合のみ使用
         /// 時間のみを判定する。
         /// IsDateOnly,IsTimeOnlyの両方を指定した場合は、IsDateOnlyを優先する。
         [TaskParameter]
         [Keys("timeonly", "time")]
-        protected bool _IsTimeOnly { get; set; }
+        protected bool? _IsTimeOnly { get; set; }
 
         [TaskParameter]
         [Keys("invert", "not", "no", "none")]

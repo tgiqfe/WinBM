@@ -72,11 +72,11 @@ namespace Audit.Work.File
 
         [TaskParameter]
         [Keys("dateonly", "date")]
-        protected bool _IsDateOnly { get; set; }
+        protected bool? _IsDateOnly { get; set; }
 
         [TaskParameter]
         [Keys("timeonly", "time")]
-        protected bool _IsTimeOnly { get; set; }
+        protected bool? _IsTimeOnly { get; set; }
 
         [TaskParameter]
         [Keys("begin", "start")]

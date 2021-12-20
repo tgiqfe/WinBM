@@ -35,6 +35,9 @@ job:
         %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02
         %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample03
       begin: true
+      creation: true
+      lastWrite: true
+      lastAccess: true
   - task: Standard/Execute/Sleep
     param:
       seconds: 1

@@ -76,11 +76,11 @@ namespace Audit.Work.Directory
 
         [TaskParameter]
         [Keys("dateonly", "date")]
-        protected bool _IsDateOnly { get; set; }
+        protected bool? _IsDateOnly { get; set; }
 
         [TaskParameter]
         [Keys("timeonly", "time")]
-        protected bool _IsTimeOnly { get; set; }
+        protected bool? _IsTimeOnly { get; set; }
 
         [TaskParameter]
         [Keys("begin", "start")]
@@ -191,7 +191,7 @@ namespace Audit.Work.Directory
                     MonitorTarget target_db_leaf = 
                         collection.GetMonitorTarget(filePath) ?? CreateForFile(filePath, "file");
 
-                    MonitorTarget target_monitor_leaf = CreateForDirectory(filePath, "file");
+                    MonitorTarget target_monitor_leaf = CreateForFile(filePath, "file");
                     target_monitor_leaf.Merge_is_Property(target_db_leaf);
                     target_monitor_leaf.CheckExists();
 
