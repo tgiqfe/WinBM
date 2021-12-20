@@ -142,7 +142,7 @@ namespace Audit.Work.Directory
                 new MonitorTargetCollection() :
                 MonitorTargetCollection.Load(GetWatchDBDirectory(), _Id);
             this._MaxDepth ??= 5;
-            this.Success = _Begin;
+            this.Success = _Begin || (collection.Count == 0);
 
             foreach (string path in _Path)
             {
@@ -195,10 +195,7 @@ namespace Audit.Work.Directory
                     target_monitor_leaf.Merge_is_Property(target_db_leaf);
                     target_monitor_leaf.CheckExists();
 
-                    if (target_monitor_leaf.Exists ?? false)
-                    {
-                        ret |= WatchFunctions.CheckFile(target_monitor_leaf, target_db_leaf, dictionary, _serial);
-                    }
+                    ret |= WatchFunctions.CheckFile(target_monitor_leaf, target_db_leaf, dictionary, _serial);
                     collection.SetMonitorTarget(filePath, target_monitor_leaf);
                 }
                 foreach (string dirPath in System.IO.Directory.GetDirectories(target_monitor.Path))

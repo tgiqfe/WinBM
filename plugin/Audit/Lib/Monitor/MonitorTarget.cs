@@ -16,7 +16,6 @@ namespace Audit.Lib.Monitor
     public class MonitorTarget
     {
         public PathType PathType { get; set; }
-        public string FullPath { get; set; }
 
         public string CreationTime { get; set; }
         public string LastWriteTime { get; set; }

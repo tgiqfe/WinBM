@@ -107,9 +107,8 @@ namespace Audit.Work.Registry
             var collection = _Begin ?
                 new MonitorTargetCollection() :
                 MonitorTargetCollection.Load(GetWatchDBDirectory(), _Id);
-
             this._MaxDepth ??= 5;
-            this.Success = _Begin;
+            this.Success = _Begin || (collection.Count == 0);
 
             if (_Name?.Length > 0)
             {
@@ -120,11 +119,6 @@ namespace Audit.Work.Registry
                     {
                         _serial++;
                         dictionary[$"{_serial}_registry"] = regKey.Name + "\\" + name;
-                        /*
-                        MonitorTarget target_dbfs = _Begin ?
-                            CreateForRegistryValue(keyPath, regKey, name, "registry") :
-                            collection.GetMonitorTarget(keyPath, name) ?? CreateForRegistryValue(keyPath, regKey, name, "registry");
-                        */
                         MonitorTarget target_dbfs =
                             collection.GetMonitorTarget(keyPath, name) ?? CreateForRegistryValue(keyPath, regKey, name, "registry");
 
@@ -175,7 +169,6 @@ namespace Audit.Work.Registry
             MonitorTarget target_db =
                 collection.GetMonitorTarget(target_monitor.Path) ?? CreateForRegistryKey(target_monitor.Path, target_monitor.Key, "registry");
 
-
             target_monitor.Merge_is_Property(target_db);
             target_monitor.CheckExists();
 
@@ -198,10 +191,7 @@ namespace Audit.Work.Registry
                     target_monitor_leaf.Merge_is_Property(target_db_leaf);
                     target_monitor_leaf.CheckExists();
 
-                    if (target_monitor_leaf.Exists ?? false)
-                    {
-                        ret |= WatchFunctions.CheckRegistryValue(target_monitor_leaf, target_db_leaf, dictionary, _serial);
-                    }
+                    ret |= WatchFunctions.CheckRegistryValue(target_monitor_leaf, target_db_leaf, dictionary, _serial);
                     collection.SetMonitorTarget(target_monitor_leaf.Path, name, target_monitor_leaf);
                 }
                 foreach (string keyPath in target_monitor.Key.GetSubKeyNames())

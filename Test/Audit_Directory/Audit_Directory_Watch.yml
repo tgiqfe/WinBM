@@ -33,7 +33,6 @@ job:
       path: |-
         %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample01
         %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample03
       begin: true
       creation: true
       lastWrite: true
@@ -50,7 +49,9 @@ job:
       path: |-
         %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample01
         %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample03
+      creation: true
+      lastWrite: true
+      lastAccess: true
   - task: IO/Directory/Delete
     param:
       path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02'
@@ -63,5 +64,31 @@ job:
       path: |-
         %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample01
         %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample03
+  - task: Standard/Execute/Sleep
+    param:
+      seconds: 1
+  - task: IO/File/Write
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample01\sample01.txt'
+      text: samplesampesample123412341234r1251321432143fdfajieopjqk43l2qkl3;2
+  - task: Audit/Directory/Watch
+    param:
+      id: audit_directory_watch
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample01
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02
 
+---
+kind: Job
+metadata:
+  description: アクセスWatch
+  priority: 203
+job:
+  work:
+  - task: Audit/Directory/Watch
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample03
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample04
+      id: audit_directory_watch02
+      begin: true

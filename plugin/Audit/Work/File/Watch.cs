@@ -112,15 +112,18 @@ namespace Audit.Work.File
         public override void MainProcess()
         {
             var dictionary = new Dictionary<string, string>();
-            var collection = MonitorTargetCollection.Load(GetWatchDBDirectory(), _Id);
+            var collection = _Begin ?
+                new MonitorTargetCollection() :
+                MonitorTargetCollection.Load(GetWatchDBDirectory(), _Id);
+            
+            //  Begin=trueあるいは、collectionが空っぽ(今回初回watch)の場合、Successをtrue
+            this.Success = _Begin || (collection.Count == 0);
 
             foreach (string path in _Path)
             {
                 _serial++;
                 dictionary[$"{_serial}_file"] = path;
-                MonitorTarget target_db = _Begin ?
-                    CreateForFile(path, "file") :
-                    collection.GetMonitorTarget(path) ?? CreateForFile(path, "file");
+                MonitorTarget target_db = collection.GetMonitorTarget(path) ?? CreateForFile(path, "file");
 
                 MonitorTarget target_monitor = CreateForFile(path, "file");
                 target_monitor.Merge_is_Property(target_db);

@@ -35,7 +35,6 @@ namespace Audit.Lib.Monitor
 
         public void SetMonitorTarget(string path, MonitorTarget target)
         {
-            target.FullPath = path;
             this[path] = target;
             this._CheckedKeys.Add(path);
         }
@@ -43,7 +42,6 @@ namespace Audit.Lib.Monitor
         public void SetMonitorTarget(string path, string name, MonitorTarget target)
         {
             string regPath = REGPATH_PREFIX + path + "\\" + name;
-            target.FullPath = regPath;
             this[regPath] = target;
             this._CheckedKeys.Add(regPath);
         }

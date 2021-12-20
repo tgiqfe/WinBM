@@ -172,7 +172,6 @@ namespace Audit.Work.Registry
             AddAudit(dictionary, this._Invert);
         }
 
-
         private bool RecursiveTree(MonitorTarget targetA, MonitorTarget targetB, Dictionary<string, string> dictionary, int depth)
         {
             bool ret = true;
