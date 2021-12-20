@@ -1,0 +1,64 @@
+---
+kind: Job
+metadata:
+  name: ディレクトリCompare
+  description: テスト[準備]
+  priority: 201
+job:
+  work:
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch'
+      force: true
+  - task: IO/Directory/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample01
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample03
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample04
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample05
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample06
+
+---
+kind: Job
+metadata:
+  description: タイムスタンプWatch
+  priority: 202
+job:
+  work:
+  - task: Audit/Directory/Watch
+    param:
+      id: audit_directory_watch
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample01
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample03
+      begin: true
+  - task: Standard/Execute/Sleep
+    param:
+      seconds: 1
+  - task: IO/File/Create
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample01\sample01.txt'
+  - task: Audit/Directory/Watch
+    param:
+      id: audit_directory_watch
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample01
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample03
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02'
+  - task: IO/Directory/Create
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02'
+  - task: Audit/Directory/Watch
+    param:
+      id: audit_directory_watch
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample01
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample03
+

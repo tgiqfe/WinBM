@@ -18,29 +18,29 @@ namespace Audit.Lib.Monitor
 
         public MonitorTargetCollection() { }
 
-        #region Get/Set MonitoredTarget
+        #region Get/Set MonitorTarget
 
-        public MonitorTarget GetMonitoredTarget(string path)
+        public MonitorTarget GetMonitorTarget(string path)
         {
             string matchKey = this.Keys.FirstOrDefault(x => x.Equals(path, StringComparison.OrdinalIgnoreCase));
             return matchKey == null ? null : this[matchKey];
         }
 
-        public MonitorTarget GetMonitoredTarget(string path, string name)
+        public MonitorTarget GetMonitorTarget(string path, string name)
         {
             string regPath = REGPATH_PREFIX + path + "\\" + name;
             string matchKey = this.Keys.FirstOrDefault(x => x.Equals(regPath, StringComparison.OrdinalIgnoreCase));
             return matchKey == null ? null : this[matchKey];
         }
 
-        public void SetMonitoredTarget(string path, MonitorTarget target)
+        public void SetMonitorTarget(string path, MonitorTarget target)
         {
             target.FullPath = path;
             this[path] = target;
             this._CheckedKeys.Add(path);
         }
 
-        public void SetMonitoredTarget(string path, string name, MonitorTarget target)
+        public void SetMonitorTarget(string path, string name, MonitorTarget target)
         {
             string regPath = REGPATH_PREFIX + path + "\\" + name;
             target.FullPath = regPath;

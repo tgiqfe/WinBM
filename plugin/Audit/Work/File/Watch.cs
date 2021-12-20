@@ -120,7 +120,7 @@ namespace Audit.Work.File
                 dictionary[$"{_serial}_file"] = path;
                 MonitorTarget target_db = _Begin ?
                     CreateForFile(path, "file") :
-                    collection.GetMonitoredTarget(path) ?? CreateForFile(path, "file");
+                    collection.GetMonitorTarget(path) ?? CreateForFile(path, "file");
 
                 MonitorTarget target_monitor = CreateForFile(path, "file");
                 target_monitor.Merge_is_Property(target_db);
@@ -130,7 +130,7 @@ namespace Audit.Work.File
                 {
                     Success |= WatchFunctions.CheckFile(target_monitor, target_db, dictionary, _serial);
                 }
-                collection.SetMonitoredTarget(path, target_monitor);
+                collection.SetMonitorTarget(path, target_monitor);
             }
             collection.Save(GetWatchDBDirectory(), _Id);
 

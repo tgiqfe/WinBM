@@ -95,7 +95,6 @@ namespace Audit.Work.Directory
         protected bool _Invert { get; set; }
 
         private int _serial;
-        private string _checkingPath;
 
         private MonitorTarget CreateForFile(string path, string pathTypeName)
         {
@@ -139,12 +138,14 @@ namespace Audit.Work.Directory
         public override void MainProcess()
         {
             var dictionary = new Dictionary<string, string>();
-            var collection = MonitorTargetCollection.Load(GetWatchDBDirectory(), _Id);
-            _MaxDepth ??= 5;
+            var collection = _Begin ?
+                new MonitorTargetCollection() :
+                MonitorTargetCollection.Load(GetWatchDBDirectory(), _Id);
+            this._MaxDepth ??= 5;
+            this.Success = _Begin;
 
             foreach (string path in _Path)
             {
-                _checkingPath = path;
                 Success |= RecursiveTree(
                     collection,
                     CreateForDirectory(path, "directory"),
@@ -168,12 +169,9 @@ namespace Audit.Work.Directory
             bool ret = false;
 
             _serial++;
-            dictionary[$"{_serial}_directory"] = (target_monitor.Path == _checkingPath) ?
-                target_monitor.Path :
-                target_monitor.Path.Replace(_checkingPath, "");
-            MonitorTarget target_db = _Begin ?
-                CreateForDirectory(target_monitor.Path, "directory") :
-                collection.GetMonitoredTarget(target_monitor.Path) ?? CreateForDirectory(target_monitor.Path, "directory");
+            dictionary[$"{_serial}_directory"] = target_monitor.Path;
+            MonitorTarget target_db = 
+                collection.GetMonitorTarget(target_monitor.Path) ?? CreateForDirectory(target_monitor.Path, "directory");
 
             target_monitor.Merge_is_Property(target_db);
             target_monitor.CheckExists();
@@ -182,17 +180,16 @@ namespace Audit.Work.Directory
             {
                 ret |= WatchFunctions.CheckDirectory(target_monitor, target_db, dictionary, _serial, depth);
             }
-            collection.SetMonitoredTarget(target_monitor.Path, target_monitor);
+            collection.SetMonitorTarget(target_monitor.Path, target_monitor);
 
             if (depth < _MaxDepth && (target_monitor.Exists ?? false))
             {
                 foreach (string filePath in System.IO.Directory.GetFiles(target_monitor.Path))
                 {
                     _serial++;
-                    dictionary[$"{_serial}_file"] = filePath.Replace(_checkingPath, "");
-                    MonitorTarget target_db_leaf = _Begin ?
-                        CreateForFile(filePath, "file") :
-                        collection.GetMonitoredTarget(filePath) ?? CreateForFile(filePath, "file");
+                    dictionary[$"{_serial}_file"] = filePath;
+                    MonitorTarget target_db_leaf = 
+                        collection.GetMonitorTarget(filePath) ?? CreateForFile(filePath, "file");
 
                     MonitorTarget target_monitor_leaf = CreateForDirectory(filePath, "file");
                     target_monitor_leaf.Merge_is_Property(target_db_leaf);
@@ -202,7 +199,7 @@ namespace Audit.Work.Directory
                     {
                         ret |= WatchFunctions.CheckFile(target_monitor_leaf, target_db_leaf, dictionary, _serial);
                     }
-                    collection.SetMonitoredTarget(filePath, target_monitor_leaf);
+                    collection.SetMonitorTarget(filePath, target_monitor_leaf);
                 }
                 foreach (string dirPath in System.IO.Directory.GetDirectories(target_monitor.Path))
                 {
