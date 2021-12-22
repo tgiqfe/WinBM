@@ -117,9 +117,22 @@ namespace Audit.Work.Registry
             //if (_IsDateOnly != null) { collection.IsDateOnly = _IsDateOnly; }
             //if (_IsTimeOnly != null) { collection.IsTimeOnly = _IsTimeOnly; }
 
-            if (collection.PrevTargetPaths?.Length > 0)
+            if (collection.PrevNames?.Length > 0)
             {
-                var tempPaths = collection.PrevTargetPaths.ToList();
+                if (collection.PrevPaths?.Length > 0)
+                {
+                    this._Path = collection.PrevPaths;
+                }
+                var tempNames = collection.PrevNames.ToList();
+                if (_Name?.Length > 0)
+                {
+                    tempNames.AddRange(_Name);
+                }
+                this._Name = tempNames.Distinct().ToArray();
+            }
+            else if (collection.PrevPaths?.Length > 0)
+            {
+                var tempPaths = collection.PrevPaths.ToList();
                 if (_Path?.Length > 0)
                 {
                     tempPaths.AddRange(_Path);
@@ -167,10 +180,8 @@ namespace Audit.Work.Registry
                         collection.SetMonitorTarget(keyPath, name, target_leaf);
                     }
                 }
-
-
-                //  ↓が要検討。PrevTargetPathの保存/取り出しのアルゴリズムについて考える
-                collection.PrevTargetPaths = _Name.Select(x => "[reg]" + keyPath + "\\" + x).ToArray();
+                collection.PrevPaths = _Path;
+                collection.PrevNames = _Name;
             }
             else
             {
@@ -192,7 +203,7 @@ namespace Audit.Work.Registry
                     collection.Targets.Remove(uncheckedPath);
                     Success = true;
                 }
-                collection.PrevTargetPaths = _Path;
+                collection.PrevPaths = _Path;
             }
             collection.Save(GetWatchDBDirectory(), _Id);
 

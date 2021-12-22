@@ -136,9 +136,9 @@ namespace Audit.Work.Directory
             if (_IsDateOnly != null) { collection.IsDateOnly = _IsDateOnly; }
             if (_IsTimeOnly != null) { collection.IsTimeOnly = _IsTimeOnly; }
 
-            if (collection.PrevTargetPaths?.Length > 0)
+            if (collection.PrevPaths?.Length > 0)
             {
-                var tempPaths = collection.PrevTargetPaths.ToList();
+                var tempPaths = collection.PrevPaths.ToList();
                 if (_Path?.Length > 0)
                 {
                     tempPaths.AddRange(_Path);
@@ -182,7 +182,7 @@ namespace Audit.Work.Directory
                 collection.Targets.Remove(uncheckedPath);
                 Success = true;
             }
-            collection.PrevTargetPaths = _Path;
+            collection.PrevPaths = _Path;
             collection.Save(GetWatchDBDirectory(), _Id);
 
             AddAudit(dictionary, this._Invert);
