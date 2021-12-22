@@ -19,7 +19,7 @@ namespace Audit.Work.Registry
         [Keys("id", "serial", "serialkey", "number", "uniquekey")]
         protected string _Id { get; set; }
 
-        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(ResolvEnv = true, Delimiter = ';')]
         [Keys("path", "registrypath", "targetpath", "key", "registrykey", "targetkey", "regkey", "target")]
         protected string[] _Path { get; set; }
 
@@ -117,9 +117,22 @@ namespace Audit.Work.Registry
             //if (_IsDateOnly != null) { collection.IsDateOnly = _IsDateOnly; }
             //if (_IsTimeOnly != null) { collection.IsTimeOnly = _IsTimeOnly; }
 
-            if (collection.PrevTargetPaths?.Length > 0)
+            if (collection.PrevNames?.Length > 0)
             {
-                var tempPaths = collection.PrevTargetPaths.ToList();
+                if (collection.PrevPaths?.Length > 0)
+                {
+                    this._Path = collection.PrevPaths;
+                }
+                var tempNames = collection.PrevNames.ToList();
+                if (_Name?.Length > 0)
+                {
+                    tempNames.AddRange(_Name);
+                }
+                this._Name = tempNames.Distinct().ToArray();
+            }
+            else if (collection.PrevPaths?.Length > 0)
+            {
+                var tempPaths = collection.PrevPaths.ToList();
                 if (_Path?.Length > 0)
                 {
                     tempPaths.AddRange(_Path);
@@ -137,7 +150,16 @@ namespace Audit.Work.Registry
                 CreateMonitorTargetCollection() :
                 MergeMonitorTargetCollection(MonitorTargetCollection.Load(GetWatchDBDirectory(), _Id));
             this._MaxDepth ??= 5;
-            this.Success = _Begin || (collection.Targets.Count == 0);
+
+            if (_Begin || (collection.Targets.Count == 0))
+            {
+                this.Success = true;
+                if (_Path == null || _Path.Length == 0)
+                {
+                    Manager.WriteLog(LogLevel.Error, "Failed parameter, Path parameter is required.");
+                    return;
+                }
+            }
 
             if (_Name?.Length > 0)
             {
@@ -158,6 +180,8 @@ namespace Audit.Work.Registry
                         collection.SetMonitorTarget(keyPath, name, target_leaf);
                     }
                 }
+                collection.PrevPaths = _Path;
+                collection.PrevNames = _Name;
             }
             else
             {
@@ -179,8 +203,8 @@ namespace Audit.Work.Registry
                     collection.Targets.Remove(uncheckedPath);
                     Success = true;
                 }
+                collection.PrevPaths = _Path;
             }
-            collection.PrevTargetPaths = _Path;
             collection.Save(GetWatchDBDirectory(), _Id);
 
             AddAudit(dictionary, this._Invert);

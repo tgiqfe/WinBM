@@ -1,7 +1,7 @@
 ---
 kind: Job
 metadata:
-  name: ディレクトリCompare
+  name: DirectoryCompare
   description: テスト[準備]
   priority: 201
 job:

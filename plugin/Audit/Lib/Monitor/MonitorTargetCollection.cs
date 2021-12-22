@@ -29,7 +29,8 @@ namespace Audit.Lib.Monitor
         public bool? IsDateOnly { get; set; }
         public bool? IsTimeOnly { get; set; }
 
-        public string[] PrevTargetPaths { get; set; }
+        public string[] PrevPaths { get; set; }
+        public string[] PrevNames { get; set; }
 
         public Dictionary<string, MonitorTarget> Targets { get; set; }
 
@@ -523,8 +524,9 @@ namespace Audit.Lib.Monitor
         {
             bool ret = false;
 
-            MonitorTarget target_db = this.Targets.ContainsKey(target.Path) ?
-                this.Targets[target.Path] :
+            string regPath = REGPATH_PREFIX + target.Path + "\\" + target.Name;
+            MonitorTarget target_db = this.Targets.ContainsKey(regPath) ?
+                this.Targets[regPath] :
                 new MonitorTarget(PathType.Registry, target.Path, "registry", target.Key, target.Name);
 
             //  MD5Hash
