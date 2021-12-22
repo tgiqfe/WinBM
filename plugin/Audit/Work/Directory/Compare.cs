@@ -28,15 +28,15 @@ namespace Audit.Work.Directory
         //  ################################
 
         [TaskParameter(MandatoryAny = 1)]
-        [Keys("iscreationtime", "creationtime", "creation", "iscreationdate", "creationdate")]
+        [Keys("iscreationtime", "creationtime", "iscreation", "creation", "iscreationdate", "creationdate")]
         protected bool? _IsCreationTime { get; set; }
 
         [TaskParameter(MandatoryAny = 2)]
-        [Keys("islastwritetime", "lastwritetime", "lastwrite", "islastwritedate", "lastwritedate", "modifytime", "modifydate", "modtime", "moddate")]
+        [Keys("islastwritetime", "lastwritetime", "islastwrite", "lastwrite", "islastwritedate", "lastwritedate", "islastwrite", "modifytime", "modifydate", "modtime", "moddate")]
         protected bool? _IsLastWriteTime { get; set; }
 
         [TaskParameter(MandatoryAny = 3)]
-        [Keys("islastaccesstime", "lastaccesstime", "lastaccess", "lastaccessdate", "lastaccess")]
+        [Keys("islastaccesstime", "lastaccesstime", "islastaccess", "lastaccess", "islastaccessdate", "lastaccessdate")]
         protected bool? _IsLastAccessTime { get; set; }
 
         [TaskParameter(MandatoryAny = 4)]

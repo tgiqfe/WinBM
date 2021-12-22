@@ -25,15 +25,15 @@ namespace Audit.Work.File
         //  ################################
 
         [TaskParameter]
-        [Keys("iscreationtime", "creationtime", "creation", "iscreationdate", "creationdate")]
+        [Keys("iscreationtime", "creationtime", "iscreation", "creation", "iscreationdate", "creationdate")]
         protected bool? _IsCreationTime { get; set; }
 
         [TaskParameter]
-        [Keys("islastwritetime", "lastwritetime", "lastwrite", "islastwritedate", "lastwritedate", "modifytime", "modifydate", "modtime", "moddate")]
+        [Keys("islastwritetime", "lastwritetime", "islastwrite", "lastwrite", "islastwritedate", "lastwritedate", "islastwrite", "modifytime", "modifydate", "modtime", "moddate")]
         protected bool? _IsLastWriteTime { get; set; }
 
         [TaskParameter]
-        [Keys("islastaccesstime", "lastaccesstime", "lastaccess", "lastaccessdate", "lastaccess")]
+        [Keys("islastaccesstime", "lastaccesstime", "islastaccess", "lastaccess", "islastaccessdate", "lastaccessdate")]
         protected bool? _IsLastAccessTime { get; set; }
 
         [TaskParameter]
