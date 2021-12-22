@@ -118,7 +118,7 @@ namespace Audit.Work.Registry
 
             if ((_NameA == null && _NameB != null) || (_NameA != null && _NameB == null))
             {
-                //Manager.WriteLog(LogLevel.Error, "Failed parameter, Both name parameter required.");
+                Manager.WriteLog(LogLevel.Error, "Failed parameter, Both name parameter required.");
                 return;
             }
 

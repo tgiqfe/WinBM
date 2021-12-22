@@ -19,7 +19,7 @@ namespace Audit.Work.Registry
         [Keys("id", "serial", "serialkey", "number", "uniquekey")]
         protected string _Id { get; set; }
 
-        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(ResolvEnv = true, Delimiter = ';')]
         [Keys("path", "registrypath", "targetpath", "key", "registrykey", "targetkey", "regkey", "target")]
         protected string[] _Path { get; set; }
 
@@ -137,7 +137,16 @@ namespace Audit.Work.Registry
                 CreateMonitorTargetCollection() :
                 MergeMonitorTargetCollection(MonitorTargetCollection.Load(GetWatchDBDirectory(), _Id));
             this._MaxDepth ??= 5;
-            this.Success = _Begin || (collection.Targets.Count == 0);
+
+            if (_Begin || (collection.Targets.Count == 0))
+            {
+                this.Success = true;
+                if (_Path == null || _Path.Length == 0)
+                {
+                    Manager.WriteLog(LogLevel.Error, "Failed parameter, Path parameter is required.");
+                    return;
+                }
+            }
 
             if (_Name?.Length > 0)
             {
@@ -158,6 +167,10 @@ namespace Audit.Work.Registry
                         collection.SetMonitorTarget(keyPath, name, target_leaf);
                     }
                 }
+
+
+                //  ↓が要検討。PrevTargetPathの保存/取り出しのアルゴリズムについて考える
+                collection.PrevTargetPaths = _Name.Select(x => "[reg]" + keyPath + "\\" + x).ToArray();
             }
             else
             {
@@ -179,8 +192,8 @@ namespace Audit.Work.Registry
                     collection.Targets.Remove(uncheckedPath);
                     Success = true;
                 }
+                collection.PrevTargetPaths = _Path;
             }
-            collection.PrevTargetPaths = _Path;
             collection.Save(GetWatchDBDirectory(), _Id);
 
             AddAudit(dictionary, this._Invert);

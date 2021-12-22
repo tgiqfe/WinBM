@@ -18,7 +18,7 @@ namespace Audit.Work.Directory
         [Keys("id", "serial", "serialkey", "number", "uniquekey")]
         protected string _Id { get; set; }
 
-        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(ResolvEnv = true, Delimiter = ';')]
         [Keys("path", "directorypath", "folderpath", "dirpath", "target", "targetpath")]
         protected string[] _Path { get; set; }
 
@@ -156,7 +156,16 @@ namespace Audit.Work.Directory
                 CreateMonitorTargetCollection() :
                 MergeMonitorTargetCollection(MonitorTargetCollection.Load(GetWatchDBDirectory(), _Id));
             this._MaxDepth ??= 5;
-            this.Success = _Begin || (collection.Targets.Count == 0);
+
+            if (_Begin || (collection.Targets.Count == 0))
+            {
+                this.Success = true;
+                if (_Path == null || _Path.Length == 0)
+                {
+                    Manager.WriteLog(LogLevel.Error, "Failed parameter, Path parameter is required.");
+                    return;
+                }
+            }
 
             foreach (string path in _Path)
             {

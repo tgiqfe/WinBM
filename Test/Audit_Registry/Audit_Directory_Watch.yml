@@ -1,0 +1,106 @@
+---
+kind: Job
+metadata:
+  name: RegistryCompare
+  description: テスト[準備]
+  priority: 201
+job:
+  work:
+  - task: IO/Registry/Delete
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Watch'
+      force: true
+  - task: IO/Registry/Create
+    param:
+      path: |-
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Watch\Sample01
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Watch\Sample02
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Watch\Sample03
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Watch\Sample04
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Watch\Sample05
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Watch\Sample06
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Watch\Sample01'
+      name: 'aaaa'
+      value: '1234'
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Watch\Sample02'
+      name: 'aaaa'
+      value: '1234'
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Watch\Sample03'
+      name: 'aaaa'
+      value: '1234'
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Watch\Sample04'
+      name: 'aaaa'
+      value: '1234'
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Watch\Sample05'
+      name: 'bbbb'
+      value: 1234
+      type: REG_DWORD
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Watch\Sample06'
+      name: 'bbbb'
+      value: 1234
+      type: REG_DWORD
+
+---
+kind: Job
+metadata:
+  description: アクセス権、継承のWatch
+  priority: 202
+job:
+  work:
+  - task: Audit/Registry/Watch
+    param:
+      id: reg_watch_01
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Watch\Sample01'
+      begin: true
+      access: true
+      inherited: true
+  - task: IO/Registry/Grant
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Watch\Sample01'
+      access: 'Administrators;FullControl;Container Inherited;None;Allow'
+      inherited: disabled
+  - task: Audit/Registry/Watch
+    param:
+      id: reg_watch_01
+
+---
+kind: Job
+metadata:
+  description: ハッシュ、レジストリ種類のWatch
+  priority: 203
+job:
+  work:
+  - task: Audit/Registry/Watch
+    param:
+      id: reg_watch_02
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Watch\Sample02'
+      name: 'aaaa'
+      begin: true
+      registryType: true
+      sha256: true
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\Watch\Sample02'
+      name: 'aaaa'
+      value: '5678'
+  - task: Audit/Registry/Watch
+    param:
+      id: reg_watch_02
+
+
