@@ -3,12 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Audit.Lib.Monitor;
+using IO.Lib;
 
 namespace Audit.Lib.Monitor
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class CompareFunctions
     {
+        public void CheckCreationTime(MonitorTarget target, bool isDateOnly, bool isTimeOnly)
+        {
+            target.CreationTime = target.PathType switch
+            {
+                PathType.File => MonitorFunctions.GetCreationTime(target.FileInfo, isDateOnly, isTimeOnly),
+                PathType.Directory => MonitorFunctions.GetCreationTime(target.DirectoryInfo, isDateOnly, isTimeOnly),
+                _ => null,
+            };
+        }
+
+        
+
+
+
+
         /// <summary>
         /// ファイルのCompareチェック
         /// </summary>

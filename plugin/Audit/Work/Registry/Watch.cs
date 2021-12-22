@@ -75,40 +75,69 @@ namespace Audit.Work.Registry
         [Keys("invert", "not", "no", "none")]
         protected bool _Invert { get; set; }
 
-        private int _serial;
+        private int _serial = 0;
 
-        private MonitorTarget CreateForRegistryKey(string path, RegistryKey key, string pathTypeName)
+        private MonitorTargetCollection CreateMonitorTargetCollection()
         {
-            return new MonitorTarget(PathType.Registry, path, key)
+            return new MonitorTargetCollection()
             {
-                PathTypeName = pathTypeName,
+                //IsCreationTime = _IsCreationTime,
+                //IsLastWriteTime = _IsLastWriteTime,
+                //IsLastAccessTime = _IsLastAccessTime,
                 IsAccess = _IsAccess,
                 IsOwner = _IsOwner,
                 IsInherited = _IsInherited,
-                IsChildCount = _IsChildCount,
-            };
-        }
-
-        private MonitorTarget CreateForRegistryValue(string path, RegistryKey key, string name, string pathTypeName)
-        {
-            return new MonitorTarget(PathType.Registry, path, key, name)
-            {
-                PathTypeName = pathTypeName,
+                //IsAttributes = _IsAttributes,
                 IsMD5Hash = _IsMD5Hash,
                 IsSHA256Hash = _IsSHA256Hash,
                 IsSHA512Hash = _IsSHA512Hash,
+                //IsSize = _IsSize,
+                IsChildCount = _IsChildCount,
                 IsRegistryType = _IsRegistryType,
+                //IsDateOnly = _IsDateOnly,
+                //IsTimeOnly = _IsTimeOnly,
             };
+        }
+
+        private MonitorTargetCollection MergeMonitorTargetCollection(MonitorTargetCollection collection)
+        {
+            //if (_IsCreationTime != null) { collection.IsCreationTime = _IsCreationTime; }
+            //if (_IsLastWriteTime != null) { collection.IsLastWriteTime = _IsLastWriteTime; }
+            //if (_IsLastAccessTime != null) { collection.IsLastAccessTime = _IsLastAccessTime; }
+            if (_IsAccess != null) { collection.IsAccess = _IsAccess; }
+            if (_IsOwner != null) { collection.IsOwner = _IsOwner; }
+            if (_IsInherited != null) { collection.IsInherited = _IsInherited; }
+            //if (_IsAttributes != null) { collection.IsAttributes = _IsAttributes; }
+            if (_IsMD5Hash != null) { collection.IsMD5Hash = _IsMD5Hash; }
+            if (_IsSHA256Hash != null) { collection.IsSHA256Hash = _IsSHA256Hash; }
+            if (_IsSHA512Hash != null) { collection.IsSHA512Hash = _IsSHA512Hash; }
+            //if (_IsSize != null) { collection.IsSize = _IsSize; }
+            if (_IsChildCount != null) { collection.IsChildCount = _IsChildCount; }
+            if (_IsRegistryType != null) { collection.IsRegistryType = _IsRegistryType; }
+            //if (_IsDateOnly != null) { collection.IsDateOnly = _IsDateOnly; }
+            //if (_IsTimeOnly != null) { collection.IsTimeOnly = _IsTimeOnly; }
+
+            if (collection.PrevTargetPaths?.Length > 0)
+            {
+                var tempPaths = collection.PrevTargetPaths.ToList();
+                if (_Path?.Length > 0)
+                {
+                    tempPaths.AddRange(_Path);
+                }
+                this._Path = tempPaths.Distinct().ToArray();
+            }
+
+            return collection;
         }
 
         public override void MainProcess()
         {
             var dictionary = new Dictionary<string, string>();
             var collection = _Begin ?
-                new MonitorTargetCollection() :
-                MonitorTargetCollection.Load(GetWatchDBDirectory(), _Id);
+                CreateMonitorTargetCollection() :
+                MergeMonitorTargetCollection(MonitorTargetCollection.Load(GetWatchDBDirectory(), _Id));
             this._MaxDepth ??= 5;
-            this.Success = _Begin || (collection.Count == 0);
+            this.Success = _Begin || (collection.Targets.Count == 0);
 
             if (_Name?.Length > 0)
             {
@@ -119,18 +148,14 @@ namespace Audit.Work.Registry
                     {
                         _serial++;
                         dictionary[$"{_serial}_registry"] = regKey.Name + "\\" + name;
-                        MonitorTarget target_dbfs =
-                            collection.GetMonitorTarget(keyPath, name) ?? CreateForRegistryValue(keyPath, regKey, name, "registry");
 
-                        MonitorTarget target_monitorfs = CreateForRegistryValue(keyPath, regKey, name, "registry");
-                        target_monitorfs.Merge_is_Property(target_dbfs);
-                        target_monitorfs.CheckExists();
-
-                        if (target_monitorfs.Exists ?? false)
+                        MonitorTarget target_leaf = new MonitorTarget(PathType.Registry, keyPath, "registry", regKey, name);
+                        target_leaf.CheckExists();
+                        if (target_leaf.Exists ?? false)
                         {
-                            Success |= WatchFunctions.CheckRegistryValue(target_monitorfs, target_dbfs, dictionary, _serial);
+                            Success |= collection.CheckRegistryValue(target_leaf, dictionary, _serial);
                         }
-                        collection.SetMonitorTarget(keyPath, name, target_monitorfs);
+                        collection.SetMonitorTarget(keyPath, name, target_leaf);
                     }
                 }
             }
@@ -142,7 +167,7 @@ namespace Audit.Work.Registry
                     {
                         Success |= RecursiveTree(
                             collection,
-                            CreateForRegistryKey(path, regKey, "registry"),
+                            new MonitorTarget(PathType.Registry, path, "registry", regKey),
                             dictionary,
                             0);
                     }
@@ -151,56 +176,48 @@ namespace Audit.Work.Registry
                 {
                     _serial++;
                     dictionary[$"{_serial}_remove"] = uncheckedPath;
-                    collection.Remove(uncheckedPath);
+                    collection.Targets.Remove(uncheckedPath);
                     Success = true;
                 }
             }
+            collection.PrevTargetPaths = _Path;
             collection.Save(GetWatchDBDirectory(), _Id);
 
             AddAudit(dictionary, this._Invert);
         }
 
-        private bool RecursiveTree(MonitorTargetCollection collection, MonitorTarget target_monitor, Dictionary<string, string> dictionary, int depth)
+        private bool RecursiveTree(MonitorTargetCollection collection, MonitorTarget target, Dictionary<string, string> dictionary, int depth)
         {
             bool ret = false;
 
             _serial++;
-            dictionary[$"{_serial}_registry"] = target_monitor.Path;
-            MonitorTarget target_db =
-                collection.GetMonitorTarget(target_monitor.Path) ?? CreateForRegistryKey(target_monitor.Path, target_monitor.Key, "registry");
-
-            target_monitor.Merge_is_Property(target_db);
-            target_monitor.CheckExists();
-
-            if (target_monitor.Exists ?? false)
+            dictionary[$"{_serial}_registry"] = target.Path;
+            target.CheckExists();
+            if (target.Exists ?? false)
             {
-                ret |= WatchFunctions.CheckRegistrykey(target_monitor, target_db, dictionary, _serial, depth);
+                ret |= collection.CheckRegistryKey(target, dictionary, _serial, depth);
             }
-            collection.SetMonitorTarget(target_monitor.Path, target_monitor);
+            collection.SetMonitorTarget(target.Path, target);
 
-            if (depth < _MaxDepth && (target_monitor.Exists ?? false))
+            if (depth < _MaxDepth && (target.Exists ?? false))
             {
-                foreach (string name in target_monitor.Key.GetValueNames())
+                foreach (string name in target.Key.GetValueNames())
                 {
                     _serial++;
-                    dictionary[$"{_serial}_registry"] = target_monitor.Path + "\\" + name;
-                    MonitorTarget target_db_leaf =
-                        collection.GetMonitorTarget(target_monitor.Path, name) ?? CreateForRegistryValue(target_monitor.Path, target_monitor.Key, name, "registry");
+                    dictionary[$"{_serial}_registry"] = target.Path + "\\" + name;
 
-                    MonitorTarget target_monitor_leaf = CreateForRegistryValue(target_monitor.Path, target_monitor.Key, name, "registry");
-                    target_monitor_leaf.Merge_is_Property(target_db_leaf);
-                    target_monitor_leaf.CheckExists();
-
-                    ret |= WatchFunctions.CheckRegistryValue(target_monitor_leaf, target_db_leaf, dictionary, _serial);
-                    collection.SetMonitorTarget(target_monitor_leaf.Path, name, target_monitor_leaf);
+                    MonitorTarget target_leaf = new MonitorTarget(PathType.Registry, target.Path, "registry", target.Key, name);
+                    target_leaf.CheckExists();
+                    ret |= collection.CheckRegistryValue(target_leaf, dictionary, _serial);
+                    collection.SetMonitorTarget(target_leaf.Path, name, target_leaf);
                 }
-                foreach (string keyPath in target_monitor.Key.GetSubKeyNames())
+                foreach (string keyPath in target.Key.GetSubKeyNames())
                 {
-                    using (RegistryKey subRegKey = target_monitor.Key.OpenSubKey(keyPath, false))
+                    using (RegistryKey subRegKey = target.Key.OpenSubKey(keyPath, false))
                     {
                         ret |= RecursiveTree(
                             collection,
-                            CreateForRegistryKey(Path.Combine(target_monitor.Path, keyPath), subRegKey, "registry"),
+                            new MonitorTarget(PathType.Registry, Path.Combine(target.Path, keyPath), "registry", subRegKey),
                             dictionary,
                             depth + 1);
                     }

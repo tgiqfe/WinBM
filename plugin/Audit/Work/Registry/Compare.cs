@@ -86,27 +86,25 @@ namespace Audit.Work.Registry
 
         private int _serial = 0;
 
-        private MonitorTarget CreateForRegistryKey(string path, RegistryKey key, string pathTypeName)
+        private MonitorTargetPair CreateMonitorTargetPair(MonitorTarget targetA, MonitorTarget targetB)
         {
-            return new MonitorTarget(PathType.Registry, path, key)
+            return new MonitorTargetPair(targetA, targetB)
             {
-                PathTypeName = pathTypeName,
+                //IsCreationTime = _IsCreationTime,
+                //IsLastWriteTime = _IsLastWriteTime,
+                //IsLastAccessTime = _IsLastAccessTime,
                 IsAccess = _IsAccess,
                 IsOwner = _IsOwner,
                 IsInherited = _IsInherited,
-                IsChildCount = _IsChildCount,
-            };
-        }
-
-        private MonitorTarget CreateForRegistryValue(string path, RegistryKey key, string name, string pathTypeName)
-        {
-            return new MonitorTarget(PathType.Registry, path, key, name)
-            {
-                PathTypeName = pathTypeName,
+                //IsAttributes = _IsAttributes,
                 IsMD5Hash = _IsMD5Hash,
                 IsSHA256Hash = _IsSHA256Hash,
                 IsSHA512Hash = _IsSHA512Hash,
+                //IsSize = _IsSize,
+                IsChildCount = _IsChildCount,
                 IsRegistryType = _IsRegistryType,
+                //IsDateOnly = _IsDateOnly,
+                //IsTimeOnly = _IsTimeOnly,
             };
         }
 
@@ -120,7 +118,7 @@ namespace Audit.Work.Registry
 
             if ((_NameA == null && _NameB != null) || (_NameA != null && _NameB == null))
             {
-                Manager.WriteLog(LogLevel.Error, "Failed parameter, Both name parameter required.");
+                //Manager.WriteLog(LogLevel.Error, "Failed parameter, Both name parameter required.");
                 return;
             }
 
@@ -130,16 +128,18 @@ namespace Audit.Work.Registry
                 using (RegistryKey keyA = RegistryControl.GetRegistryKey(_PathA, false, false))
                 using (RegistryKey keyB = RegistryControl.GetRegistryKey(_PathB, false, false))
                 {
-                    MonitorTarget targetA = CreateForRegistryValue(_PathA, keyA, _NameA, "registryA");
-                    MonitorTarget targetB = CreateForRegistryValue(_PathB, keyB, _NameB, "registryB");
+                    MonitorTarget targetA = new MonitorTarget(PathType.Registry, _PathA, "registryA", keyA, _NameA);
+                    MonitorTarget targetB = new MonitorTarget(PathType.Registry, _PathB, "registryB", keyB, _NameB);
                     targetA.CheckExists();
                     targetB.CheckExists();
 
                     if ((targetA.Exists ?? false) && (targetB.Exists ?? false))
                     {
-                        dictionary["registryA_Exists"] = _PathA + "\\" + _NameA;
-                        dictionary["registryB_Exists"] = _PathB + "\\" + _NameB;
-                        Success &= CompareFunctions.CheckRegistryValue(targetA, targetB, dictionary, _serial);
+                        dictionary[$"{_serial}_registryA_Exists"] = _PathA + "\\" + _NameA;
+                        dictionary[$"{_serial}_registryB_Exists"] = _PathB + "\\" + _NameB;
+
+                        var targetPair = CreateMonitorTargetPair(targetA, targetB);
+                        Success &= targetPair.CheckRegistryValue(dictionary, _serial);
                     }
                     else
                     {
@@ -162,8 +162,8 @@ namespace Audit.Work.Registry
                 using (RegistryKey keyB = RegistryControl.GetRegistryKey(_PathB, false, false))
                 {
                     Success &= RecursiveTree(
-                        CreateForRegistryKey(_PathA, keyA, "registryA"),
-                        CreateForRegistryKey(_PathB, keyB, "registryB"),
+                        new MonitorTarget(PathType.Registry, _PathA, "registryA", keyA),
+                        new MonitorTarget(PathType.Registry, _PathB, "registryB", keyB),
                          dictionary,
                          0);
                 }
@@ -187,15 +187,17 @@ namespace Audit.Work.Registry
 
                 if (depth < _MaxDepth)
                 {
-                    foreach (string childName in targetA.Key.GetValueNames())
+                    var leaves = targetA.Key.GetValueNames().ToList();
+                    leaves.AddRange(targetB.Key.GetValueNames());
+                    foreach (string childName in leaves.Distinct())
                     {
                         _serial++;
-                        MonitorTarget targetA_leaf = CreateForRegistryValue(targetA.Path, targetA.Key, childName, "registryA");
-                        MonitorTarget targetB_leaf = CreateForRegistryValue(targetB.Path, targetB.Key, childName, "registryB");
+                        MonitorTarget targetA_leaf = new MonitorTarget(PathType.Registry, targetA.Path, "registryA", targetA.Key, childName);
+                        MonitorTarget targetB_leaf = new MonitorTarget(PathType.Registry, targetB.Path, "registryB", targetB.Key, childName);
                         targetA_leaf.CheckExists();
                         targetB_leaf.CheckExists();
 
-                        if (targetB_leaf.Exists ?? false)
+                        if ((targetA_leaf.Exists ?? false) && (targetB_leaf.Exists ?? false))
                         {
                             dictionary[$"{_serial}_registryA_Exists"] = targetA_leaf.Path + "\\" + targetA_leaf.Name;
                             dictionary[$"{_serial}_registryB_Exists"] = targetB_leaf.Path + "\\" + targetB_leaf.Name;
@@ -203,18 +205,29 @@ namespace Audit.Work.Registry
                         }
                         else
                         {
-                            dictionary[$"{_serial}_registryB_NotExists"] = targetB_leaf.Path + "\\" + targetB_leaf.Name;
-                            ret = false;
+                            if (targetA_leaf.Exists ?? false)
+                            {
+                                dictionary[$"{_serial}_registryA_NotExists"] = targetA_leaf.Path + "\\" + targetA_leaf.Name;
+                                ret = false;
+                            }
+                            if (targetB_leaf.Exists ?? false)
+                            {
+                                dictionary[$"{_serial}_registryB_NotExists"] = targetB_leaf.Path + "\\" + targetB_leaf.Name;
+                                ret = false;
+                            }
                         }
                     }
-                    foreach (string keyPath in targetA.Key.GetSubKeyNames())
+
+                    var containers = targetA.Key.GetSubKeyNames().ToList();
+                    containers.AddRange(targetB.Key.GetSubKeyNames());
+                    foreach (string keyPath in containers.Distinct())
                     {
                         using (RegistryKey subRegKeyA = targetA.Key.OpenSubKey(keyPath, false))
                         using (RegistryKey subRegKeyB = targetB.Key.OpenSubKey(keyPath, false))
                         {
                             ret &= RecursiveTree(
-                                CreateForRegistryKey(Path.Combine(targetA.Path, keyPath), subRegKeyA, "registryA"),
-                                CreateForRegistryKey(Path.Combine(targetB.Path, keyPath), subRegKeyB, "registryB"),
+                                new MonitorTarget(PathType.Registry, Path.Combine(targetA.Path, keyPath), "registryA", subRegKeyA),
+                                new MonitorTarget(PathType.Registry, Path.Combine(targetB.Path, keyPath), "registryB", subRegKeyB),
                                 dictionary,
                                 depth + 1);
                         }

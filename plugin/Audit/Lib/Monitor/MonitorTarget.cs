@@ -89,6 +89,8 @@ namespace Audit.Lib.Monitor
         #endregion
 
         public MonitorTarget() { }
+
+        /*
         public MonitorTarget(PathType pathType, string path)
         {
             this.PathType = pathType;
@@ -108,6 +110,33 @@ namespace Audit.Lib.Monitor
             this.Key = key;
             this.Name = name;
         }
+        */
+
+
+
+        public MonitorTarget(PathType pathType, string path, string pathTypeName)
+        {
+            this.PathType = pathType;
+            this.Path = path;
+            this.PathTypeName = pathTypeName;
+        }
+        public MonitorTarget(PathType pathType, string path, string pathTypeName, RegistryKey key)
+        {
+            this.PathType = pathType;
+            this.Path = path;
+            this.PathTypeName = pathTypeName;
+            this.Key = key;
+        }
+        public MonitorTarget(PathType pathType, string path, string pathTypeName, RegistryKey key, string name)
+        {
+            this.PathType = pathType;
+            this.Path = path;
+            this.PathTypeName = pathTypeName;
+            this.Key = key;
+            this.Name = name;
+        }
+
+
 
         #region Check method
 
@@ -245,6 +274,7 @@ namespace Audit.Lib.Monitor
 
         #endregion
 
+        /*
         /// <summary>
         /// Is～プロパティをマージする
         /// </summary>
@@ -267,5 +297,6 @@ namespace Audit.Lib.Monitor
             if (target.IsDateOnly != null) { this.IsDateOnly = target.IsDateOnly; }
             if (target.IsTimeOnly != null) { this.IsTimeOnly = target.IsTimeOnly; }
         }
+        */
     }
 }

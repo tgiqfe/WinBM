@@ -88,11 +88,10 @@ namespace Audit.Work.File
 
         private int _serial = 0;
 
-        private MonitorTarget CreateForFile(string path, string pathTypeName)
+        private MonitorTargetCollection CreateMonitorTargetCollection()
         {
-            return new MonitorTarget(IO.Lib.PathType.File, path)
+            return new MonitorTargetCollection()
             {
-                PathTypeName = pathTypeName,
                 IsCreationTime = _IsCreationTime,
                 IsLastWriteTime = _IsLastWriteTime,
                 IsLastAccessTime = _IsLastAccessTime,
@@ -104,37 +103,68 @@ namespace Audit.Work.File
                 IsSHA256Hash = _IsSHA256Hash,
                 IsSHA512Hash = _IsSHA512Hash,
                 IsSize = _IsSize,
+                //IsChildCount = _IsChildCount,
+                //IsRegistryType = _IsRegistryType,
                 IsDateOnly = _IsDateOnly,
                 IsTimeOnly = _IsTimeOnly,
             };
+        }
+
+        private MonitorTargetCollection MergeMonitorTargetCollection(MonitorTargetCollection collection)
+        {
+            if (_IsCreationTime != null) { collection.IsCreationTime = _IsCreationTime; }
+            if (_IsLastWriteTime != null) { collection.IsLastWriteTime = _IsLastWriteTime; }
+            if (_IsLastAccessTime != null) { collection.IsLastAccessTime = _IsLastAccessTime; }
+            if (_IsAccess != null) { collection.IsAccess = _IsAccess; }
+            if (_IsOwner != null) { collection.IsOwner = _IsOwner; }
+            if (_IsInherited != null) { collection.IsInherited = _IsInherited; }
+            if (_IsAttributes != null) { collection.IsAttributes = _IsAttributes; }
+            if (_IsMD5Hash != null) { collection.IsMD5Hash = _IsMD5Hash; }
+            if (_IsSHA256Hash != null) { collection.IsSHA256Hash = _IsSHA256Hash; }
+            if (_IsSHA512Hash != null) { collection.IsSHA512Hash = _IsSHA512Hash; }
+            if (_IsSize != null) { collection.IsSize = _IsSize; }
+            //if(_IsChildCount != null){collection.IsChildCount = _IsChildCount;}
+            //if(_IsRegistryType != null){collection.IsRegistryType = _IsRegistryType;}
+            if (_IsDateOnly != null) { collection.IsDateOnly = _IsDateOnly; }
+            if (_IsTimeOnly != null) { collection.IsTimeOnly = _IsTimeOnly; }
+
+            if (collection.PrevTargetPaths?.Length > 0)
+            {
+                var tempPaths = collection.PrevTargetPaths.ToList();
+                if (_Path?.Length > 0)
+                {
+                    tempPaths.AddRange(_Path);
+                }
+                this._Path = tempPaths.Distinct().ToArray();
+            }
+
+            return collection;
         }
 
         public override void MainProcess()
         {
             var dictionary = new Dictionary<string, string>();
             var collection = _Begin ?
-                new MonitorTargetCollection() :
-                MonitorTargetCollection.Load(GetWatchDBDirectory(), _Id);
-            
+                CreateMonitorTargetCollection() :
+                MergeMonitorTargetCollection(MonitorTargetCollection.Load(GetWatchDBDirectory(), _Id));
+
             //  Begin=trueあるいは、collectionが空っぽ(今回初回watch)の場合、Successをtrue
-            this.Success = _Begin || (collection.Count == 0);
+            this.Success = _Begin || (collection.Targets.Count == 0);
 
             foreach (string path in _Path)
             {
                 _serial++;
                 dictionary[$"{_serial}_file"] = path;
-                MonitorTarget target_db = collection.GetMonitorTarget(path) ?? CreateForFile(path, "file");
 
-                MonitorTarget target_monitor = CreateForFile(path, "file");
-                target_monitor.Merge_is_Property(target_db);
-                target_monitor.CheckExists();
-
-                if (target_monitor.Exists ?? false)
+                MonitorTarget target = new MonitorTarget(PathType.File, path, "file");
+                target.CheckExists();
+                if (target.Exists ?? false)
                 {
-                    Success |= WatchFunctions.CheckFile(target_monitor, target_db, dictionary, _serial);
+                    Success |= collection.CheckFile(target, dictionary, _serial);
                 }
-                collection.SetMonitorTarget(path, target_monitor);
+                collection.SetMonitorTarget(path, target);
             }
+            collection.PrevTargetPaths = _Path;
             collection.Save(GetWatchDBDirectory(), _Id);
 
             AddAudit(dictionary, this._Invert);

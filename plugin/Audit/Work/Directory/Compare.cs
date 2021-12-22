@@ -109,11 +109,10 @@ namespace Audit.Work.Directory
 
         private int _serial = 0;
 
-        private MonitorTarget CreateForFile(string path, string pathTypeName)
+        private MonitorTargetPair CreateMonitorTargetPair(MonitorTarget targetA, MonitorTarget targetB)
         {
-            return new MonitorTarget(PathType.File, path)
+            return new MonitorTargetPair(targetA, targetB)
             {
-                PathTypeName = pathTypeName,
                 IsCreationTime = _IsCreationTime,
                 IsLastWriteTime = _IsLastWriteTime,
                 IsLastAccessTime = _IsLastAccessTime,
@@ -125,24 +124,8 @@ namespace Audit.Work.Directory
                 IsSHA256Hash = _IsSHA256Hash,
                 IsSHA512Hash = _IsSHA512Hash,
                 IsSize = _IsSize,
-                IsDateOnly = _IsDateOnly,
-                IsTimeOnly = _IsTimeOnly,
-            };
-        }
-
-        private MonitorTarget CreateForDirectory(string path, string pathTypeName)
-        {
-            return new MonitorTarget(PathType.Directory, path)
-            {
-                PathTypeName = pathTypeName,
-                IsCreationTime = _IsCreationTime,
-                IsLastWriteTime = _IsLastWriteTime,
-                IsLastAccessTime = _IsLastAccessTime,
-                IsAccess = _IsAccess,
-                IsOwner = _IsOwner,
-                IsInherited = _IsInherited,
-                IsAttributes = _IsAttributes,
                 IsChildCount = _IsChildCount,
+                //IsRegistryType = _IsRegistryType,
                 IsDateOnly = _IsDateOnly,
                 IsTimeOnly = _IsTimeOnly,
             };
@@ -159,12 +142,10 @@ namespace Audit.Work.Directory
             this.Success = true;
 
             Success &= RecursiveTree(
-                CreateForDirectory(_PathA, "directoryA"),
-                CreateForDirectory(_PathB, "directoryB"),
+                new MonitorTarget(PathType.Directory, _PathA, "directoryA"),
+                new MonitorTarget(PathType.Directory, _PathB, "directoryB"),
                 dictionary,
                 0);
-
-            //Success &= RecursiveTree(_PathA, _PathB, dictionary, 0);
 
             AddAudit(dictionary, this._Invert);
         }
@@ -176,40 +157,59 @@ namespace Audit.Work.Directory
             _serial++;
             targetA.CheckExists();
             targetB.CheckExists();
+
             if ((targetA.Exists ?? false) && (targetB.Exists ?? false))
             {
                 dictionary[$"{_serial}_directoryA_Exists"] = targetA.Path;
                 dictionary[$"{_serial}_directoryB_Exists"] = targetB.Path;
-                ret &= CompareFunctions.CheckDirectory(targetA, targetB, dictionary, _serial, depth);
+
+                var targetPair = CreateMonitorTargetPair(targetA, targetB);
+                ret &= targetPair.CheckDirectory(dictionary, _serial, depth);
 
                 if (depth < _MaxDepth)
                 {
-                    foreach (string childPathA in System.IO.Directory.GetFiles(targetA.Path))
+                    var leaves = System.IO.Directory.GetFiles(targetA.Path).ToList();
+                    leaves.AddRange(System.IO.Directory.GetFiles(targetB.Path));
+                    foreach (string childPathA in leaves.Distinct())
                     {
                         _serial++;
                         string childPathB = Path.Combine(targetB.Path, Path.GetFileName(childPathA));
-                        MonitorTarget targetA_leaf = CreateForFile(childPathA, "fileA");
-                        MonitorTarget targetB_leaf = CreateForFile(childPathB, "fileB");
+                        MonitorTarget targetA_leaf = new MonitorTarget(PathType.File, childPathA, "fileA");
+                        MonitorTarget targetB_leaf = new MonitorTarget(PathType.File, childPathB, "fileB");
                         targetA_leaf.CheckExists();
                         targetB_leaf.CheckExists();
 
-                        if (targetB_leaf.Exists ?? false)
+                        if ((targetA_leaf.Exists ?? false) && (targetB_leaf.Exists ?? false))
                         {
                             dictionary[$"{_serial}_fileA_Exists"] = childPathA;
                             dictionary[$"{_serial}_fileB_Exists"] = childPathB;
-                            ret &= CompareFunctions.CheckFile(targetA_leaf, targetB_leaf, dictionary, _serial);
+
+                            var targetPair_leaf = CreateMonitorTargetPair(targetA_leaf, targetB_leaf);
+                            ret &= targetPair_leaf.CheckFile(dictionary, _serial);
                         }
                         else
                         {
-                            dictionary[$"{_serial}_fileB_NotExists"] = childPathB;
-                            ret = false;
+                            if (!targetA_leaf.Exists ?? false)
+                            {
+                                dictionary[$"{_serial}_fileA_NotExists"] = childPathA;
+                                ret = false;
+                            }
+                            if (!targetB_leaf.Exists ?? false)
+                            {
+                                dictionary[$"{_serial}_fileB_NotExists"] = childPathB;
+                                ret = false;
+                            }
                         }
                     }
-                    foreach (string childPath in System.IO.Directory.GetDirectories(targetA.Path))
+
+                    var containers = System.IO.Directory.GetDirectories(targetA.Path).ToList();
+                    containers.AddRange(System.IO.Directory.GetDirectories(targetB.Path));
+                    foreach (string childPathA in containers.Distinct())
                     {
+                        string childPathB = Path.Combine(targetB.Path, Path.GetFileName(childPathA));
                         ret &= RecursiveTree(
-                            CreateForDirectory(childPath, "directoryA"),
-                            CreateForDirectory(Path.Combine(targetB.Path, Path.GetFileName(childPath)), "directoryB"),
+                            new MonitorTarget(PathType.Directory, childPathA, "directoryA"),
+                            new MonitorTarget(PathType.Directory, childPathB, "directoryB"),
                             dictionary,
                             depth + 1);
                     }
@@ -228,9 +228,6 @@ namespace Audit.Work.Directory
                     ret = false;
                 }
             }
-
-
-
             return ret;
         }
     }
