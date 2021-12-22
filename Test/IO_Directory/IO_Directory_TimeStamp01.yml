@@ -1,0 +1,50 @@
+---
+kind: Job
+metadata:
+  name: TestAttribute
+  description: IO/File/Attributeテスト [準備]
+  priority: 201
+job:
+  work:
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01'
+  - task: IO/File/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Exsample01\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Exsample02\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Exsample03\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Exsample04\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Exsample05\sample01.txt
+
+---
+kind: Job
+metadata:
+  description: タイムスタンプ変更
+  priority: 202
+job:
+  work:
+  - task: Audit/Directory/Watch
+    param:
+      id: io_directory_timestamp_01
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Exsample01
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Exsample02
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Exsample03
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Exsample04
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Exsample05
+      begin: true
+      creation: true
+      lastwrite: true
+      lastaccess: true
+  - task: IO/Directory/TimeStamp
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Exsample02'
+      creation: '2020/12/02'
+      lastwrite: '2020/12/03 00:00:01'
+      lastaccess: '2020/12/04 00:00:02'
+  - task: Audit/Directory/Watch
+    param:
+      id: io_directory_timestamp_01
+

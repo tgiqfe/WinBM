@@ -8,15 +8,12 @@ using WinBM.Task;
 using System.IO;
 using IO.Lib;
 
-namespace IO.Work.File
+namespace IO.Work.Directory
 {
-    /// <summary>
-    /// ファイルのタイムスタンプを変更
-    /// </summary>
     internal class TimeStamp : IOTaskWork
     {
         [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
-        [Keys("path", "filepath", "target", "targetpath")]
+        [Keys("path", "filepath", "target", "targetpath", "dirpath", "directorypath")]
         protected string[] _Path { get; set; }
 
         [TaskParameter(MandatoryAny = 1)]
@@ -35,24 +32,24 @@ namespace IO.Work.File
         {
             this.Success = true;
 
-            TargetFileProcess(_Path, TimeStampFileAction);
+            TargetDirectoryProcess(_Path, TimeStampDirectoryAction);
         }
 
-        private void TimeStampFileAction(string target)
+        private void TimeStampDirectoryAction(string target)
         {
             try
             {
-                var info = new FileInfo(target);
+                var info = new DirectoryInfo(target);
 
-                if(_CreationTime != null)
+                if (_CreationTime != null)
                 {
                     info.CreationTime = (DateTime)_CreationTime;
                 }
-                if(_LastWriteTime != null)
+                if (_LastWriteTime != null)
                 {
                     info.LastWriteTime = (DateTime)_LastWriteTime;
                 }
-                if(_LastAccessTime != null)
+                if (_LastAccessTime != null)
                 {
                     info.LastAccessTime = (DateTime)_LastAccessTime;
                 }
