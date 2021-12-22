@@ -171,13 +171,13 @@ namespace Audit.Work.Registry
                         _serial++;
                         dictionary[$"{_serial}_registry"] = regKey.Name + "\\" + name;
 
-                        MonitorTarget target_leaf = new MonitorTarget(PathType.Registry, keyPath, "registry", regKey, name);
-                        target_leaf.CheckExists();
-                        if (target_leaf.Exists ?? false)
+                        MonitorTarget target = new MonitorTarget(PathType.Registry, keyPath, "registry", regKey, name);
+                        target.CheckExists();
+                        if (target.Exists ?? false)
                         {
-                            Success |= collection.CheckRegistryValue(target_leaf, dictionary, _serial);
+                            Success |= collection.CheckRegistryValue(target, dictionary, _serial);
                         }
-                        collection.SetMonitorTarget(keyPath, name, target_leaf);
+                        collection.SetMonitorTarget(keyPath, name, target);
                     }
                 }
                 collection.PrevPaths = _Path;
