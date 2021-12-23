@@ -57,10 +57,9 @@ namespace IO.Work.Directory
                     proc.StartInfo.FileName = "robocopy.exe";
                     proc.StartInfo.Arguments = $"\"{emptyDirPath}\" \"{target}\" /MIR /COPY:DAT /XJD /XJF /R:0 /W:0 /NP";
                     proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    
+
                     proc.StartInfo.UseShellExecute = false;
                     proc.StartInfo.CreateNoWindow = true;
-                    
                     proc.Start();
                     proc.WaitForExit();
                 }
@@ -76,24 +75,56 @@ namespace IO.Work.Directory
 
                 try
                 {
-                    //  対話モードでない場合はゴミ箱に移動しない。
-                    if (Manager.Interactive && _Recycle)
+                    if (_Clear)
                     {
-                        FileSystem.DeleteDirectory(
-                            target,
-                            UIOption.OnlyErrorDialogs,
-                            RecycleOption.SendToRecycleBin,
-                            UICancelOption.DoNothing);
+                        if (Manager.Interactive && _Recycle)
+                        {
+                            foreach (string filePath in System.IO.Directory.GetFiles(target))
+                            {
+                                FileSystem.DeleteFile(
+                                    filePath,
+                                    UIOption.OnlyErrorDialogs,
+                                    RecycleOption.SendToRecycleBin,
+                                    UICancelOption.DoNothing);
+                            }
+                            foreach (string dirPath in System.IO.Directory.GetDirectories(target))
+                            {
+                                FileSystem.DeleteFile(
+                                    dirPath,
+                                    UIOption.OnlyErrorDialogs,
+                                    RecycleOption.SendToRecycleBin,
+                                    UICancelOption.DoNothing);
+                            }
+                        }
+                        else
+                        {
+                            foreach (string filePath in System.IO.Directory.GetFiles(target))
+                            {
+                                System.IO.File.Delete(filePath);
+                            }
+                            foreach (string dirPath in System.IO.Directory.GetDirectories(target))
+                            {
+                                System.IO.Directory.Delete(dirPath, recursive: true);
+                            }
+                        }
                     }
                     else
                     {
-                        System.IO.Directory.Delete(target, recursive: true);
-                    }
-                    if (_Clear)
-                    {
-                        System.IO.Directory.CreateDirectory(target);
+                        if (Manager.Interactive && _Recycle)
+                        {
+                            FileSystem.DeleteDirectory(
+                                target,
+                                UIOption.OnlyErrorDialogs,
+                                RecycleOption.SendToRecycleBin,
+                                UICancelOption.DoNothing);
+                        }
+                        else
+                        {
+                            System.IO.Directory.Delete(target, recursive: true);
+                        }
                     }
                 }
+                /*
                 catch (UnauthorizedAccessException uae)
                 {
                     Manager.WriteLog(LogLevel.Debug, "{0} {1}", this.TaskName, uae.Message);
@@ -126,6 +157,7 @@ namespace IO.Work.Directory
                         }
                     }
                 }
+                */
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
