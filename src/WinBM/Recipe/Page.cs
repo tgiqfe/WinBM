@@ -198,8 +198,44 @@ namespace WinBM.Recipe
         }
 
         #endregion
+        #region Save to DB
 
+        public static void Save(IEnumerable<Page> list, string fileName)
+        {
+            string parent = Path.GetDirectoryName(fileName);
+            if (!Directory.Exists(parent))
+            {
+                Directory.CreateDirectory(parent);
+            }
 
+            using (var litedb = new LiteDatabase(fileName))
+            {
+                var collection = litedb.GetCollection<Page>("WinBMRecipe");
+                collection.Upsert(list);
+            }
+        }
+
+        public static IEnumerable<Page> Load(string fileName)
+        {
+            List<Page> list = null;
+            try
+            {
+                using (var litedb = new LiteDatabase(fileName))
+                {
+                    var collection = litedb.GetCollection<Page>("WinBMRecipe");
+                    list = collection.FindAll().ToList();
+                }
+            }
+            catch { }
+
+            if(list == null)
+            {
+                list = new List<Page>();
+            }
+            return list;
+        }
+
+        #endregion
 
     }
 }
