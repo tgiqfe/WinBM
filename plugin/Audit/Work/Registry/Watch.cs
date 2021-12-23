@@ -173,10 +173,7 @@ namespace Audit.Work.Registry
 
                         MonitorTarget target = new MonitorTarget(PathType.Registry, keyPath, "registry", regKey, name);
                         target.CheckExists();
-                        if (target.Exists ?? false)
-                        {
-                            Success |= collection.CheckRegistryValue(target, dictionary, _serial);
-                        }
+                        Success |= collection.CheckRegistryValue(target, dictionary, _serial);
                         collection.SetMonitorTarget(keyPath, name, target);
                     }
                 }

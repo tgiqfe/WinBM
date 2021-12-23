@@ -43,10 +43,13 @@ namespace WinBM.PowerShell.Cmdlet
                 List<WinBM.Recipe.Page> list = null;
                 if (File.Exists(RecipeFile))
                 {
+                    /*
                     using (var sr = new StreamReader(RecipeFile, Encoding.UTF8))
                     {
                         list = WinBM.Recipe.Page.Deserialize(sr);
                     }
+                    */
+                    list = WinBM.Recipe.Page.Deserialize(RecipeFile);
                 }
                 else if (Directory.Exists(RecipeFile))
                 {
@@ -55,11 +58,15 @@ namespace WinBM.PowerShell.Cmdlet
                         string extension = Path.GetExtension(filePath).ToLower();
                         if (extension == ".yml" || extension == ".yaml")
                         {
+                            /*
                             using (var sr = new StreamReader(filePath, Encoding.UTF8))
                             {
                                 list ??= new List<Page>();
                                 list.AddRange(WinBM.Recipe.Page.Deserialize(sr));
                             }
+                            */
+                            list ??= new List<Page>();
+                            list.AddRange(WinBM.Recipe.Page.Deserialize(filePath));
                         }
                     }
                 }

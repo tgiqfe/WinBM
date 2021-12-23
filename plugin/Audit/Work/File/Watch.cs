@@ -165,10 +165,7 @@ namespace Audit.Work.File
 
                 MonitorTarget target = new MonitorTarget(PathType.File, path, "file");
                 target.CheckExists();
-                if (target.Exists ?? false)
-                {
-                    Success |= collection.CheckFile(target, dictionary, _serial);
-                }
+                Success |= collection.CheckFile(target, dictionary, _serial);
                 collection.SetMonitorTarget(path, target);
             }
             collection.PrevPaths = _Path;

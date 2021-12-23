@@ -27,6 +27,9 @@ namespace WinBM.Recipe
             get { return this.Metadata == null ? "_" : this.Metadata.Name ?? "_"; }
         }
 
+        [YamlIgnore]
+        public string FilePath { get; set; }
+
         [YamlMember(Alias = "kind")]
         public EnumKind Kind { get; set; }
 
@@ -125,7 +128,11 @@ namespace WinBM.Recipe
         {
             using (var sr = new StreamReader(fileName, Encoding.UTF8))
             {
-                return Deserialize(sr);
+                List<Page> list = Deserialize(sr);
+                list.ForEach(x => x.FilePath = fileName);
+                return list;
+
+                //return Deserialize(sr);
             }
         }
 

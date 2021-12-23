@@ -123,6 +123,12 @@ namespace Audit.Lib.Monitor
                 this.Targets[target.Path] :
                 new MonitorTarget(PathType.File, target.Path, "file");
 
+            if (!(bool)target.Exists)
+            {
+                dictionary[$"{serial}_{target.PathTypeName}_delete"] = target.Path;
+                return target_db.Exists ?? false;
+            }
+
             //  CreationTime
             if (IsCreationTime ?? false)
             {
@@ -314,6 +320,12 @@ namespace Audit.Lib.Monitor
                 this.Targets[target.Path] :
                 new MonitorTarget(PathType.Directory, target.Path, "directory");
 
+            if (!(bool)target.Exists)
+            {
+                dictionary[$"{serial}_{target.PathTypeName}_delete"] = target.Path;
+                return target_db.Exists ?? false;
+            }
+
             //  CreationTime
             if (IsCreationTime ?? false)
             {
@@ -453,6 +465,12 @@ namespace Audit.Lib.Monitor
                 this.Targets[target.Path] :
                 new MonitorTarget(PathType.Registry, target.Path, "registry", target.Key);
 
+            if (!(bool)target.Exists)
+            {
+                dictionary[$"{serial}_{target.PathTypeName}_delete"] = target.Path;
+                return target_db.Exists ?? false;
+            }
+
             //  Access
             if (IsAccess ?? false)
             {
@@ -528,6 +546,12 @@ namespace Audit.Lib.Monitor
             MonitorTarget target_db = this.Targets.ContainsKey(regPath) ?
                 this.Targets[regPath] :
                 new MonitorTarget(PathType.Registry, target.Path, "registry", target.Key, target.Name);
+
+            if (!(bool)target.Exists)
+            {
+                dictionary[$"{serial}_{target.PathTypeName}_delete"] = target.Path + "\\" + target.Name;
+                return target_db.Exists ?? false;
+            }
 
             //  MD5Hash
             if (IsMD5Hash ?? false)

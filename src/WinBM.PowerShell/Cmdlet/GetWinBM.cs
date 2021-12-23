@@ -24,15 +24,16 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
 
         protected override void ProcessRecord()
         {
-            //string recipeFile = RecipeFile;
-
             List<WinBM.Recipe.Page> list = null;
             if (File.Exists(RecipeFile))
             {
+                /*
                 using (var sr = new StreamReader(RecipeFile, Encoding.UTF8))
                 {
                     list = WinBM.Recipe.Page.Deserialize(sr);
                 }
+                */
+                list = WinBM.Recipe.Page.Deserialize(RecipeFile);
             }
             else if (Directory.Exists(RecipeFile))
             {
