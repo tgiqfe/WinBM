@@ -36,8 +36,6 @@ namespace Audit.Work
                 }
                 else
                 {
-                    //_AuditMonitorFile = Path.Combine(
-                    //    GlobalSetting.WorkDir, "Audit", "AuditMonitor.json");
                     _AuditMonitorFile = Item.GetDefaultMonitorFile();
                 }
 
@@ -190,48 +188,6 @@ namespace Audit.Work
             }
             return _WatchDBDir;
         }
-
-        /*
-        protected Audit.Lib.WatchPathCollection LoadWatchDB(string id)
-        {
-            if (_WatchDBDir == null)
-            {
-                if ((Manager.Setting.PluginParam?.ContainsKey(Item.AUDIT_WATCHDBDIR) ?? false) &&
-                    !string.IsNullOrEmpty(Manager.Setting.PluginParam[Item.AUDIT_WATCHDBDIR]))
-                {
-                    _WatchDBDir = Manager.Setting.PluginParam[Item.AUDIT_WATCHDBDIR];
-                }
-                else
-                {
-                    //_WatchDBDir = Path.Combine(
-                    //    GlobalSetting.WorkDir, "Audit", "WatchDB");
-                    _WatchDBDir = Item.GetDefaultWatchDBDir();
-                }
-            }
-            return Audit.Lib.WatchPathCollection.Load(_WatchDBDir, id);
-        }
-        */
-
-        /*
-        protected void SaveWatchDB(Audit.Lib.WatchPathCollection collection, string id)
-        {
-            if (_WatchDBDir == null)
-            {
-                if ((Manager.Setting.PluginParam?.ContainsKey(Item.AUDIT_WATCHDBDIR) ?? false) &&
-                    !string.IsNullOrEmpty(Manager.Setting.PluginParam[Item.AUDIT_WATCHDBDIR]))
-                {
-                    _WatchDBDir = Manager.Setting.PluginParam[Item.AUDIT_WATCHDBDIR];
-                }
-                else
-                {
-                    //_WatchDBDir = Path.Combine(
-                    //    GlobalSetting.WorkDir, "Audit", "WatchDB");
-                    _WatchDBDir = Item.GetDefaultWatchDBDir();
-                }
-            }
-            collection.Save(_WatchDBDir, id);
-        }
-        */
 
         #endregion
     }
