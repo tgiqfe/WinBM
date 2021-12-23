@@ -1,0 +1,49 @@
+---
+kind: Job
+metadata:
+  name: TestAttribute
+  description: IO/Directory/Deleteテスト
+  priority: 301
+job:
+  work:
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01'
+  - task: IO/File/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Exsample01\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Exsample02\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Exsample03\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Exsample04\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Exsample05\sample01.txt
+
+---
+kind: Job
+metadata:
+  description: Clearの検証
+  priority: 302
+job:
+  work:
+  - task: IO/File/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Exsample01\example01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Exsample01\example02.txt
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Exsample01\example03.txt
+  - task: IO/Directory/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Exsample01\exam01
+        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Exsample01\exam02
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Exsample01'
+      clear: true
+  - task: Audit/Directory/ChildCount
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Exsample01'
+      directoryCount: 0
+      fileCount: 0
+
+
