@@ -6,26 +6,20 @@ using System.Threading.Tasks;
 
 namespace WinBM
 {
-    public class FileScope
+    /// <summary>
+    /// Recipeファイル内でのみ使用する環境変数を実装
+    /// </summary>
+    public class FileScopeEnv
     {
-        public List<FileEnv> FileEnvList { get; set; }
-
-        public void AddEnv(string path, string name, string val)
-        {
-            this.FileEnvList ??= new List<FileEnv>();
-            this.FileEnvList.Add(new FileEnv()
-            {
-                Path = path,
-                Name = name,
-                Value = val
-            });
-        }
-    }
-
-    public class FileEnv
-    {
+        /// <summary>
+        /// 対象Recipeファイル。
+        /// ここで指定したファイル内でのみ使用可能な疑似環境変数とする
+        /// </summary>
         public string Path { get; set; }
 
+        /// <summary>
+        /// 疑似環境変数名
+        /// </summary>
         private string _Name = null;
         public string Name
         {
@@ -33,6 +27,9 @@ namespace WinBM
             set { this._Name = "%" + value + "%"; }
         }
 
+        /// <summary>
+        /// 疑似環境変数の値
+        /// </summary>
         public string Value { get; set; }
 
         public bool IsMathPath(string path)
@@ -50,6 +47,22 @@ namespace WinBM
                     this.Value,
                     System.Text.RegularExpressions.RegexOptions.IgnoreCase);
             }
+        }
+    }
+
+    /// <summary>
+    /// FileScopeEnvのコレクション
+    /// </summary>
+    public class FileScopeEnvCollection : List<FileScopeEnv>
+    {
+        public void Add(string path, string name, string val)
+        {
+            this.Add(new FileScopeEnv()
+            {
+                Path = path,
+                Name = name,
+                Value = val
+            });
         }
     }
 }

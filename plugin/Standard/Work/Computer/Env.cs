@@ -28,8 +28,8 @@ namespace Standard.Work.Computer
                 {
                     if(this._Target == EnvironmentScope.File)
                     {
-                        this.Manager.FileScope ??= new FileScope();
-                        this.Manager.FileScope.AddEnv(this.FilePath, pair.Key, pair.Value);
+                        this.Manager.FseCollection ??= new WinBM.FileScopeEnvCollection();
+                        this.Manager.FseCollection.Add(this.FilePath, pair.Key, pair.Value);
                     }
                     else
                     {

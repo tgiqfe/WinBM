@@ -12,7 +12,7 @@ namespace WinBM
     {
         public GlobalSetting Setting { get; set; }
 
-        public FileScope FileScope { get; set; }
+        public FileScopeEnvCollection FseCollection { get; set; }
 
         /// <summary>
         /// Step(pause)が可能かどうか。

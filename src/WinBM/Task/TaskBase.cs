@@ -472,9 +472,9 @@ namespace WinBM.Task
                     env = env.Replace("%TASK_CLASS%", this.GetType().Name, StringComparison.OrdinalIgnoreCase);
                 }
 
-                if (Manager.FileScope != null)
+                if (Manager.FseCollection != null)
                 {
-                    Manager.FileScope.FileEnvList.
+                    Manager.FseCollection.
                         Where(x => x.IsMathPath(this.FilePath)).
                         ToList().
                         ForEach(x => x.Resolv(ref env));
