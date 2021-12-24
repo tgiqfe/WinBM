@@ -22,7 +22,12 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
         {
             if (this.Page != null)
             {
-                WinBM.Recipe.Page.Save(this.Page, this.Path);
+                string[] candidate_db = { ".db", "dat", ".recipe" };
+                string extension = System.IO.Path.GetExtension(this.Path);
+                if (candidate_db.Any(x => x.Equals(extension, StringComparison.OrdinalIgnoreCase)))
+                {
+                    WinBM.Recipe.Page.Save(this.Page, this.Path);
+                }
             }
         }
     }

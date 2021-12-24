@@ -27,13 +27,17 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
             List<WinBM.Recipe.Page> list = null;
             if (File.Exists(RecipeFile))
             {
-                /*
-                using (var sr = new StreamReader(RecipeFile, Encoding.UTF8))
+                string[] candidate_db = { ".db", ".dat", ".recipe" };
+                string[] candidate_yml = { ".yaml", ".yml" };
+                string extension = System.IO.Path.GetExtension(RecipeFile);
+                if (candidate_db.Any(x => x.Equals(extension, StringComparison.OrdinalIgnoreCase)))
                 {
-                    list = WinBM.Recipe.Page.Deserialize(sr);
+                    list = WinBM.Recipe.Page.Load(RecipeFile).ToList();
                 }
-                */
-                list = WinBM.Recipe.Page.Deserialize(RecipeFile);
+                else if (candidate_yml.Any(x => x.Equals(extension, StringComparison.OrdinalIgnoreCase)))
+                {
+                    list = WinBM.Recipe.Page.Deserialize(RecipeFile);
+                }
             }
             else if (Directory.Exists(RecipeFile))
             {
@@ -44,14 +48,6 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
                     {
                         list ??= new List<WinBM.Recipe.Page>();
                         list.AddRange(WinBM.Recipe.Page.Deserialize(filePath));
-
-                        /*
-                        using (var sr = new StreamReader(filePath, Encoding.UTF8))
-                        {
-                            list ??= new List<WinBM.Recipe.Page>();
-                            list.AddRange(WinBM.Recipe.Page.Deserialize(sr));
-                        }
-                        */
                     }
                 }
             }
