@@ -54,7 +54,15 @@ namespace WinBM.Task
             }
         }
 
+        /// <summary>
+        /// セッション用設定の管理用
+        /// </summary>
         public SessionManager Manager { get; set; }
+
+        /// <summary>
+        /// Recipeファイルのパス
+        /// </summary>
+        public string FilePath { get; set; }
 
         /// <summary>
         /// OutputとRequireでの実行結果を格納

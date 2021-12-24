@@ -27,6 +27,9 @@ namespace WinBM.PowerShell.Cmdlet
 
         protected override void ProcessRecord()
         {
+            string[] candidate_db = { ".db", ".dat", ".recipe" };
+            string[] candidate_yml = { ".yaml", ".yml" };
+
             if (!string.IsNullOrEmpty(RecipeFile))
             {
                 var manager = new SessionManager()
@@ -41,8 +44,6 @@ namespace WinBM.PowerShell.Cmdlet
                 List<WinBM.Recipe.Page> list = null;
                 if (File.Exists(RecipeFile))
                 {
-                    string[] candidate_db = { ".db", ".dat", ".recipe" };
-                    string[] candidate_yml = { ".yaml", ".yml" };
                     string extension = System.IO.Path.GetExtension(RecipeFile);
                     if (candidate_db.Any(x => x.Equals(extension, StringComparison.OrdinalIgnoreCase)))
                     {
@@ -58,7 +59,7 @@ namespace WinBM.PowerShell.Cmdlet
                     foreach (string filePath in Directory.GetFiles(RecipeFile))
                     {
                         string extension = Path.GetExtension(filePath).ToLower();
-                        if (extension == ".yml" || extension == ".yaml")
+                        if (candidate_yml.Any(x => x.Equals(extension, StringComparison.OrdinalIgnoreCase)))
                         {
                             list ??= new List<Page>();
                             list.AddRange(WinBM.Recipe.Page.Deserialize(filePath));

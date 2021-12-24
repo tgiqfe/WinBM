@@ -49,12 +49,6 @@ namespace WinBM.PowerShell.Cmdlet
             {
                 fileList.ForEach(x =>
                 {
-                    /*
-                    using (var sr = new StreamReader(x, Encoding.UTF8))
-                    {
-                        pageList.AddRange(WinBM.Recipe.Page.Deserialize(sr));
-                    }
-                    */
                     pageList.AddRange(WinBM.Recipe.Page.Deserialize(x));
                 });
                 isSuccess = true;

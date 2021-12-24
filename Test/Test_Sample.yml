@@ -1,0 +1,19 @@
+---
+kind: Output
+metadata:
+  description: テスト用サンプル
+  priority: 1001
+output:
+  spec:
+  - task: Standard/Console/StdOut
+
+---
+kind: Job
+metadata:
+  description: テスト用サンプル
+  priority: 1002
+job:
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      message: サンプル
