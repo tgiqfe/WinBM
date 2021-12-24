@@ -400,7 +400,7 @@ namespace WinBM.Task
                 case string s:
                     //  stringのempty許可/拒否については検討中。
                     //  変更の可能性有りの為、defualtに統合はまだ行わない。
-                    return s != null;   
+                    return s != null;
                 case string[] ar:
                     return (ar?.Length > 0);
                 default:
@@ -470,6 +470,14 @@ namespace WinBM.Task
                 if (env.Contains("%TASK_CLASS%", StringComparison.OrdinalIgnoreCase))
                 {
                     env = env.Replace("%TASK_CLASS%", this.GetType().Name, StringComparison.OrdinalIgnoreCase);
+                }
+
+                if (Manager.FileScope != null)
+                {
+                    Manager.FileScope.FileEnvList.
+                        Where(x => x.IsMathPath(this.FilePath)).
+                        ToList().
+                        ForEach(x => x.Resolv(ref env));
                 }
 
                 env = Environment.ExpandEnvironmentVariables(env);
