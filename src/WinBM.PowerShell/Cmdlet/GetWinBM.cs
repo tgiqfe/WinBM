@@ -42,11 +42,16 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
                     string extension = Path.GetExtension(filePath).ToLower();
                     if (extension == ".yml" || extension == ".yaml")
                     {
+                        list ??= new List<WinBM.Recipe.Page>();
+                        list.AddRange(WinBM.Recipe.Page.Deserialize(filePath));
+
+                        /*
                         using (var sr = new StreamReader(filePath, Encoding.UTF8))
                         {
                             list ??= new List<WinBM.Recipe.Page>();
                             list.AddRange(WinBM.Recipe.Page.Deserialize(sr));
                         }
+                        */
                     }
                 }
             }

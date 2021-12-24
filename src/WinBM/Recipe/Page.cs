@@ -24,11 +24,17 @@ namespace WinBM.Recipe
         public string Serial
         {
             //  Metadata自体がnullの場合は [_] を返す。Metadata.Nameがnullの場合は [-] を返す。
-            get { return this.Metadata == null ? "_" : this.Metadata.Name ?? "_"; }
+            get
+            {
+                return $"{this.FilePath}:{this.Index}";
+            }
         }
 
         [YamlIgnore]
         public string FilePath { get; set; }
+
+        [YamlIgnore]
+        public int Index { get; set; }
 
         [YamlMember(Alias = "kind")]
         public EnumKind Kind { get; set; }
@@ -44,7 +50,6 @@ namespace WinBM.Recipe
 
         [YamlMember(Alias = "job")]
         public PageJob Job { get; set; }
-
 
         #region Serialize
 
@@ -166,6 +171,7 @@ namespace WinBM.Recipe
             {
                 //  Metadata設定の修正
                 count++;
+                page.Index = count;
                 page.Metadata ??= new Metadata();
                 if (string.IsNullOrEmpty(page.Metadata.Name))
                 {
@@ -178,7 +184,7 @@ namespace WinBM.Recipe
                 //  Kindに一致したコンテンツ(Config/Output/Job)を残して削除
                 PropertyInfo[] props = page.GetType().
                     GetProperties(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance).
-                    Where(x => x.Name != "Kind" && x.Name != "Metadata" && x.Name != "Serial").
+                    Where(x => x.Name != "Kind" && x.Name != "Metadata" && x.Name != "Serial" && x.Name != "FilePath" && x.Name != "Index").
                     ToArray();
                 foreach (PropertyInfo prop in props)
                 {
@@ -207,10 +213,15 @@ namespace WinBM.Recipe
             {
                 Directory.CreateDirectory(parent);
             }
+            if (File.Exists(fileName))
+            {
+                File.Delete(fileName);
+            }
 
             using (var litedb = new LiteDatabase(fileName))
             {
                 var collection = litedb.GetCollection<Page>("WinBMRecipe");
+                collection.EnsureIndex(x => x.Serial, true);
                 collection.Upsert(list);
             }
         }
@@ -223,12 +234,13 @@ namespace WinBM.Recipe
                 using (var litedb = new LiteDatabase(fileName))
                 {
                     var collection = litedb.GetCollection<Page>("WinBMRecipe");
-                    list = collection.FindAll().ToList();
+                    collection.EnsureIndex(x => x.Serial, true);
+                    list = collection.Query().ToList();
                 }
             }
             catch { }
 
-            if(list == null)
+            if (list == null)
             {
                 list = new List<Page>();
             }

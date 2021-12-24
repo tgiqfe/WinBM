@@ -12,15 +12,18 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
     [Cmdlet(VerbsData.Compress, "WinBMRecipe")]
     public class ComparessWinBMRecipe : PSCmdlet
     {
-        [Parameter(ValueFromPipeline = true)]
-        public WinBM.Recipe.Page[] Page { get; set; }
+        [Parameter(Position = 0)]
+        public Page[] Page { get; set; }
 
-        [Parameter]
+        [Parameter(Position = 1)]
         public string Path { get; set; }
 
         protected override void ProcessRecord()
         {
-            WinBM.Recipe.Page.Save(this.Page, this.Path);
+            if (this.Page != null)
+            {
+                WinBM.Recipe.Page.Save(this.Page, this.Path);
+            }
         }
     }
 }

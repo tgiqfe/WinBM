@@ -12,7 +12,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
     [Cmdlet(VerbsData.Expand, "WinBMRecipe")]
     public class ExpandWinBMRecipe : PSCmdlet
     {
-        [Parameter]
+        [Parameter(Position = 0)]
         public string Path { get; set; }
 
         protected override void ProcessRecord()
