@@ -31,7 +31,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
             if (_outputTypes == null)
             {
                 //  将来拡張用
-                _outputTypes = new string[] { "Yaml", "PSCommand" };
+                _outputTypes = new string[] { TYPE_YAML, TYPE_PSCOMMAND };
             }
             Collection<Attribute> attribute = new Collection<Attribute>()
             {

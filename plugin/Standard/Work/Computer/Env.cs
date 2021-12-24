@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WinBM;
 using WinBM.Task;
+using Standard.Lib;
 
 namespace Standard.Work.Computer
 {
@@ -15,9 +16,9 @@ namespace Standard.Work.Computer
         protected Dictionary<string, string> _EnvSet { get; set; }
 
         [TaskParameter]
-        [Keys("target", "envtarget", "targetenv")]
-        [Values("process,proc,proces", "user,usr", "machine,mashine,masin,computer")]
-        protected EnvironmentVariableTarget _Target { get; set; }
+        [Keys("target", "envtarget", "targetenv", "scope", "targetscope", "envscope")]
+        [Values("process,proc,proces", "user,usr", "machine,mashine,masin,computer", "file,recipefile,")]
+        protected EnvironmentScope _Target { get; set; }
 
         public override void MainProcess()
         {
@@ -25,7 +26,24 @@ namespace Standard.Work.Computer
             {
                 foreach (KeyValuePair<string, string> pair in _EnvSet)
                 {
-                    Environment.SetEnvironmentVariable(pair.Key, pair.Value, this._Target);
+                    if(this._Target == EnvironmentScope.File)
+                    {
+                        this.Manager.FseCollection ??= new WinBM.FileScopeEnvCollection();
+                        this.Manager.FseCollection.Add(this.FilePath, pair.Key, pair.Value);
+                    }
+                    else
+                    {
+                        Environment.SetEnvironmentVariable(
+                            pair.Key,
+                            pair.Value,
+                            _Target switch
+                            {
+                                EnvironmentScope.Process => EnvironmentVariableTarget.Process,
+                                EnvironmentScope.User => EnvironmentVariableTarget.User,
+                                EnvironmentScope.Machine => EnvironmentVariableTarget.Machine,
+                                _ => EnvironmentVariableTarget.Process,
+                            });
+                    }
                 }
                 this.Success = true;
             }
@@ -35,7 +53,7 @@ namespace Standard.Work.Computer
                 Manager.WriteLog(LogLevel.Debug, e.ToString());
             }
 
-            if (this._Target == EnvironmentVariableTarget.Process)
+            if (this._Target == EnvironmentScope.Process)
             {
                 this.IsPostSpec = true;
             }

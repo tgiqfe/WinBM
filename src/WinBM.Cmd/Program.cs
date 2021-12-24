@@ -17,8 +17,6 @@ namespace WinBM.Cmd
             var param = new ArgumentParameter(args);
             if (param.Enabled)
             {
-                //string manifestFile = param.RecipeFile.Path;
-
                 var manager = new SessionManager()
                 {
                     Setting = GlobalSetting.Load(),
@@ -31,35 +29,14 @@ namespace WinBM.Cmd
                 List<Page> list = null;
                 foreach (string path in param.RecipeFile.Paths)
                 {
+                    /*
                     using (var sr = new StreamReader(path, Encoding.UTF8))
                     {
                         list.AddRange(Page.Deserialize(sr));
                     }
+                    */
+                    list.AddRange(Page.Deserialize(path));
                 }
-
-                /*
-                if (File.Exists(manifestFile))
-                {
-                    using (var sr = new StreamReader(manifestFile, Encoding.UTF8))
-                    {
-                        list = Page.Deserialize(sr);
-                    }
-                }
-                else if (Directory.Exists(manifestFile))
-                {
-                    foreach (string file in Directory.GetFiles(manifestFile))
-                    {
-                        string extension = Path.GetExtension(file).ToLower();
-                        if (extension == ".yml" || extension == ".yaml")
-                        {
-                            using (var sr = new StreamReader(file, Encoding.UTF8))
-                            {
-                                list.AddRange(Page.Deserialize(sr));
-                            }
-                        }
-                    }
-                }
-                */
 
                 rancher.ConfigProcess(list.
                     Where(x => x.Kind == WinBM.Recipe.Page.EnumKind.Config).ToList());

@@ -24,8 +24,17 @@ namespace WinBM.Recipe
         public string Serial
         {
             //  Metadata自体がnullの場合は [_] を返す。Metadata.Nameがnullの場合は [-] を返す。
-            get { return this.Metadata == null ? "_" : this.Metadata.Name ?? "_"; }
+            get
+            {
+                return $"{this.FilePath}:{this.Index}";
+            }
         }
+
+        [YamlIgnore]
+        public string FilePath { get; set; }
+
+        [YamlIgnore]
+        public int Index { get; set; }
 
         [YamlMember(Alias = "kind")]
         public EnumKind Kind { get; set; }
@@ -41,7 +50,6 @@ namespace WinBM.Recipe
 
         [YamlMember(Alias = "job")]
         public PageJob Job { get; set; }
-
 
         #region Serialize
 
@@ -125,7 +133,11 @@ namespace WinBM.Recipe
         {
             using (var sr = new StreamReader(fileName, Encoding.UTF8))
             {
-                return Deserialize(sr);
+                List<Page> list = Deserialize(sr);
+                list.ForEach(x => x.FilePath = fileName);
+                return list;
+
+                //return Deserialize(sr);
             }
         }
 
@@ -159,6 +171,7 @@ namespace WinBM.Recipe
             {
                 //  Metadata設定の修正
                 count++;
+                page.Index = count;
                 page.Metadata ??= new Metadata();
                 if (string.IsNullOrEmpty(page.Metadata.Name))
                 {
@@ -171,7 +184,7 @@ namespace WinBM.Recipe
                 //  Kindに一致したコンテンツ(Config/Output/Job)を残して削除
                 PropertyInfo[] props = page.GetType().
                     GetProperties(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance).
-                    Where(x => x.Name != "Kind" && x.Name != "Metadata" && x.Name != "Serial").
+                    Where(x => x.Name != "Kind" && x.Name != "Metadata" && x.Name != "Serial" && x.Name != "FilePath" && x.Name != "Index").
                     ToArray();
                 foreach (PropertyInfo prop in props)
                 {
@@ -191,8 +204,50 @@ namespace WinBM.Recipe
         }
 
         #endregion
+        #region Save to DB
 
+        public static void Save(IEnumerable<Page> list, string fileName)
+        {
+            string parent = Path.GetDirectoryName(fileName);
+            if (!Directory.Exists(parent))
+            {
+                Directory.CreateDirectory(parent);
+            }
+            if (File.Exists(fileName))
+            {
+                File.Delete(fileName);
+            }
 
+            using (var litedb = new LiteDatabase(fileName))
+            {
+                var collection = litedb.GetCollection<Page>("WinBMRecipe");
+                collection.EnsureIndex(x => x.Serial, true);
+                collection.Upsert(list);
+            }
+        }
+
+        public static IEnumerable<Page> Load(string fileName)
+        {
+            List<Page> list = null;
+            try
+            {
+                using (var litedb = new LiteDatabase(fileName))
+                {
+                    var collection = litedb.GetCollection<Page>("WinBMRecipe");
+                    collection.EnsureIndex(x => x.Serial, true);
+                    list = collection.Query().ToList();
+                }
+            }
+            catch { }
+
+            if (list == null)
+            {
+                list = new List<Page>();
+            }
+            return list;
+        }
+
+        #endregion
 
     }
 }

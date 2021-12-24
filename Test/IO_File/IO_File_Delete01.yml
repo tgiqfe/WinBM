@@ -75,7 +75,7 @@ job:
       id: Sample03.txt
       path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample03.txt'
       begin: true
-      exists: true
+      md5: true
   - task: IO/File/Remove
     param:
       path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample03.txt'
@@ -83,7 +83,7 @@ job:
     param:
       id: Sample03.txt
       path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample03.txt'
-      exists: true
+      md5: true
   - task: IO/File/Delete
     param:
       path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\Delete01\Sample*'

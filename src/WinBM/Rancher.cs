@@ -66,6 +66,7 @@ namespace WinBM
                             }
 
                             task.Manager = _Manager;
+                            task.FilePath = page.FilePath;
                             task.PageName = page.Metadata.Name;
                             task.SpecName = spec.Name;
                             task.SpecType = "Config";
@@ -145,6 +146,7 @@ namespace WinBM
                             }
 
                             task.Manager = _Manager;
+                            task.FilePath = page.FilePath;
                             task.PageName = page.Metadata.Name;
                             task.SpecName = spec.Name;
                             task.SpecType = "Output";
@@ -234,6 +236,7 @@ namespace WinBM
                         }
 
                         task.Manager = _Manager;
+                        task.FilePath = page.FilePath;
                         task.PageName = page.Metadata.Name;
                         task.SpecName = spec.Name;
                         task.SpecType = "Require";
@@ -318,6 +321,7 @@ namespace WinBM
                         }
 
                         task.Manager = _Manager;
+                        task.FilePath = page.FilePath;
                         task.PageName = page.Metadata.Name;
                         task.SpecName = spec.Name;
                         task.SpecType = "Work";
