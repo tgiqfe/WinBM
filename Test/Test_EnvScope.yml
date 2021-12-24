@@ -1,0 +1,33 @@
+---
+kind: Output
+metadata:
+  priority: 100
+output:
+  spec:
+  - task: Standard/Console/StdOut
+
+---
+kind: Job
+metadata:
+  priority: 101
+job:
+  work:
+  - task: Standard/Computer/Env
+    param:
+      set: |-
+        AAAA = 12341234
+        BBBB = 56785678
+      scope: File
+  - task: Standard/Message/StdOut
+    param:
+      textResolvEnv: 'test ⇒ %AAAA%'
+
+---
+kind: Job
+metadata:
+  priority: 102
+job:
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      textResolvEnv: 'test ⇒ %BBBB%'
