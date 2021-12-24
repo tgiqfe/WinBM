@@ -34,7 +34,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
                 Description = this.Description,
                 Skip = this.Skip,
                 Step = this.Step,
-                Priority = Priority,
+                Priority = this.Priority == null ? "" : Priority.ToString(),
             };
             WriteObject(metadata);
         }

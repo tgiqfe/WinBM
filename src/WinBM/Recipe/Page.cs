@@ -100,7 +100,8 @@ namespace WinBM.Recipe
             }
 
             //  Priority == 0の場合はnull化
-            if (this.Metadata != null && this.Metadata.Priority == 0)
+            //if (this.Metadata != null && this.Metadata.Priority == 0)
+            if (this.Metadata != null && this.Metadata.GetPriority() == 0)
             {
                 this.Metadata.Priority = null;
             }
@@ -179,7 +180,11 @@ namespace WinBM.Recipe
                 }
 
                 //  Priorityがnullの場合は0に戻す
-                page.Metadata.Priority ??= 0;
+                //page.Metadata.Priority ??= 0;
+                if (string.IsNullOrEmpty(page.Metadata.Priority))
+                {
+                    page.Metadata.Priority = "0";
+                }
 
                 //  Kindに一致したコンテンツ(Config/Output/Job)を残して削除
                 PropertyInfo[] props = page.GetType().
