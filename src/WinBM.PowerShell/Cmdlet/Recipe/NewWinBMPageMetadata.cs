@@ -24,7 +24,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
         public SwitchParameter Step { get; set; }
 
         [Parameter]
-        public int? Priority { get; set; }
+        public string Priority { get; set; }
 
         protected override void ProcessRecord()
         {
@@ -34,7 +34,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
                 Description = this.Description,
                 Skip = this.Skip,
                 Step = this.Step,
-                Priority = this.Priority == null ? "" : Priority.ToString(),
+                Priority = this.Priority,
             };
             WriteObject(metadata);
         }

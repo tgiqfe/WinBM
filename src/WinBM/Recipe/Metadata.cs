@@ -55,11 +55,16 @@ namespace WinBM.Recipe
         /// <returns></returns>
         public int GetPriority()
         {
+            if (string.IsNullOrEmpty(this.Priority))
+            {
+                return 0;
+            }
+
             string priority = this.Priority;
             for (int i = 0; i < 5 && priority.Contains("%"); i++)
             {
                 FileScope.
-                    FileScopeList.
+                    FileScopeList?.
                     Where(x => x.IsMathPath(_filePath)).
                     ToList().
                     ForEach(x => x.Resolv(ref priority));

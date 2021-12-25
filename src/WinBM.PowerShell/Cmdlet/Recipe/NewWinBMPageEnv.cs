@@ -22,7 +22,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
         [Parameter]
         public SwitchParameter Skip { get; set; }
 
-        [Parameter(Mandatory = true, Position = 0)]
+        [Parameter]
         public string Task { get; set; }
 
         [Parameter]

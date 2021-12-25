@@ -87,7 +87,7 @@ namespace WinBM.Recipe
             //  Kindで指定していないプロパティを除外
             PropertyInfo[] props = this.GetType().
                 GetProperties(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance).
-                Where(x => x.Name != "Kind" && x.Name != "Metadata" && x.Name != "Serial").
+                Where(x => x.Name != "Kind" && x.Name != "Metadata" && x.Name != "Serial" && x.Name != "FilePath" && x.Name != "Index").
                 ToArray();
             foreach (PropertyInfo prop in props)
             {
@@ -103,8 +103,7 @@ namespace WinBM.Recipe
             }
 
             //  Priority == 0の場合はnull化
-            //if (this.Metadata != null && this.Metadata.Priority == 0)
-            if (this.Metadata != null && this.Metadata.GetPriority() == 0)
+            if (this.Metadata != null && this.Metadata.Priority == "0")
             {
                 this.Metadata.Priority = null;
             }
