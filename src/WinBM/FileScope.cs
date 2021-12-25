@@ -9,7 +9,7 @@ namespace WinBM
     /// <summary>
     /// Recipeファイル内でのみ使用する環境変数を実装
     /// </summary>
-    public class FileScopeEnv
+    public class FileScope
     {
         /// <summary>
         /// 対象Recipeファイル。
@@ -53,11 +53,11 @@ namespace WinBM
     /// <summary>
     /// FileScopeEnvのコレクション
     /// </summary>
-    public class FileScopeEnvCollection : List<FileScopeEnv>
+    public class FileScopeCollection : List<FileScope>
     {
         public void Add(string path, string name, string val)
         {
-            this.Add(new FileScopeEnv()
+            this.Add(new FileScope()
             {
                 Path = path,
                 Name = name,

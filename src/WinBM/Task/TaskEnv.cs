@@ -3,23 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WinBM;
-using WinBM.Task;
-using Standard.Lib;
 
-namespace Standard.Config.Prepare
+namespace WinBM.Task
 {
-    /// <summary>
-    /// Page全体で使用するProcess環境変数をセット。
-    /// [取り扱いスコープ]
-    ///   Process   ⇒ Env,Work
-    ///   User      ⇒ Workのみ
-    ///   Machine   ⇒ Workのみ
-    ///   File      ⇒ Env,Work
-    ///   Page      ⇒ Workのみ
-    /// </summary>
-    internal class Env : TaskConfig
+    public class TaskEnv : TaskBase
     {
+        protected enum EnvironmentScope
+        {
+            Process, File
+        }
+
         [TaskParameter(Mandatory = true, EqualSign = '=', Delimiter = '\n')]
         [Keys("set", "envset", "envs", "environment", "environments")]
         protected Dictionary<string, string> _EnvSet { get; set; }
@@ -29,7 +22,7 @@ namespace Standard.Config.Prepare
         /// </summary>
         [TaskParameter]
         [Keys("target", "envtarget", "targetenv", "scope", "targetscope", "envscope")]
-        [Values("process,proc,proces", "user,usr", "machine,mashine,masin,computer", "file,recipefile", "page,pag,pege")]
+        [Values("process,proc,proces", "file,recipefile")]
         protected EnvironmentScope _Target { get; set; }
 
         public override void MainProcess()
