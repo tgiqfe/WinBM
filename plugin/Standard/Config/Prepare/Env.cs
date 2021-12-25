@@ -7,6 +7,8 @@ using WinBM;
 using WinBM.Task;
 using Standard.Lib;
 
+//  削除予定
+
 namespace Standard.Config.Prepare
 {
     /// <summary>
