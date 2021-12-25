@@ -27,8 +27,8 @@
             <TableColumnItems>
               <TableColumnItem>
                 <ScriptBlock>
-                  $_.Metadata.Priority
-                </ScriptBlock>
+					$_.Metadata.GetPriority()
+				</ScriptBlock>
               </TableColumnItem>
               <TableColumnItem>
                 <PropertyName>Kind</PropertyName>

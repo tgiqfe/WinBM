@@ -25,7 +25,8 @@ job:
 ---
 kind: Job
 metadata:
-  priority: 102
+  name: test
+  priority: (102 + 1) * 1.5
 job:
   work:
   - task: Standard/Message/StdOut

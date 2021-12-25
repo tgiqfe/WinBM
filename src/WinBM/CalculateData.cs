@@ -3,34 +3,61 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data;
 
 namespace WinBM
 {
     internal class CalculateData
     {
-        public static int ComputeInt(string value)
+        public static int ComputeInt(string text)
         {
-            if (int.TryParse(value, out int tempInt))
+            if (int.TryParse(text, out int tempInt))
             {
                 return tempInt;
             }
 
-            var dataTable = new DataTable();
-            var result = decimal.ToDouble((decimal)dataTable.Compute(value, ""));
-
-            return (int)Math.Round(result, MidpointRounding.AwayFromZero);
+            var dataTable = new System.Data.DataTable();
+            var result = dataTable.Compute(text, "");
+            switch (result)
+            {
+                case int i:
+                    return i;
+                case long l:
+                    return l > int.MaxValue ? int.MaxValue : (int)l;
+                case float f:
+                    return (int)Math.Round(f, MidpointRounding.AwayFromZero);
+                case double d:
+                    return (int)Math.Round(d, MidpointRounding.AwayFromZero);
+                case decimal c:
+                    return (int)Math.Round(decimal.ToDouble(c), MidpointRounding.AwayFromZero);
+                default:
+                    return 0;
+            }
         }
 
-        public static double ComputeDouble(string value)
+        public static double ComputeDouble(string text)
         {
-            if(double.TryParse(value, out double tempDouble))
+            if (double.TryParse(text, out double tempDouble))
             {
                 return tempDouble;
             }
 
-            var dataTable = new DataTable();
-            return decimal.ToDouble((decimal)dataTable.Compute(value, ""));
+            var dataTable = new System.Data.DataTable();
+            var result = dataTable.Compute(text, "");
+            switch (result)
+            {
+                case int i:
+                    return i;
+                case long l:
+                    return l;
+                case float f:
+                    return f;
+                case double d:
+                    return d;
+                case decimal c:
+                    return decimal.ToDouble(c);
+                default:
+                    return 0;
+            }
         }
     }
 }
