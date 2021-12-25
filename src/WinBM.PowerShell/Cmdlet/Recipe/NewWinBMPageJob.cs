@@ -36,7 +36,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
 
         protected override void ProcessRecord()
         {
-            var job = new SpecJob()
+            var spec = new SpecJob()
             {
                 Name = this.Name,
                 Description = this.Description,
@@ -47,7 +47,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
                 Progress = this.Progress,
             };
 
-            WriteObject(job);
+            WriteObject(spec);
         }
     }
 }

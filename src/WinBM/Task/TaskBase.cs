@@ -22,7 +22,7 @@ namespace WinBM.Task
 
         /// <summary>
         /// specの種類
-        /// Config / Output / Require / Workの4種類
+        /// Env / Config / Output / Require / Workの5種類
         /// Rancherで呼び出し時にセット
         /// </summary>
         public string SpecType { get; set; }
@@ -66,6 +66,7 @@ namespace WinBM.Task
 
         /// <summary>
         /// OutputとRequireでの実行結果を格納
+        /// - Envの場合のSuccess → -
         /// - Configの場合のSuccess ⇒ -
         /// - Outputの場合のSuccess ⇒ パラメータに問題無し。OutputManagerに追加する
         /// - Requireの場合のSuccess ⇒ 事前条件チェックに成功。

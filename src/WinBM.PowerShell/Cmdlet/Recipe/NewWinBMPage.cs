@@ -19,6 +19,9 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
         public Metadata Metadata { get; set; }
 
         [Parameter]
+        public SpecEnv[] Env { get; set; }
+
+        [Parameter]
         public SpecConfig[] Config { get; set; }
 
         [Parameter]
@@ -39,6 +42,13 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
             };
             switch (this.Kind)
             {
+                case WinBM.Recipe.Page.EnumKind.Env:
+                    page.Env = new PageEnv();
+                    if (this.Env?.Length > 0)
+                    {
+                        page.Env.Spec = this.Env;
+                    }
+                    break;
                 case WinBM.Recipe.Page.EnumKind.Config:
                     page.Config = new PageConfig();
                     if(this.Config?.Length > 0)

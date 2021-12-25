@@ -19,6 +19,9 @@ namespace WinBM.PowerShell.Cmdlet
         public Metadata Metadata { get; set; }
 
         [Parameter]
+        public PageEnv Env { get; set; }
+
+        [Parameter]
         public PageConfig Config { get; set; }
 
         [Parameter]
@@ -48,32 +51,44 @@ namespace WinBM.PowerShell.Cmdlet
 
             switch (this.Kind)
             {
+                case WinBM.Recipe.Page.EnumKind.Env:
+                    page.Env = this.Env;
+                    page.Config = null;
+                    page.Output = null;
+                    page.Job = null;
+                    break;
                 case WinBM.Recipe.Page.EnumKind.Config:
+                    page.Env = null;
                     page.Config = this.Config;
                     page.Output = null;
                     page.Job = null;
                     break;
                 case WinBM.Recipe.Page.EnumKind.Output:
+                    page.Env = null;
+                    page.Config = null;
                     page.Output = new PageOutput();
-                    if (this.Output != null && this.Output.Length > 0)
+                    //if (this.Output != null && this.Output.Length > 0)
+                    if(this.Output?.Length > 0)
                     {
                         page.Output.Spec = this.Output;
                     }
-                    page.Config = null;
                     page.Job = null;
                     break;
                 case WinBM.Recipe.Page.EnumKind.Job:
+                    page.Env = null; 
+                    page.Config = null;
+                    page.Output = null;
                     page.Job = new PageJob();
-                    if (this.Require != null && this.Require.Length > 0)
+                    //if (this.Require != null && this.Require.Length > 0)
+                    if (this.Require?.Length > 0)
                     {
                         page.Job.Require = this.Require;
                     }
-                    if (this.Work != null && this.Work.Length > 0)
+                    //if (this.Work != null && this.Work.Length > 0)
+                    if(this.Work?.Length > 0)
                     {
                         page.Job.Work = this.Work;
                     }
-                    page.Config = null;
-                    page.Output = null;
                     break;
             }
 
