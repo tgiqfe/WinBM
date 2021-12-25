@@ -28,6 +28,9 @@ namespace WinBM
         /// </summary>
         public void ConfigProcess(List<Page> list)
         {
+            //  Config
+            //  Priority値を昇順にConfigを登録し、Task名が重複した場合は、後から登録しようとしたものを無視
+            //  つまり、Priorityの低いほうを優先。
             var registeredTask = new List<string>();
             foreach (Page page in list.OrderBy(x => x.Metadata.GetPriority()))
             {

@@ -60,3 +60,26 @@ job:
   - task: Standard/Message/StdOut
     param:
       textResolvEnv: 'test ⇒ CCCC: %CCCC%'
+
+---
+kind: Job
+metadata:
+  priority: 200 + 15
+job:
+  work:
+  - task: Standard/Prepare/Env
+    param:
+      set: |-
+        wait = 3
+  - task: Standard/Message/StdOut
+    param:
+      messageResolvEnv: 'Wait: %wait%'
+  - task: Standard/Message/StdOut
+    param:
+      messageResolvenv: '%DATETIME%'
+  - task: Standard/Execute/Sleep
+    param:
+      seconds: '%wait%'
+  - task: Standard/Message/StdOut
+    param:
+      messageResolvenv: '%DATETIME%'
