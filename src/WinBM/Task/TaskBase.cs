@@ -161,6 +161,25 @@ namespace WinBM.Task
                         }
                         else if (type == typeof(int?))
                         {
+                            //  不正な値、且つ計算させない場合はnullになる。以降の数値型も同じ
+                            if (int.TryParse(matchValue, out int tempInt))
+                            {
+                                if (!paramAttr.Unsigned || tempInt >= 0)
+                                {
+                                    prop.SetValue(this, tempInt);
+                                }
+                            }
+                            else if (paramAttr.ResolvEnv)
+                            {
+                                matchValue = ExpandEnvironment(matchValue);
+                                var num = CalculateData.ComputeInt(matchValue);
+                                if (!paramAttr.Unsigned || num >= 0)
+                                {
+                                    prop.SetValue(this, num);
+                                }
+                            }
+
+                            /*
                             //  不正な値の場合はnullになる。移行の数値型も同じ
                             int? num = int.TryParse(matchValue, out int tempInt) ? tempInt : null;
                             if (num != null)
@@ -170,9 +189,28 @@ namespace WinBM.Task
                                     prop.SetValue(this, num);
                                 }
                             }
+                            */
                         }
                         else if (type == typeof(long?))
                         {
+                            if (long.TryParse(matchValue, out long tempLong))
+                            {
+                                if (!paramAttr.Unsigned || tempLong >= 0)
+                                {
+                                    prop.SetValue(this, tempLong);
+                                }
+                            }
+                            else if (paramAttr.ResolvEnv)
+                            {
+                                matchValue = ExpandEnvironment(matchValue);
+                                var num = CalculateData.ComputeLong(matchValue);
+                                if (!paramAttr.Unsigned || num >= 0)
+                                {
+                                    prop.SetValue(this, num);
+                                }
+                            }
+
+                            /*
                             long? num = long.TryParse(matchValue, out long tempLong) ? tempLong : null;
                             if (num != null)
                             {
@@ -181,9 +219,28 @@ namespace WinBM.Task
                                     prop.SetValue(this, num);
                                 }
                             }
+                            */
                         }
                         else if (type == typeof(double?))
                         {
+                            if (double.TryParse(matchValue, out double tempDouble))
+                            {
+                                if (!paramAttr.Unsigned || tempDouble >= 0)
+                                {
+                                    prop.SetValue(this, tempDouble);
+                                }
+                            }
+                            else if (paramAttr.ResolvEnv)
+                            {
+                                matchValue = ExpandEnvironment(matchValue);
+                                var num = CalculateData.ComputeDouble(matchValue);
+                                if (!paramAttr.Unsigned || num >= 0)
+                                {
+                                    prop.SetValue(this, num);
+                                }
+                            }
+
+                            /*
                             double? num = double.TryParse(matchValue, out double tempDouble) ? tempDouble : null;
                             if (num != null)
                             {
@@ -192,6 +249,7 @@ namespace WinBM.Task
                                     prop.SetValue(this, num);
                                 }
                             }
+                            */
                         }
                         else if (type == typeof(DateTime?))
                         {

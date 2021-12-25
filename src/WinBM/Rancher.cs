@@ -28,8 +28,11 @@ namespace WinBM
         /// </summary>
         public void ConfigProcess(List<Page> list)
         {
+            //  Config
+            //  Priority値を昇順にConfigを登録し、Task名が重複した場合は、後から登録しようとしたものを無視
+            //  つまり、Priorityの低いほうを優先。
             var registeredTask = new List<string>();
-            foreach (Page page in list.OrderBy(x => x.Metadata.Priority))
+            foreach (Page page in list.OrderBy(x => x.Metadata.GetPriority()))
             {
                 if (page.Metadata.Skip ?? false)
                 {
@@ -110,7 +113,7 @@ namespace WinBM
             //  Priority値を昇順にOutputを登録し、Task名が重複した場合は、後から登録しようとしたものを無視
             //  つまり、Priorityの低いほうを優先。
             var registeredTask = new List<string>();
-            foreach (Page page in list.OrderBy(x => x.Metadata.Priority))
+            foreach (Page page in list.OrderBy(x => x.Metadata.GetPriority()))
             {
                 if (page.Metadata.Skip ?? false)
                 {
@@ -189,7 +192,7 @@ namespace WinBM
         {
             bool abort = false;
             int jobIndex = 0;
-            foreach (Page page in list.OrderBy(x => x.Metadata.Priority))
+            foreach (Page page in list.OrderBy(x => x.Metadata.GetPriority()))
             {
                 _Manager.WriteProgressBar(1, list.Count, ++jobIndex, page.Metadata.Name);
 

@@ -39,7 +39,12 @@ namespace WinBM.Recipe
         /// Job ⇒ Priorityの昇順の順番で実行。
         /// </summary>
         [YamlMember(Alias = "priority")]
-        public int? Priority { get; set; }
+        public string Priority { get; set; }
+
+        public int GetPriority()
+        {
+            return CalculateData.ComputeInt(this.Priority);
+        }
 
         public override string ToString()
         {

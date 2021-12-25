@@ -145,7 +145,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
             {
                 sb.Append(" -Step");
             }
-            if (metadata.Priority != null && metadata.Priority != 0)
+            if (metadata.Priority != null && metadata.GetPriority() != 0)
             {
                 sb.Append($" -Priority {metadata.Priority}");
             }
