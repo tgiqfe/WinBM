@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WinBM.Lib;
 
 namespace WinBM.Task
 {
@@ -33,9 +34,7 @@ namespace WinBM.Task
                 {
                     if (this._Target == EnvironmentScope.File)
                     {
-                        FileScope2.Add(this.FilePath, pair.Key, pair.Value);
-                        //this.Manager.FseCollection ??= new WinBM.FileScopeCollection();
-                        //this.Manager.FseCollection.Add(this.FilePath, pair.Key, pair.Value);
+                        FileScope.Add(this.FilePath, pair.Key, pair.Value);
                     }
                     else
                     {

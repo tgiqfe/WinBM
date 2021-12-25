@@ -13,7 +13,7 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
         public string Description { get; set; }
         public bool? Skip { get; set; }
         public bool? Step { get; set; }
-        public int? Priority { get; set; }
+        public string Priority { get; set; }
 
         public IllegalParamCollection Illegals { get; set; }
 
@@ -120,15 +120,7 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
 
         public void SetPriority(YamlNode node)
         {
-            if (int.TryParse(node.Value, out int priority))
-            {
-                this.Priority = priority;
-            }
-            else
-            {
-                this.Illegals ??= new IllegalParamCollection();
-                Illegals.AddIllegalValue(node);
-            }
+            this.Priority = node.Value;
         }
     }
 }

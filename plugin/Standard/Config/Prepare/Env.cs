@@ -40,8 +40,9 @@ namespace Standard.Config.Prepare
                 {
                     if (this._Target == EnvironmentScope.File)
                     {
-                        this.Manager.FseCollection ??= new WinBM.FileScopeCollection();
-                        this.Manager.FseCollection.Add(this.FilePath, pair.Key, pair.Value);
+                        WinBM.Lib.FileScope.Add(this.FilePath, pair.Key, pair.Value);
+                        //this.Manager.FseCollection ??= new WinBM.FileScopeCollection();
+                        //this.Manager.FseCollection.Add(this.FilePath, pair.Key, pair.Value);
                     }
                     else
                     {

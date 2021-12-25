@@ -113,15 +113,6 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
         public void SetTask(YamlNode node)
         {
             string task = node.Value;
-            if (task.Contains("/") && task.Split('/').Length == 3 && !task.Contains("\n"))
-            {
-                this.Task = node.Value;
-            }
-            else
-            {
-                this.Illegals ??= new IllegalParamCollection();
-                Illegals.AddIllegalValue(node);
-            }
         }
 
         public void SetParam(YamlNode node)

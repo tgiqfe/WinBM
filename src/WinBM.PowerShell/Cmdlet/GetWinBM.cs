@@ -53,6 +53,16 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
                 }
             }
 
+            //  Envのみ読み込み
+            var manager = new SessionManager()
+            {
+                Cmdlet = this,
+                Setting = GlobalSetting.Load(),
+            };
+            var rancher = new Rancher(manager);
+            rancher.EnvProcess(list.
+                Where(x => x.Kind == WinBM.Recipe.Page.EnumKind.Env).ToList());
+
             WriteObject(list);
         }
 

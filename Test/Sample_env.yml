@@ -24,7 +24,7 @@ output:
 kind: Job
 metadata:
   description: Envで指定した環境変数
-  priority: 101
+  priority: '101 + %wait%'
 job:
   work:
   - task: Standard/Message/StdOut

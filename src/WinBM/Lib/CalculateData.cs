@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WinBM
+namespace WinBM.Lib
 {
     /// <summary>
     /// 文字列の中の計算式を返す

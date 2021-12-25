@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using YamlDotNet.Serialization;
+using WinBM.Lib;
 
 namespace WinBM.Recipe
 {
@@ -57,7 +58,7 @@ namespace WinBM.Recipe
             string priority = this.Priority;
             for (int i = 0; i < 5 && priority.Contains("%"); i++)
             {
-                FileScope2.
+                FileScope.
                     FileScopeList.
                     Where(x => x.IsMathPath(_filePath)).
                     ToList().
@@ -75,7 +76,7 @@ namespace WinBM.Recipe
         private string _filePath = null;
 
         /// <summary>
-        /// ファイルパスをセット
+        /// ファイルパスをセット。デシリアライズ時にセット。
         /// </summary>
         /// <param name="filePath"></param>
         public void SetFilePath(string filePath)

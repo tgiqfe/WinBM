@@ -138,7 +138,11 @@ namespace WinBM.Recipe
             using (var sr = new StreamReader(fileName, Encoding.UTF8))
             {
                 List<Page> list = Deserialize(sr);
-                list.ForEach(x => x.FilePath = fileName);
+                list.ForEach(x =>
+                {
+                    x.FilePath = fileName;
+                    x.Metadata.SetFilePath(fileName);
+                });
                 return list;
             }
         }
