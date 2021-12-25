@@ -6,6 +6,22 @@ using System.Threading.Tasks;
 
 namespace WinBM
 {
+    public class FileScope2
+    {
+        public static List<FileScope> FileScopeList { get; set; }
+
+        public static void Add(string path, string name, string val)
+        {
+            FileScopeList ??= new List<FileScope>();
+            FileScopeList.Add(new FileScope()
+            {
+                Path = path,
+                Name = name,
+                Value = val
+            });
+        }
+    }
+
     /// <summary>
     /// Recipeファイル内でのみ使用する環境変数を実装
     /// </summary>

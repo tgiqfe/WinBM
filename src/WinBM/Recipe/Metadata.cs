@@ -41,14 +41,48 @@ namespace WinBM.Recipe
         [YamlMember(Alias = "priority")]
         public string Priority { get; set; }
 
-        public int GetPriority()
-        {
-            return CalculateData.ComputeInt(this.Priority);
-        }
-
         public override string ToString()
         {
             return this.Name;
         }
+
+        #region Priority
+
+        /// <summary>
+        /// Priority値を取得
+        /// </summary>
+        /// <returns></returns>
+        public int GetPriority()
+        {
+            string priority = this.Priority;
+            for (int i = 0; i < 5 && priority.Contains("%"); i++)
+            {
+                FileScope2.
+                    FileScopeList.
+                    Where(x => x.IsMathPath(_filePath)).
+                    ToList().
+                    ForEach(x => x.Resolv(ref priority));
+                priority = Environment.ExpandEnvironmentVariables(priority);
+            }
+
+            return CalculateData.ComputeInt(priority);
+        }
+
+        /// <summary>
+        /// Fileスコープ内の変数を使用してPriority値を計算する為に必要な、ファイルパス
+        /// </summary>
+        /// <param name="filePath"></param>
+        private string _filePath = null;
+
+        /// <summary>
+        /// ファイルパスをセット
+        /// </summary>
+        /// <param name="filePath"></param>
+        public void SetFilePath(string filePath)
+        {
+            this._filePath = filePath;
+        }
+
+        #endregion
     }
 }

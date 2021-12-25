@@ -531,6 +531,7 @@ namespace WinBM.Task
                     env = env.Replace("%TASK_CLASS%", this.GetType().Name, StringComparison.OrdinalIgnoreCase);
                 }
 
+                /*
                 if (Manager.FseCollection != null)
                 {
                     Manager.FseCollection.
@@ -538,6 +539,11 @@ namespace WinBM.Task
                         ToList().
                         ForEach(x => x.Resolv(ref env));
                 }
+                */
+                FileScope2.FileScopeList.
+                    Where(x => x.IsMathPath(this.FilePath)).
+                    ToList().
+                    ForEach(x => x.Resolv(ref env));
 
                 env = Environment.ExpandEnvironmentVariables(env);
             }

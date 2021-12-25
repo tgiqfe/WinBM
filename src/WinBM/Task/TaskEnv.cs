@@ -33,8 +33,9 @@ namespace WinBM.Task
                 {
                     if (this._Target == EnvironmentScope.File)
                     {
-                        this.Manager.FseCollection ??= new WinBM.FileScopeCollection();
-                        this.Manager.FseCollection.Add(this.FilePath, pair.Key, pair.Value);
+                        FileScope2.Add(this.FilePath, pair.Key, pair.Value);
+                        //this.Manager.FseCollection ??= new WinBM.FileScopeCollection();
+                        //this.Manager.FseCollection.Add(this.FilePath, pair.Key, pair.Value);
                     }
                     else
                     {
@@ -48,8 +49,8 @@ namespace WinBM.Task
             }
             catch (Exception e)
             {
-                Manager.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
-                Manager.WriteLog(LogLevel.Debug, e.ToString());
+                Manager.Setting.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
+                Manager.Setting.WriteLog(LogLevel.Debug, e.ToString());
             }
 
             if (this._Target == EnvironmentScope.Process)

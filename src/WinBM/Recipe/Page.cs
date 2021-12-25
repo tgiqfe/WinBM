@@ -140,8 +140,6 @@ namespace WinBM.Recipe
                 List<Page> list = Deserialize(sr);
                 list.ForEach(x => x.FilePath = fileName);
                 return list;
-
-                //return Deserialize(sr);
             }
         }
 
@@ -183,7 +181,6 @@ namespace WinBM.Recipe
                 }
 
                 //  Priorityがnullの場合は0に戻す
-                //page.Metadata.Priority ??= 0;
                 if (string.IsNullOrEmpty(page.Metadata.Priority))
                 {
                     page.Metadata.Priority = "0";
