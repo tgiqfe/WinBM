@@ -172,7 +172,11 @@ namespace WinBM.Task
                             else if (paramAttr.ResolvEnv)
                             {
                                 matchValue = ExpandEnvironment(matchValue);
-                                prop.SetValue(this, CalculateData.ComputeInt(matchValue));
+                                var num = CalculateData.ComputeInt(matchValue);
+                                if (!paramAttr.Unsigned || num >= 0)
+                                {
+                                    prop.SetValue(this, num);
+                                }
                             }
 
                             /*
@@ -199,7 +203,11 @@ namespace WinBM.Task
                             else if (paramAttr.ResolvEnv)
                             {
                                 matchValue = ExpandEnvironment(matchValue);
-                                prop.SetValue(this, CalculateData.ComputeLong(matchValue));
+                                var num = CalculateData.ComputeLong(matchValue);
+                                if (!paramAttr.Unsigned || num >= 0)
+                                {
+                                    prop.SetValue(this, num);
+                                }
                             }
 
                             /*
@@ -225,7 +233,11 @@ namespace WinBM.Task
                             else if (paramAttr.ResolvEnv)
                             {
                                 matchValue = ExpandEnvironment(matchValue);
-                                prop.SetValue(this, CalculateData.ComputeDouble(matchValue));
+                                var num = CalculateData.ComputeDouble(matchValue);
+                                if (!paramAttr.Unsigned || num >= 0)
+                                {
+                                    prop.SetValue(this, num);
+                                }
                             }
 
                             /*

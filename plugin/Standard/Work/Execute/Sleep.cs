@@ -11,11 +11,11 @@ namespace Standard.Work.Execute
 {
     internal class Sleep : TaskJob
     {
-        [TaskParameter(MandatoryAny = 1, ResolvEnv = true)]
+        [TaskParameter(MandatoryAny = 1, Unsigned = true, ResolvEnv = true)]
         [Keys("seconds", "second", "sec")]
         protected int? _Seconds { get; set; }
 
-        [TaskParameter(MandatoryAny = 2, ResolvEnv = true)]
+        [TaskParameter(MandatoryAny = 2, Unsigned = true, ResolvEnv = true)]
         [Keys("milliseconds", "millisecond", "milli", "msec", "millisec")]
         protected int? _MilliSeconds { get; set; }
 
