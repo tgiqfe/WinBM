@@ -7,7 +7,7 @@ using WinBM;
 using WinBM.Task;
 using Standard.Lib;
 
-namespace Standard.Work.Computer
+namespace Standard.Work.Prepare
 {
     internal class Env : TaskJob
     {
@@ -15,9 +15,12 @@ namespace Standard.Work.Computer
         [Keys("set", "envset", "envs", "environment", "environments")]
         protected Dictionary<string, string> _EnvSet { get; set; }
 
+        /// <summary>
+        /// 環境変数の適用範囲のスコープ。無指定の場合は[Process]
+        /// </summary>
         [TaskParameter]
         [Keys("target", "envtarget", "targetenv", "scope", "targetscope", "envscope")]
-        [Values("process,proc,proces", "user,usr", "machine,mashine,masin,computer", "file,recipefile,")]
+        [Values("process,proc,proces", "user,usr", "machine,mashine,masin,computer", "file,recipefile", "page,pag,pege")]
         protected EnvironmentScope _Target { get; set; }
 
         public override void MainProcess()
@@ -26,7 +29,7 @@ namespace Standard.Work.Computer
             {
                 foreach (KeyValuePair<string, string> pair in _EnvSet)
                 {
-                    if(this._Target == EnvironmentScope.File)
+                    if (this._Target == EnvironmentScope.File)
                     {
                         this.Manager.FseCollection ??= new WinBM.FileScopeEnvCollection();
                         this.Manager.FseCollection.Add(this.FilePath, pair.Key, pair.Value);
@@ -41,6 +44,7 @@ namespace Standard.Work.Computer
                                 EnvironmentScope.Process => EnvironmentVariableTarget.Process,
                                 EnvironmentScope.User => EnvironmentVariableTarget.User,
                                 EnvironmentScope.Machine => EnvironmentVariableTarget.Machine,
+                                EnvironmentScope.Page => EnvironmentVariableTarget.Process,
                                 _ => EnvironmentVariableTarget.Process,
                             });
                     }
@@ -53,14 +57,18 @@ namespace Standard.Work.Computer
                 Manager.WriteLog(LogLevel.Debug, e.ToString());
             }
 
-            if (this._Target == EnvironmentScope.Process)
+            if (this._Target == EnvironmentScope.Page)
             {
                 this.IsPostSpec = true;
+            }
+            if(this._Target == EnvironmentScope.Process)
+            {
+                this.IsPostPage = true;
             }
         }
 
         /// <summary>
-        /// Process環境変数でセットした場合、後処理で削除
+        /// スコープ[Page]でセットした場合、Page内の処理終了後に削除
         /// </summary>
         public override void PostSpec()
         {
@@ -70,5 +78,15 @@ namespace Standard.Work.Computer
             }
         }
 
+        /// <summary>
+        /// スコープ[Process]でセットした場合、全Page終了後に削除
+        /// </summary>
+        public override void PostPage()
+        {
+            foreach (string key in _EnvSet.Keys)
+            {
+                Environment.SetEnvironmentVariable(key, null, EnvironmentVariableTarget.Process);
+            }
+        }
     }
 }

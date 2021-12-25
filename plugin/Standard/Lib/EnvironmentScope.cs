@@ -10,5 +10,6 @@ namespace Standard.Lib
         User = 1,
         Machine = 2,
         File = 3,
+        Page = 4,
     }
 }

@@ -1,4 +1,15 @@
 ---
+kind: Config
+metadata:
+  priority: -1000
+config:
+  spec:
+  - task: Standard/Prepare/Env
+    param:
+      set: 'Weight = 10'
+      scope: File
+
+---
 kind: Output
 metadata:
   priority: 100
@@ -12,7 +23,7 @@ metadata:
   priority: 101
 job:
   work:
-  - task: Standard/Computer/Env
+  - task: Standard/Prepare/Env
     param:
       set: |-
         AAAA = 12341234
@@ -20,7 +31,15 @@ job:
       scope: File
   - task: Standard/Message/StdOut
     param:
-      textResolvEnv: 'test ⇒ %AAAA%'
+      textResolvEnv: 'test ⇒ AAAA: %AAAA%'
+  - task: Standard/Prepare/Env
+    param:
+      set: |-
+        CCCC = ABCDABCD
+      scope: Page
+  - task: Standard/Message/StdOut
+    param:
+      textResolvEnv: 'test ⇒ CCCC: %CCCC%'
 
 ---
 kind: Job
@@ -31,4 +50,13 @@ job:
   work:
   - task: Standard/Message/StdOut
     param:
-      textResolvEnv: 'test ⇒ %BBBB%'
+      textResolvEnv: 'test ⇒ BBBB: %BBBB%'
+  - task: Standard/Message/StdOut
+    param:
+      textResolvEnv: 'test ⇒ Waight: %Weight%'
+  - task: Standard/Message/StdOut
+    param:
+      textResolvEnv: 'test ⇒ WEIGHT: %WEIGHT%'
+  - task: Standard/Message/StdOut
+    param:
+      textResolvEnv: 'test ⇒ CCCC: %CCCC%'
