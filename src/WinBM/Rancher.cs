@@ -21,6 +21,56 @@ namespace WinBM
             this._Manager = manager;
         }
 
+        #region Process Env
+
+        /// <summary>
+        /// Env
+        /// </summary>
+        public void EnvProcess(List<Page> list)
+        {
+            //  Env
+            var registeredTask = new List<string>();
+            foreach (Page page in list.OrderBy(x => x.Metadata.GetPriority()))
+            {
+                if (page.Metadata.Skip ?? false)
+                {
+                    _Manager.Setting.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
+                    continue;
+                }
+
+                var postSpecList = new List<TaskEnv>();
+
+                //  Env
+                if (page.Env.Spec != null)
+                {
+                    foreach (SpecEnv spec in page.Env.Spec)
+                    {
+                        if (spec.Skip ?? false)
+                        {
+                            _Manager.Setting.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
+                            continue;
+                        }
+
+                        TaskEnv task = new TaskEnv();
+                        task.Manager = _Manager;
+                        task.FilePath = page.FilePath;
+                        task.PageName = page.Metadata.Name;
+                        task.SpecName = spec.Name;
+                        task.SpecType = "Env";
+                        task.SetParam(spec.Param);
+
+                        if (task.CheckParam())
+                        {
+                            task.MainProcess();
+
+                            if (task.IsPostPage) { _PostPageList.Add(task); }
+                        }
+                    }
+                }
+            }
+        }
+
+        #endregion
         #region Process Config
 
         /// <summary>

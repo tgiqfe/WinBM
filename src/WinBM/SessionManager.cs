@@ -12,8 +12,6 @@ namespace WinBM
     {
         public GlobalSetting Setting { get; set; }
 
-        public FileScopeEnvCollection FseCollection { get; set; }
-
         /// <summary>
         /// Step(pause)が可能かどうか。
         /// 対話モードの場合のみ可能にさせるように、呼び出し側で設定すること。

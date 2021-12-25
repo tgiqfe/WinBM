@@ -30,7 +30,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
 
         protected override void ProcessRecord()
         {
-            var config = new SpecConfig()
+            var spec = new SpecConfig()
             {
                 Name = this.Name,
                 Description = this.Description,
@@ -38,7 +38,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
                 Task = this.Task,
                 Param = this.Param.ToDictionary(),
             };
-            WriteObject(config);
+            WriteObject(spec);
         }
     }
 }

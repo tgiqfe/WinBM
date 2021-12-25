@@ -124,40 +124,6 @@ namespace IO.Work.Directory
                         }
                     }
                 }
-                /*
-                catch (UnauthorizedAccessException uae)
-                {
-                    Manager.WriteLog(LogLevel.Debug, "{0} {1}", this.TaskName, uae.Message);
-
-                    if (_Force)
-                    {
-                        Manager.WriteLog(LogLevel.Info, "Remove readonly attribute: \"{0}\"", target);
-                        System.IO.Directory.GetFiles(target, "*", System.IO.SearchOption.AllDirectories).
-                            ToList().
-                            ForEach(x => new FileInfo(x).IsReadOnly = false);
-                        System.IO.Directory.GetDirectories(target, "*", System.IO.SearchOption.AllDirectories).
-                            ToList().
-                            ForEach(x => new DirectoryInfo(x).Attributes &= ~FileAttributes.ReadOnly);
-
-                        if (Manager.Interactive && _Recycle)
-                        {
-                            FileSystem.DeleteDirectory(
-                                target,
-                                UIOption.OnlyErrorDialogs,
-                                RecycleOption.SendToRecycleBin,
-                                UICancelOption.DoNothing);
-                        }
-                        else
-                        {
-                            System.IO.Directory.Delete(target, recursive: true);
-                        }
-                        if (_Clear)
-                        {
-                            System.IO.Directory.CreateDirectory(target);
-                        }
-                    }
-                }
-                */
                 catch (Exception e)
                 {
                     Console.WriteLine(e);

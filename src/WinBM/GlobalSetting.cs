@@ -34,6 +34,7 @@ namespace WinBM
         /// </summary>
         public bool DryRun { get; set; }
 
+        //public bool StepPrepare { get; set; }     //  PrepafeはStepの対象外
         public bool StepConfig { get; set; }
         public bool StepOutput { get; set; }
         public bool StepRequire { get; set; }

@@ -10,8 +10,8 @@ using WinBM.PowerShell.Lib;
 
 namespace WinBM.PowerShell.Cmdlet.Recipe
 {
-    [Cmdlet(VerbsCommon.New, "WinBMPageOutput")]
-    public class NewWinBMPageOutput : PSCmdlet
+    [Cmdlet(VerbsCommon.New, "WinBMPageEnv")]
+    public class NewWinBMPageEnv : PSCmdlet
     {
         [Parameter]
         public string Name { get; set; }
@@ -22,7 +22,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
         [Parameter]
         public SwitchParameter Skip { get; set; }
 
-        [Parameter(Mandatory = true, Position = 0)]
+        [Parameter]
         public string Task { get; set; }
 
         [Parameter]
@@ -30,7 +30,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
 
         protected override void ProcessRecord()
         {
-            var spec = new SpecOutput()
+            var spec = new SpecEnv()
             {
                 Name = this.Name,
                 Description = this.Description,

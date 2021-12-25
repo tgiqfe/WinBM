@@ -9,6 +9,14 @@ using Standard.Lib;
 
 namespace Standard.Work.Prepare
 {
+    /// <summary>
+    /// [取り扱いスコープ]
+    ///   Process   ⇒ Env,Work
+    ///   User      ⇒ Workのみ
+    ///   Machine   ⇒ Workのみ
+    ///   File      ⇒ Env,Work
+    ///   Page      ⇒ Workのみ
+    /// </summary>
     internal class Env : TaskJob
     {
         [TaskParameter(Mandatory = true, Delimiter = '\n', EqualSign = '=')]
@@ -31,8 +39,7 @@ namespace Standard.Work.Prepare
                 {
                     if (this._Target == EnvironmentScope.File)
                     {
-                        this.Manager.FseCollection ??= new WinBM.FileScopeEnvCollection();
-                        this.Manager.FseCollection.Add(this.FilePath, pair.Key, pair.Value);
+                        WinBM.Lib.FileScope.Add(this.FilePath, pair.Key, pair.Value);
                     }
                     else
                     {

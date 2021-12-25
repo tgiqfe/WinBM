@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WinBM
+namespace WinBM.Lib
 {
     /// <summary>
     /// Recipeファイル内でのみ使用する環境変数を実装
     /// </summary>
-    public class FileScopeEnv
+    public class FileEnv
     {
         /// <summary>
         /// 対象Recipeファイル。
@@ -47,22 +47,6 @@ namespace WinBM
                     this.Value,
                     System.Text.RegularExpressions.RegexOptions.IgnoreCase);
             }
-        }
-    }
-
-    /// <summary>
-    /// FileScopeEnvのコレクション
-    /// </summary>
-    public class FileScopeEnvCollection : List<FileScopeEnv>
-    {
-        public void Add(string path, string name, string val)
-        {
-            this.Add(new FileScopeEnv()
-            {
-                Path = path,
-                Name = name,
-                Value = val
-            });
         }
     }
 }

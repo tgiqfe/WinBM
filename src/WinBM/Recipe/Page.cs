@@ -16,7 +16,7 @@ namespace WinBM.Recipe
     {
         public enum EnumKind
         {
-            Job, Config, Output
+            Env, Config, Output, Job
         }
 
         [YamlIgnore]
@@ -41,6 +41,9 @@ namespace WinBM.Recipe
 
         [YamlMember(Alias = "metadata")]
         public Metadata Metadata { get; set; }
+
+        [YamlMember(Alias = "env")]
+        public PageEnv Env { get; set; }
 
         [YamlMember(Alias = "config")]
         public PageConfig Config { get; set; }
@@ -84,7 +87,7 @@ namespace WinBM.Recipe
             //  Kindで指定していないプロパティを除外
             PropertyInfo[] props = this.GetType().
                 GetProperties(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance).
-                Where(x => x.Name != "Kind" && x.Name != "Metadata" && x.Name != "Serial").
+                Where(x => x.Name != "Kind" && x.Name != "Metadata" && x.Name != "Serial" && x.Name != "FilePath" && x.Name != "Index").
                 ToArray();
             foreach (PropertyInfo prop in props)
             {
@@ -100,8 +103,7 @@ namespace WinBM.Recipe
             }
 
             //  Priority == 0の場合はnull化
-            //if (this.Metadata != null && this.Metadata.Priority == 0)
-            if (this.Metadata != null && this.Metadata.GetPriority() == 0)
+            if (this.Metadata != null && this.Metadata.Priority == "0")
             {
                 this.Metadata.Priority = null;
             }
@@ -135,10 +137,12 @@ namespace WinBM.Recipe
             using (var sr = new StreamReader(fileName, Encoding.UTF8))
             {
                 List<Page> list = Deserialize(sr);
-                list.ForEach(x => x.FilePath = fileName);
+                list.ForEach(x =>
+                {
+                    x.FilePath = fileName;
+                    x.Metadata.SetFilePath(fileName);
+                });
                 return list;
-
-                //return Deserialize(sr);
             }
         }
 
@@ -180,13 +184,12 @@ namespace WinBM.Recipe
                 }
 
                 //  Priorityがnullの場合は0に戻す
-                //page.Metadata.Priority ??= 0;
                 if (string.IsNullOrEmpty(page.Metadata.Priority))
                 {
                     page.Metadata.Priority = "0";
                 }
 
-                //  Kindに一致したコンテンツ(Config/Output/Job)を残して削除
+                //  Kindに一致したコンテンツ(Env/Config/Output/Job)を残して削除
                 PropertyInfo[] props = page.GetType().
                     GetProperties(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance).
                     Where(x => x.Name != "Kind" && x.Name != "Metadata" && x.Name != "Serial" && x.Name != "FilePath" && x.Name != "Index").

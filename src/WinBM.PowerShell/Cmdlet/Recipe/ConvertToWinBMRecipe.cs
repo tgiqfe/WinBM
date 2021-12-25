@@ -49,7 +49,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
 
         protected override void ProcessRecord()
         {
-            string outputType = _dictionary[PARAM_NAME].Value as string ?? "Yaml";
+            string outputType = _dictionary[PARAM_NAME].Value as string ?? TYPE_YAML;
 
             switch (outputType)
             {
@@ -83,6 +83,15 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
 
                 switch (page.Kind)
                 {
+                    case WinBM.Recipe.Page.EnumKind.Env:
+                        if(page.Env.Spec != null)
+                        {
+                            foreach (SpecEnv spec in page.Env.Spec)
+                            {
+                                varPage.Env.Add(GetCommandEnv(spec));
+                            }
+                        }
+                        break;
                     case WinBM.Recipe.Page.EnumKind.Config:
                         if (page.Config.Spec != null)
                         {
@@ -145,9 +154,43 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
             {
                 sb.Append(" -Step");
             }
-            if (metadata.Priority != null && metadata.GetPriority() != 0)
+            //if (metadata.Priority != null && metadata.GetPriority() != 0)
+            if (metadata.Priority != null && metadata.Priority != "0")
             {
-                sb.Append($" -Priority {metadata.Priority}");
+                sb.Append($" -Priority \"{metadata.Priority}\"");
+            }
+
+            return sb.ToString();
+        }
+
+        private string GetCommandEnv(SpecEnv spec)
+        {
+            var sb = new StringBuilder();
+            sb.Append("New-WinBMPageEnv");
+            if (!string.IsNullOrEmpty(spec.Name))
+            {
+                sb.Append($" -Name \"{spec.Name}\"");
+            }
+            if (!string.IsNullOrEmpty(spec.Description))
+            {
+                sb.Append($" -Description \"{spec.Description}\"");
+            }
+            if (!string.IsNullOrEmpty(spec.Task))
+            {
+                sb.Append($" -Task {spec.Task}");
+            }
+            if (spec.Skip ?? false)
+            {
+                sb.Append(" -Skip");
+            }
+            if (spec.Param?.Count > 0)
+            {
+                sb.Append(" -Param @{ ");
+                foreach (KeyValuePair<string, string> pair in spec.Param)
+                {
+                    sb.Append($"\"{pair.Key}\" = \"{pair.Value}\"; ");
+                }
+                sb.Append("}");
             }
 
             return sb.ToString();
@@ -267,6 +310,11 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
 
         class VarPageSet
         {
+            /// <summary>
+            /// パイプラインで受け渡しされる場合でもカウントを引き継ぐ為に、静的に準備
+            /// </summary>
+            private static int _count = 0;
+
             public List<VarPage> VarList { get; set; }
 
             public VarPageSet()
@@ -279,13 +327,14 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
                 var sb = new StringBuilder();
                 for (int i = 0; i < VarList.Count; i++)
                 {
+                    _count++;
                     if (i > 0) { sb.AppendLine(); }
-                    sb.AppendLine($"# Page {i}");
+                    sb.AppendLine($"# Page {_count}");
 
                     sb.Append(VarList[i].GetCommand(i));
 
-                    sb.AppendLine(string.Format("page_{0} = New-WinBMPage -Kind {1}{2}{3}",
-                        i,
+                    sb.AppendLine(string.Format("$page_{0} = New-WinBMPage -Kind {1}{2}{3}",
+                        _count,
                         VarList[i].Kind,
                         VarList[i].GetMetadataParameterString(i),
                         VarList[i].GetSpecParameterString(i)));
@@ -299,6 +348,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
         {
             public string Kind { get; set; }
             public string Metadata { get; set; }
+            public List<string> Env { get; set; }
             public List<string> Config { get; set; }
             public List<string> Output { get; set; }
             public List<string> Require { get; set; }
@@ -306,6 +356,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
 
             public VarPage()
             {
+                this.Env = new List<string>();
                 this.Config = new List<string>();
                 this.Output = new List<string>();
                 this.Require = new List<string>();
@@ -320,6 +371,11 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
 
                 switch (Kind)
                 {
+                    case "Env":
+                        Env.Select((x, index) => $"$env_{pageNum}_{index} = {x}").
+                            ToList().
+                            ForEach(x => sb.AppendLine(x));
+                        break;
                     case "Config":
                         Config.Select((x, index) => $"$config_{pageNum}_{index} = {x}").
                             ToList().
@@ -352,12 +408,16 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
             {
                 switch (Kind)
                 {
+                    case "Env":
+                        return string.Format(" -Env @({0})",
+                            string.Join(", ",
+                                Env.Select((x, index) => $"$env_{pageNum}_{index}")));
                     case "Config":
                         return string.Format(" -Config @({0})",
                             string.Join(", ",
                                 Config.Select((x, index) => $"$config_{pageNum}_{index}")));
                     case "Output":
-                        return string.Format(" -Kind @({0})",
+                        return string.Format(" -Output @({0})",
                             string.Join(", ",
                                 Output.Select((x, index) => $"$output_{pageNum}_{index}")));
                     case "Job":

@@ -89,31 +89,6 @@ namespace Audit.Lib.Monitor
         #endregion
 
         public MonitorTarget() { }
-
-        /*
-        public MonitorTarget(PathType pathType, string path)
-        {
-            this.PathType = pathType;
-            this.Path = path;
-        }
-        public MonitorTarget(PathType pathType, string path, RegistryKey key)
-        {
-            //  keyがnullだった場合、pathに値を入れることができなくなる為、文字列パスとRegistryKeyの両方を指定
-            this.PathType = pathType;
-            this.Path = path;
-            this.Key = key;
-        }
-        public MonitorTarget(PathType pathType, string path, RegistryKey key, string name)
-        {
-            this.PathType = pathType;
-            this.Path = path;
-            this.Key = key;
-            this.Name = name;
-        }
-        */
-
-
-
         public MonitorTarget(PathType pathType, string path, string pathTypeName)
         {
             this.PathType = pathType;
@@ -273,30 +248,5 @@ namespace Audit.Lib.Monitor
         }
 
         #endregion
-
-        /*
-        /// <summary>
-        /// Is～プロパティをマージする
-        /// </summary>
-        /// <param name="target"></param>
-        public void Merge_is_Property(MonitorTarget target)
-        {
-            if (target.IsCreationTime != null) { this.IsCreationTime = target.IsCreationTime; }
-            if (target.IsLastWriteTime != null) { this.IsLastWriteTime = target.IsLastWriteTime; }
-            if (target.IsLastAccessTime != null) { this.IsLastAccessTime = target.IsLastAccessTime; }
-            if (target.IsAccess != null) { this.IsAccess = target.IsAccess; }
-            if (target.IsOwner != null) { this.IsOwner = target.IsOwner; }
-            if (target.IsInherited != null) { this.IsInherited = target.IsInherited; }
-            if (target.IsAttributes != null) { this.IsAttributes = target.IsAttributes; }
-            if (target.IsMD5Hash != null) { this.IsMD5Hash = target.IsMD5Hash; }
-            if (target.IsSHA256Hash != null) { this.IsSHA256Hash = target.IsSHA256Hash; }
-            if (target.IsSHA512Hash != null) { this.IsSHA512Hash = target.IsSHA512Hash; }
-            if (target.IsSize != null) { this.IsSize = target.IsSize; }
-            if (target.IsChildCount != null) { this.IsChildCount = target.IsChildCount; }
-            if (target.IsRegistryType != null) { this.IsRegistryType = target.IsRegistryType; }
-            if (target.IsDateOnly != null) { this.IsDateOnly = target.IsDateOnly; }
-            if (target.IsTimeOnly != null) { this.IsTimeOnly = target.IsTimeOnly; }
-        }
-        */
     }
 }

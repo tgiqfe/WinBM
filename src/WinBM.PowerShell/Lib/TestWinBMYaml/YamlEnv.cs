@@ -7,19 +7,19 @@ using System.IO;
 
 namespace WinBM.PowerShell.Lib.TestWinBMYaml
 {
-    internal class YamlMetadata
+    internal class YamlEnv
     {
         public string Name { get; set; }
         public string Description { get; set; }
         public bool? Skip { get; set; }
-        public bool? Step { get; set; }
-        public string Priority { get; set; }
+        public string Task { get; set; }
+        public Dictionary<string, string> Param { get; set; }
 
         public IllegalParamCollection Illegals { get; set; }
 
-        public static YamlMetadata Create(string content)
+        public static List<YamlEnv> Create(string content)
         {
-            var result = new YamlMetadata();
+            var resultList = new List<YamlEnv>();
 
             Func<string, string, LineType, List<YamlNodeCollection>> searchContent = (category, spec, type) =>
             {
@@ -54,32 +54,37 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
                 return new List<YamlNodeCollection>();
             };
 
-            foreach (YamlNode node in searchContent("metadata:", null, LineType.Metadata)[0])
+            foreach (var collection in searchContent("env:", "spec:", LineType.EnvSpec))
             {
-                switch (node.Key)
+                var spec = new YamlEnv();
+                foreach (YamlNode node in collection)
                 {
-                    case "name":
-                        result.SetName(node);
-                        break;
-                    case "description":
-                        result.SetDescription(node);
-                        break;
-                    case "skip":
-                        result.SetSkip(node);
-                        break;
-                    case "step":
-                        result.SetStep(node);
-                        break;
-                    case "priority":
-                        result.SetPriority(node);
-                        break;
-                    default:
-                        result.Illegals ??= new IllegalParamCollection();
-                        result.Illegals.AddIllegalKey(node);
-                        break;
+                    switch (node.Key)
+                    {
+                        case "name":
+                            spec.SetName(node);
+                            break;
+                        case "description":
+                            spec.SetDescription(node);
+                            break;
+                        case "skip":
+                            spec.SetSkip(node);
+                            break;
+                        case "task":
+                            spec.SetTask(node);
+                            break;
+                        case "param":
+                            spec.SetParam(node);
+                            break;
+                        default:
+                            spec.Illegals ??= new IllegalParamCollection();
+                            spec.Illegals.AddIllegalKey(node);
+                            break;
+                    }
                 }
+                resultList.Add(spec);
             }
-            return result;
+            return resultList;
         }
 
         public void SetName(YamlNode node)
@@ -105,22 +110,17 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
             }
         }
 
-        public void SetStep(YamlNode node)
+        public void SetTask(YamlNode node)
         {
-            if (bool.TryParse(node.Value, out bool step))
-            {
-                this.Skip = step;
-            }
-            else
-            {
-                this.Illegals ??= new IllegalParamCollection();
-                Illegals.AddIllegalValue(node);
-            }
+            string task = node.Value;
         }
 
-        public void SetPriority(YamlNode node)
+        public void SetParam(YamlNode node)
         {
-            this.Priority = node.Value;
+            using (var asr = new AdvancedStringReader(node.Value))
+            {
+                this.Param = YamlFunctions.GetNodeCollections(asr, LineType.EnvSpecParam)[0].ToDictionary();
+            }
         }
     }
 }

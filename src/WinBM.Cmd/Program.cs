@@ -29,12 +29,6 @@ namespace WinBM.Cmd
                 List<Page> list = null;
                 foreach (string path in param.RecipeFile.Paths)
                 {
-                    /*
-                    using (var sr = new StreamReader(path, Encoding.UTF8))
-                    {
-                        list.AddRange(Page.Deserialize(sr));
-                    }
-                    */
                     list.AddRange(Page.Deserialize(path));
                 }
 

@@ -73,38 +73,6 @@ namespace IO.Work.Directory
                     PathType.Directory);
             }
 
-            /*
-            //  アクセス文字列を準備。Access文字列指定/Account+Right指定の場合のみ準備。Inherited指定のみの場合は対象外
-            if ((_Access == null || _Access.Length == 0) && !string.IsNullOrEmpty(_Account))
-            {
-                _Account = PredefinedAccount.Resolv(_Account);
-                _Access = new string[1]
-                {
-                    string.Format("{0};{1};{2};{3};{4}",
-                    _Account,
-                    _Rights,
-                    _NoRecurse ? "None" : "ContainerInherit,ObjectInherit",
-                    "None",
-                    _AccessControl)
-                };
-            }
-            */
-
-            /*
-            if (string.IsNullOrEmpty(_Access) && !string.IsNullOrEmpty(_Account))
-            {
-                _Account = PredefinedAccount.Resolv(_Account);
-
-                //  アクセス文字列を生成。
-                _Access = string.Format("{0};{1};{2};{3};{4}",
-                    _Account,
-                    _Rights,
-                    _NoRecurse ? "None" : "ContainerInherit,ObjectInherit",
-                    "None",
-                    _AccessControl);
-            }
-            */
-
             TargetDirectoryProcess(_Path, GrantDirectoryAction);
         }
 
@@ -126,21 +94,6 @@ namespace IO.Work.Directory
                         security.AddAccessRule((FileSystemAccessRule)x.ToAccessRule());
                     });
                 }
-
-                /*
-                //if (!string.IsNullOrEmpty(_Access))
-                if (_Access?.Length > 0)
-                {
-                    foreach (string access in _Access)
-                    {
-                        DirectoryControl.StringToAccessRules(access).ForEach(x =>
-                        {
-                            isChange = true;
-                            security.AddAccessRule(x);
-                        });
-                    }
-                }
-                */
 
                 switch (_Inherited)
                 {

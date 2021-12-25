@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using WinBM.Lib;
 
 namespace WinBM.Task
 {
@@ -22,7 +23,7 @@ namespace WinBM.Task
 
         /// <summary>
         /// specの種類
-        /// Config / Output / Require / Workの4種類
+        /// Env / Config / Output / Require / Workの5種類
         /// Rancherで呼び出し時にセット
         /// </summary>
         public string SpecType { get; set; }
@@ -66,6 +67,7 @@ namespace WinBM.Task
 
         /// <summary>
         /// OutputとRequireでの実行結果を格納
+        /// - Envの場合のSuccess ⇒ -
         /// - Configの場合のSuccess ⇒ -
         /// - Outputの場合のSuccess ⇒ パラメータに問題無し。OutputManagerに追加する
         /// - Requireの場合のSuccess ⇒ 事前条件チェックに成功。
@@ -178,18 +180,6 @@ namespace WinBM.Task
                                     prop.SetValue(this, num);
                                 }
                             }
-
-                            /*
-                            //  不正な値の場合はnullになる。移行の数値型も同じ
-                            int? num = int.TryParse(matchValue, out int tempInt) ? tempInt : null;
-                            if (num != null)
-                            {
-                                if (!paramAttr.Unsigned || (int)num >= 0)
-                                {
-                                    prop.SetValue(this, num);
-                                }
-                            }
-                            */
                         }
                         else if (type == typeof(long?))
                         {
@@ -209,17 +199,6 @@ namespace WinBM.Task
                                     prop.SetValue(this, num);
                                 }
                             }
-
-                            /*
-                            long? num = long.TryParse(matchValue, out long tempLong) ? tempLong : null;
-                            if (num != null)
-                            {
-                                if (!paramAttr.Unsigned || (long)num >= 0)
-                                {
-                                    prop.SetValue(this, num);
-                                }
-                            }
-                            */
                         }
                         else if (type == typeof(double?))
                         {
@@ -239,17 +218,6 @@ namespace WinBM.Task
                                     prop.SetValue(this, num);
                                 }
                             }
-
-                            /*
-                            double? num = double.TryParse(matchValue, out double tempDouble) ? tempDouble : null;
-                            if (num != null)
-                            {
-                                if (!paramAttr.Unsigned || (double)num >= 0)
-                                {
-                                    prop.SetValue(this, num);
-                                }
-                            }
-                            */
                         }
                         else if (type == typeof(DateTime?))
                         {
@@ -530,13 +498,10 @@ namespace WinBM.Task
                     env = env.Replace("%TASK_CLASS%", this.GetType().Name, StringComparison.OrdinalIgnoreCase);
                 }
 
-                if (Manager.FseCollection != null)
-                {
-                    Manager.FseCollection.
-                        Where(x => x.IsMathPath(this.FilePath)).
-                        ToList().
-                        ForEach(x => x.Resolv(ref env));
-                }
+                FileScope.FileScopeList.
+                    Where(x => x.IsMathPath(this.FilePath)).
+                    ToList().
+                    ForEach(x => x.Resolv(ref env));
 
                 env = Environment.ExpandEnvironmentVariables(env);
             }
