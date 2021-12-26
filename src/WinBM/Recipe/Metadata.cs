@@ -47,7 +47,7 @@ namespace WinBM.Recipe
             return this.Name;
         }
 
-        #region Priority
+        #region Calc priority
 
         /// <summary>
         /// Priority値を取得
@@ -71,7 +71,7 @@ namespace WinBM.Recipe
                 priority = Environment.ExpandEnvironmentVariables(priority);
             }
 
-            return CalculateData.ComputeInt(priority);
+            return CalculateText.ToInt(priority);
         }
 
         /// <summary>

@@ -1,0 +1,41 @@
+---
+kind: Init
+metadata:
+  name: EnvSample
+  description: サンプル
+  priority: 100
+init:
+  spec:
+  - param:
+      env: |-
+        AAAA = testtest
+        BBBB = 12341234
+        CCCC = AbcdAbcd
+        wait = 100
+      scope: file
+  - param:
+      dll: |-
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Audit\bin\%BUILD_TYPE%\net6.0\Audit.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\IO\bin\%BUILD_TYPE%\net6.0\IO.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Standard\bin\%BUILD_TYPE%\net6.0\Standard.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Web\bin\%BUILD_TYPE%\net6.0\Web.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\OSVersion\bin\%BUILD_TYPE%\net6.0\OSVersion.dll        
+
+---
+kind: Output
+output:
+  spec:
+  - task: Standard/Console/StdOut
+
+---
+kind: Job
+metadata:
+  description: Envで指定した環境変数
+  priority: '101 + %wait%'
+job:
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      messageResolvEnv: 'AAAA: %AAAA%'
+
+

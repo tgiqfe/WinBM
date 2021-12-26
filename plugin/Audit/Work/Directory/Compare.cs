@@ -99,7 +99,7 @@ namespace Audit.Work.Directory
         [Keys("timeonly", "time")]
         protected bool? _IsTimeOnly { get; set; }
 
-        [TaskParameter]
+        [TaskParameter(Unsigned = true)]
         [Keys("maxdepth", "depth", "maxdeepth", "deepth")]
         protected int? _MaxDepth { get; set; }
 

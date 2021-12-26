@@ -174,8 +174,8 @@ namespace WinBM.Task
                             else if (paramAttr.ResolvEnv)
                             {
                                 matchValue = ExpandEnvironment(matchValue);
-                                var num = CalculateData.ComputeInt(matchValue);
-                                if (!paramAttr.Unsigned || num >= 0)
+                                var num = CalculateText.ToInt(matchValue, nullable: true);
+                                if (num != null && (!paramAttr.Unsigned || num >= 0))
                                 {
                                     prop.SetValue(this, num);
                                 }
@@ -193,8 +193,8 @@ namespace WinBM.Task
                             else if (paramAttr.ResolvEnv)
                             {
                                 matchValue = ExpandEnvironment(matchValue);
-                                var num = CalculateData.ComputeLong(matchValue);
-                                if (!paramAttr.Unsigned || num >= 0)
+                                var num = CalculateText.ToLong(matchValue, nullable: true);
+                                if (num != null && (!paramAttr.Unsigned || num >= 0))
                                 {
                                     prop.SetValue(this, num);
                                 }
@@ -212,8 +212,8 @@ namespace WinBM.Task
                             else if (paramAttr.ResolvEnv)
                             {
                                 matchValue = ExpandEnvironment(matchValue);
-                                var num = CalculateData.ComputeDouble(matchValue);
-                                if (!paramAttr.Unsigned || num >= 0)
+                                var num = CalculateText.ToDouble(matchValue, nullable: true);
+                                if (num != null && (!paramAttr.Unsigned || num >= 0))
                                 {
                                     prop.SetValue(this, num);
                                 }
