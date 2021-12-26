@@ -70,7 +70,7 @@ namespace WinBM.PowerShell.Cmdlet
                 };
                 var rancher = new Rancher(manager);
                 rancher.EnvProcess(pageList.
-                    Where(x => x.Kind == WinBM.Recipe.Page.EnumKind.Env).ToList());
+                    Where(x => x.Kind == WinBM.Recipe.Page.EnumKind.Init).ToList());
 
                 WriteObject(pageList);
                 return;

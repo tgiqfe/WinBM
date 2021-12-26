@@ -51,7 +51,7 @@ namespace WinBM.PowerShell.Cmdlet
 
             switch (this.Kind)
             {
-                case WinBM.Recipe.Page.EnumKind.Env:
+                case WinBM.Recipe.Page.EnumKind.Init:
                     page.Env = this.Env;
                     page.Config = null;
                     page.Output = null;

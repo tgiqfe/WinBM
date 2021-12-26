@@ -36,7 +36,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
             {
                 switch (page.Kind)
                 {
-                    case WinBM.Recipe.Page.EnumKind.Env:
+                    case WinBM.Recipe.Page.EnumKind.Init:
                         page.Env ??= new PageEnv();
                         page.Env.Spec ??= new SpecEnv[] { };
                         page.Env.Spec.Concat(this.Env);

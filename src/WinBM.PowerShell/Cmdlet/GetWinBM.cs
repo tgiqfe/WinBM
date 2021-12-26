@@ -61,7 +61,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
             };
             var rancher = new Rancher(manager);
             rancher.EnvProcess(list.
-                Where(x => x.Kind == WinBM.Recipe.Page.EnumKind.Env).ToList());
+                Where(x => x.Kind == WinBM.Recipe.Page.EnumKind.Init).ToList());
 
             WriteObject(list);
         }

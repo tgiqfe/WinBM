@@ -42,7 +42,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
             };
             switch (this.Kind)
             {
-                case WinBM.Recipe.Page.EnumKind.Env:
+                case WinBM.Recipe.Page.EnumKind.Init:
                     page.Env = new PageEnv();
                     if (this.Env?.Length > 0)
                     {

@@ -83,7 +83,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
 
                 switch (page.Kind)
                 {
-                    case WinBM.Recipe.Page.EnumKind.Env:
+                    case WinBM.Recipe.Page.EnumKind.Init:
                         if(page.Env.Spec != null)
                         {
                             foreach (SpecEnv spec in page.Env.Spec)

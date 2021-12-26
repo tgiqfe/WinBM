@@ -16,7 +16,7 @@ namespace WinBM.Recipe
     {
         public enum EnumKind
         {
-            Env, Config, Output, Job
+            Init, Config, Output, Job
         }
 
         [YamlIgnore]
