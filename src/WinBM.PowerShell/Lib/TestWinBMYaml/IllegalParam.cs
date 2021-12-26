@@ -46,6 +46,10 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
                     Console.Write(IllegalType.Value);
                     break;
+                case IllegalType.Node:
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                    Console.Write(IllegalType.Node);
+                    break;
                 case IllegalType.Dll:
                     Console.ForegroundColor = ConsoleColor.DarkMagenta;
                     Console.Write(IllegalType.Dll);

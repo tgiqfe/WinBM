@@ -28,6 +28,16 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
             });
         }
 
+        public void AddIllegalNode(int line, string message)
+        {
+            this.Add(new IllegalParam()
+            {
+                IllegalType = IllegalType.Node,
+                Line = line,
+                Message = message,
+            });
+        }
+
         public void AddNothingDll(YamlNode node)
         {
             //  未実装

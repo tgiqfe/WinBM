@@ -23,6 +23,10 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
                 string readLine = "";
                 while ((readLine = asr.ReadLine()) != null)
                 {
+                    if (readLine.Contains("#"))
+                    {
+                        readLine = YamlFunctions.RemoveComment(readLine);
+                    }
                     if (readLine.StartsWith("kind:"))
                     {
                         collection.Add(
@@ -33,9 +37,70 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
                         break;
                     }
                 }
-
                 result.SetKind(collection.First());
             }
+
+            //  Kind指定したNodeが存在するかチェック
+            using (var asr = new AdvancedStringReader(content))
+            {
+                string category = "";
+                string[] specs = null;
+                switch (result.Kind)
+                {
+                    case "Env":
+                        category = "env:";
+                        specs = new string[] { "spec:" };
+                        break;
+                    case "Config":
+                        category = "config:";
+                        specs = new string[] { "spec:" };
+                        break;
+                    case "Output":
+                        category = "output:";
+                        specs = new string[] { "spec:" };
+                        break;
+                    case "Job":
+                        category = "job:";
+                        specs = new string[] { "work:", "require:" };
+                        break;
+                }
+
+                int specSuccessCount = 0;
+                string readLine = "";
+                bool inChild = false;
+                while ((readLine = asr.ReadLine()) != null)
+                {
+                    if (readLine.Contains("#"))
+                    {
+                        readLine = YamlFunctions.RemoveComment(readLine);
+                    }
+                    if (readLine == category)
+                    {
+                        inChild = true;
+                        continue;
+                    }
+                    if (inChild && specs.Any(x => x == readLine.Trim()))
+                    {
+                        specSuccessCount++;
+                        inChild = false;
+                        continue;
+                    }
+                    if (!readLine.StartsWith(" "))
+                    {
+                        if (!readLine.StartsWith("kind:") && readLine != "metadata:")
+                        {
+                            result.Illegals ??= new IllegalParamCollection();
+                            result.Illegals.AddIllegalNode(asr.Line, "Illegal node: " + readLine);
+                        }
+                    }
+                }
+                if (specSuccessCount != specs.Length)
+                {
+                    result.Illegals ??= new IllegalParamCollection();
+                    result.Illegals.AddIllegalNode(-1, "Insufficient node. [" + result.Kind + "]");
+                }
+            }
+
             return result;
         }
 

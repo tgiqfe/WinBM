@@ -1,0 +1,24 @@
+---
+kind: Output
+metadata:
+  name: EnvSample
+  description: サンプル
+  priority: 100
+output:
+  spec:
+  - task: sample/test/illegal
+    param:
+      env: |-
+        AAAA = testtest
+        BBBB = 12341234
+        CCCC = AbcdAbcd
+        wait = 100
+      scope: file
+  - task: sample/test/illegal
+    param:
+      dll: |-
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Audit\bin\%BUILD_TYPE%\net6.0\Audit.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\IO\bin\%BUILD_TYPE%\net6.0\IO.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Standard\bin\%BUILD_TYPE%\net6.0\Standard.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Web\bin\%BUILD_TYPE%\net6.0\Web.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\OSVersion\bin\%BUILD_TYPE%\net6.0\OSVersion.dll        
