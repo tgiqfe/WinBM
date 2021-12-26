@@ -87,8 +87,6 @@ namespace Audit.Work
                 }
                 else
                 {
-                    //_SinceDBFile = Path.Combine(
-                    //    GlobalSetting.WorkDir, "Audit", "SinceDB.json");
                     _SinceDBFile = Item.GetDefaultSinceDBFile();
                 }
             }
@@ -127,8 +125,6 @@ namespace Audit.Work
                 }
                 else
                 {
-                    //_SinceDBFile = Path.Combine(
-                    //    GlobalSetting.WorkDir, "Audit", "SinceDB.json");
                     _SinceDBFile = Item.GetDefaultSinceDBFile();
                 }
             }
@@ -170,7 +166,7 @@ namespace Audit.Work
         }
 
         #endregion
-        #region Load/Save WatchDB
+        #region WatchDB
 
         protected string GetWatchDBDirectory()
         {
