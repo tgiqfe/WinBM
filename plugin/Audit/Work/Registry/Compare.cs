@@ -76,7 +76,7 @@ namespace Audit.Work.Registry
 
         //  ################################
 
-        [TaskParameter]
+        [TaskParameter(Unsigned = true)]
         [Keys("maxdepth", "depth", "maxdeepth", "deepth")]
         protected int? _MaxDepth { get; set; }
 

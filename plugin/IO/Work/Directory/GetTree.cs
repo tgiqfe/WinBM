@@ -16,7 +16,7 @@ namespace IO.Work.Directory
         [Keys("path", "filepath", "target", "targetpath", "dirpath", "directorypath")]
         protected string[] _Path { get; set; }
 
-        [TaskParameter]
+        [TaskParameter(Unsigned = true)]
         [Keys("maxdepth", "depth", "maxdeepth", "depth")]
         protected int? _MaxDepth { get; set; }
 
