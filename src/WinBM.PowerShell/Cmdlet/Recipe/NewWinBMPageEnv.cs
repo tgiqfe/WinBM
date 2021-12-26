@@ -30,7 +30,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
 
         protected override void ProcessRecord()
         {
-            var spec = new SpecEnv()
+            var spec = new SpecInit()
             {
                 Name = this.Name,
                 Description = this.Description,

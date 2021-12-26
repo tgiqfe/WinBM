@@ -7,10 +7,10 @@ using YamlDotNet.Serialization;
 
 namespace WinBM.Recipe
 {
-    public class PageEnv : PageBase
+    public class PageInit : PageBase
     {
         [YamlMember(Alias = "spec")]
-        public SpecEnv[] Spec { get; set; }
+        public SpecInit[] Spec { get; set; }
 
         public override string ToString()
         {
@@ -23,7 +23,7 @@ namespace WinBM.Recipe
             if (Spec != null)
             {
                 int count = 0;
-                foreach (SpecEnv spec in this.Spec)
+                foreach (SpecInit spec in this.Spec)
                 {
                     count++;
                     if (string.IsNullOrEmpty(spec.Name))

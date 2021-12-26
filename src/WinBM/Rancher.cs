@@ -43,7 +43,7 @@ namespace WinBM
                 //  Env
                 if (page.Env.Spec != null)
                 {
-                    foreach (SpecEnv spec in page.Env.Spec)
+                    foreach (SpecInit spec in page.Env.Spec)
                     {
                         if (spec.Skip ?? false)
                         {
