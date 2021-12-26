@@ -172,6 +172,8 @@ namespace IO.Work.Directory
 
         private void TakeOwnerDirectory(string targetDir, NTAccount account)
         {
+            if (_abortRecurse) { return; }
+
             System.IO.DirectoryInfo info = new System.IO.DirectoryInfo(targetDir);
             try
             {
@@ -211,6 +213,8 @@ namespace IO.Work.Directory
 
         private void TakeOwnerFile(string targetFile, NTAccount account)
         {
+            if (_abortRecurse) { return; }
+
             System.IO.FileInfo info = new System.IO.FileInfo(targetFile);
             try
             {

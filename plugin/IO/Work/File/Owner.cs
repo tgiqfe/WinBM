@@ -82,6 +82,8 @@ namespace IO.Work.File
 
         private void TakeOwnerFile(string targetFile, NTAccount account)
         {
+            if (_abortRecurse) { return; }
+
             System.IO.FileInfo info = new System.IO.FileInfo(targetFile);
             try
             {
