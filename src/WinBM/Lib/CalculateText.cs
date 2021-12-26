@@ -11,14 +11,17 @@ namespace WinBM.Lib
     /// 例)
     /// 1234 + 1 - 10  を指定した場合に、1225 を返す
     /// </summary>
-    internal class CalculateData
+    internal class CalculateText
     {
+        #region to int
+
         /// <summary>
         /// int型で返す。小数点第一位で四捨五入
         /// </summary>
         /// <param name="text"></param>
+        /// <param name="nullable"></param>
         /// <returns></returns>
-        public static int ComputeInt(string text)
+        public static int? ToInt(string text, bool nullable)
         {
             if (int.TryParse(text, out int num))
             {
@@ -46,15 +49,30 @@ namespace WinBM.Lib
             }
             catch { }
 
-            return 0;
+            return nullable ? null : 0;
         }
 
+
         /// <summary>
-        /// long型で返す。小数点第一位で四捨五入
+        /// int型で返す。小数点第一位で四捨五入。null非許容の為、不正値の場合は0を返す。
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        public static long ComputeLong(string text)
+        public static int ToInt(string text)
+        {
+            return ToInt(text, false) ?? 0;
+        }
+
+        #endregion
+        #region to long
+
+        /// <summary>
+        /// long型で返す。小数点第一位で四捨五入。
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="nullable"></param>
+        /// <returns></returns>
+        public static long? ToLong(string text, bool nullable)
         {
             if (long.TryParse(text, out long num))
             {
@@ -81,16 +99,29 @@ namespace WinBM.Lib
             }
             catch { }
 
-            return 0;
-
+            return nullable ? null : 0;
         }
 
         /// <summary>
-        /// double型で返す
+        /// long型で返す。小数点第一位で四捨五入。null非許容の為、不正値の場合は0を返す。
         /// </summary>
         /// <param name="text"></param>
         /// <returns></returns>
-        public static double ComputeDouble(string text)
+        public static long ToLong(string text)
+        {
+            return ToLong(text, false) ?? 0;
+        }
+
+        #endregion
+        #region to double
+
+        /// <summary>
+        /// double型で返す。
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="nullable"></param>
+        /// <returns></returns>
+        public static double? ToDouble(string text, bool nullable)
         {
             if (double.TryParse(text, out double num))
             {
@@ -117,7 +148,19 @@ namespace WinBM.Lib
             }
             catch { }
 
-            return 0;
+            return nullable ? null : 0;
         }
+
+        /// <summary>
+        /// double型で返す。null非許容の為、不正値の場合は0を返す。
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static double ToDouble(string text)
+        {
+            return ToDouble(text, false) ?? 0;
+        }
+
+        #endregion
     }
 }
