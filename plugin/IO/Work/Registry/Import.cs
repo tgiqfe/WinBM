@@ -12,7 +12,7 @@ namespace IO.Work.Registry
 {
     internal class Import : TaskJob
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("filepath", "file", "outputpath", "outputfile", "output")]
         protected string _FilePath { get; set; }
 

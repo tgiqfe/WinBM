@@ -10,7 +10,7 @@ namespace Audit.Work.Directory
 {
     internal class Exists : AuditTaskWork
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "directorypath", "folderpath", "dirpath", "target", "targetpath")]
         protected string[] _Path { get; set; }
 

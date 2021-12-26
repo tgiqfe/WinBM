@@ -15,11 +15,11 @@ namespace IO.Work.Registry
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Export : TaskJob
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("path", "registrypath", "targetpath", "key", "registrykey", "targetkey", "regkey", "target")]
         protected string _Path { get; set; }
 
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("filepath", "file", "outputpath", "outputfile", "output")]
         protected string _FilePath { get; set; }
 

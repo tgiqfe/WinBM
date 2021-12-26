@@ -26,11 +26,11 @@ namespace Standard.Config.Prepare
         [Keys("stepwork", "workstep")]
         protected bool StepWork { get; set; }
 
-        [TaskParameter(ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Resolv = true, Delimiter = ';')]
         [Keys("plugins", "pluginfiles")]
         protected string[] _PluginFiles { get; set; }
 
-        [TaskParameter(ResolvEnv = true)]
+        [TaskParameter(Resolv = true)]
         [Keys("plugindir", "plugindirectory")]
         protected string _PluginDirectory { get; set; }
 

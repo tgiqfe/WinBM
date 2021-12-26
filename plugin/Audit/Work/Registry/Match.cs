@@ -13,19 +13,19 @@ namespace Audit.Work.Registry
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Match : AuditTaskWork
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("path", "registrypath", "targetpath", "key", "registrykey", "targetkey", "regkey", "target")]
         protected string[] _Path { get; set; }
 
-        [TaskParameter(ResolvEnv = true)]
+        [TaskParameter(Resolv = true)]
         [Keys("name", "name", "namae", "registryname", "regname", "paramname")]
         protected string _Name { get; set; }
 
-        [TaskParameter(ResolvEnv = true)]
+        [TaskParameter(Resolv = true)]
         [Keys("value", "val", "valu", "registryvalue", "regvalue")]
         protected string _Value { get; set; }
 
-        [TaskParameter(ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Resolv = true, Delimiter = ';')]
         [Keys("valuemulti", "valmulti", "multi", "valuearray", "valarray", "array")]
         protected string[] _ValueMulti { get; set; }
 

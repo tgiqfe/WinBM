@@ -15,7 +15,7 @@ namespace Audit.Work.Log
         /// <summary>
         /// 読み込み対象のログファイルへのパス
         /// </summary>
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("path", "filepath", "target", "targetpath")]
         protected string _Path { get; set; }
 

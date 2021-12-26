@@ -15,11 +15,11 @@ namespace IO.Work.Directory
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Owner : IOTaskWork
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath", "dirpath", "directorypath")]
         protected string[] _Path { get; set; }
 
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("account", "acount", "owner", "own")]
         protected string _Account { get; set; }
 

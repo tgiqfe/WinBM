@@ -11,7 +11,7 @@ namespace Audit.Work.File
 {
     internal class Exists : AuditTaskWork
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath")]
         protected string[] _Path { get; set; }
 

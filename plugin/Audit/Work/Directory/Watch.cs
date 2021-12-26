@@ -18,7 +18,7 @@ namespace Audit.Work.Directory
         [Keys("id", "serial", "serialkey", "number", "uniquekey")]
         protected string _Id { get; set; }
 
-        [TaskParameter(ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Resolv = true, Delimiter = ';')]
         [Keys("path", "directorypath", "folderpath", "dirpath", "target", "targetpath")]
         protected string[] _Path { get; set; }
 

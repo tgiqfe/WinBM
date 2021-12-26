@@ -21,7 +21,7 @@ namespace IO.Work.File
     /// </summary>
     internal class Delete : IOTaskWork
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath")]
         protected string[] _Path { get; set; }
 

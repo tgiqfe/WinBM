@@ -9,7 +9,7 @@ namespace IO.Require.File
 {
     internal class Exists : TaskJob
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("path", "filepath", "target", "targetpath")]
         protected string _Path { get; set; }
 

@@ -10,7 +10,7 @@ namespace OSVersion.Config.Prepare
 {
     internal class Setting : TaskConfig
     {
-        [TaskParameter(ResolvEnv = true)]
+        [TaskParameter(Resolv = true)]
         [Keys("osversioninfodbfile", "osvinfodbfile", "osvinfodb")]
         protected string _OSVersionInfoDBFile { get; set; }
 

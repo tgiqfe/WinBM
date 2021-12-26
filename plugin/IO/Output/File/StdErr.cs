@@ -13,7 +13,7 @@ namespace IO.Output.File
     {
         public override OutputType Type { get { return OutputType.StandardError; } }
 
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("path", "filepath", "target", "targetpath")]
         protected string _Path { get; set; }
 

@@ -12,11 +12,11 @@ namespace IO.Work.Directory
 {
     internal class Rename : TaskJob
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("path", "filepath", "target", "targetpath")]
         protected string _Path { get; set; }
 
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("newname", "new")]
         protected string _NewName { get; set; }
 

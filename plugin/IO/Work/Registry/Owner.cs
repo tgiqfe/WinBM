@@ -15,11 +15,11 @@ namespace IO.Work.Registry
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Owner : IOTaskWorkRegistry
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "registrypath", "targetpath", "key", "registrykey", "targetkey", "regkey", "target")]
         protected string[] _Path { get; set; }
 
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("account", "acount", "owner", "own")]
         protected string _Account { get; set; }
 

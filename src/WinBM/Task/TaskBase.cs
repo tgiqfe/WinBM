@@ -144,7 +144,7 @@ namespace WinBM.Task
                         if (type == typeof(string))
                         {
                             //  環境変数の解決
-                            if (paramAttr.ResolvEnv)
+                            if (paramAttr.Resolv)
                             {
                                 matchValue = ExpandEnvironment(matchValue);
                             }
@@ -171,7 +171,7 @@ namespace WinBM.Task
                                     prop.SetValue(this, tempInt);
                                 }
                             }
-                            else if (paramAttr.ResolvEnv)
+                            else if (paramAttr.Resolv)
                             {
                                 matchValue = ExpandEnvironment(matchValue);
                                 var num = CalculateText.ToInt(matchValue, nullable: true);
@@ -190,7 +190,7 @@ namespace WinBM.Task
                                     prop.SetValue(this, tempLong);
                                 }
                             }
-                            else if (paramAttr.ResolvEnv)
+                            else if (paramAttr.Resolv)
                             {
                                 matchValue = ExpandEnvironment(matchValue);
                                 var num = CalculateText.ToLong(matchValue, nullable: true);
@@ -209,7 +209,7 @@ namespace WinBM.Task
                                     prop.SetValue(this, tempDouble);
                                 }
                             }
-                            else if (paramAttr.ResolvEnv)
+                            else if (paramAttr.Resolv)
                             {
                                 matchValue = ExpandEnvironment(matchValue);
                                 var num = CalculateText.ToDouble(matchValue, nullable: true);
@@ -233,7 +233,7 @@ namespace WinBM.Task
                                 ToArray();
 
                             //  環境変数の解決
-                            if (paramAttr.ResolvEnv)
+                            if (paramAttr.Resolv)
                             {
                                 array = array.Select(x => ExpandEnvironment(x)).ToArray();
                             }
@@ -249,7 +249,7 @@ namespace WinBM.Task
                                 ToArray();
 
                             //  環境変数の解決
-                            if (paramAttr.ResolvEnv)
+                            if (paramAttr.Resolv)
                             {
                                 array = array.Select(x => ExpandEnvironment(x)).ToArray();
                             }
