@@ -40,8 +40,8 @@
               </TableColumnItem>
               <TableColumnItem>
                 <ScriptBlock>
-				  if($_.Kind -eq "Env"){
-				    $_.Env.ToString()
+				  if($_.Kind -eq "Init"){
+				    $_.Init.ToString()
 				  }elseif($_.Kind -eq "Config"){
                     $_.Config.ToString()
                   }elseif($_.Kind -eq "Output"){
@@ -72,7 +72,7 @@
                 <PropertyName>Metadata</PropertyName>
               </ListItem>
 			  <ListItem>
-				<PropertyName>Env</PropertyName>
+				<PropertyName>Init</PropertyName>
 			  </ListItem>
               <ListItem>
                 <PropertyName>Config</PropertyName>

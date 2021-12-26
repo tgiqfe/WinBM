@@ -17,7 +17,7 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
 
         public YamlKind Kind { get; set; }
         public YamlMetadata Metadata { get; set; }
-        public List<YamlEnv> Env { get; set; }
+        public List<YamlInit> Init { get; set; }
         public List<YamlConfig> Config { get; set; }
         public List<YamlOutput> Output { get; set; }
         public List<YamlRequire> Require { get; set; }
@@ -57,7 +57,7 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
             {
                 this.Kind = YamlKind.Create(Content);
                 this.Metadata = YamlMetadata.Create(Content);
-                this.Env = YamlEnv.Create(Content);
+                this.Init = YamlInit.Create(Content);
                 this.Config = YamlConfig.Create(Content);
                 this.Output = YamlOutput.Create(Content);
                 this.Require = YamlRequire.Create(Content);
@@ -69,7 +69,7 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
         {
             Kind.Illegals?.ForEach(y => y.View());
             Metadata.Illegals?.ForEach(y => y.View());
-            Env.ForEach(x => x.Illegals?.ForEach(y => y.View()));
+            Init.ForEach(x => x.Illegals?.ForEach(y => y.View()));
             Config.ForEach(x => x.Illegals?.ForEach(y => y.View()));
             Output.ForEach(x => x.Illegals?.ForEach(y => y.View()));
             Require.ForEach(x => x.Illegals?.ForEach(y => y.View()));

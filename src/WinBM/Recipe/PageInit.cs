@@ -28,7 +28,7 @@ namespace WinBM.Recipe
                     count++;
                     if (string.IsNullOrEmpty(spec.Name))
                     {
-                        spec.Name = string.Format("{0}_Env{1}",
+                        spec.Name = string.Format("{0}_Init{1}",
                             pageName,
                             count);
                     }

@@ -47,8 +47,8 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
                 string[] specs = null;
                 switch (result.Kind)
                 {
-                    case "Env":
-                        category = "env:";
+                    case "Init":
+                        category = "init:";
                         specs = new string[] { "spec:" };
                         break;
                     case "Config":

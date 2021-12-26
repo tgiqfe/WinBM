@@ -19,7 +19,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
         public Metadata Metadata { get; set; }
 
         [Parameter]
-        public SpecEnv[] Env { get; set; }
+        public SpecInit[] Init { get; set; }
 
         [Parameter]
         public SpecConfig[] Config { get; set; }
@@ -43,10 +43,10 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
             switch (this.Kind)
             {
                 case WinBM.Recipe.Page.EnumKind.Init:
-                    page.Env = new PageEnv();
-                    if (this.Env?.Length > 0)
+                    page.Init = new PageInit();
+                    if (this.Init?.Length > 0)
                     {
-                        page.Env.Spec = this.Env;
+                        page.Init.Spec = this.Init;
                     }
                     break;
                 case WinBM.Recipe.Page.EnumKind.Config:

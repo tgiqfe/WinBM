@@ -12,7 +12,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
     public class AddWinBMPage : PSCmdlet
     {
         [Parameter]
-        public SpecEnv[] Env { get; set; }
+        public SpecInit[] Init { get; set; }
 
         [Parameter]
         public SpecConfig[] Config { get; set; }
@@ -37,9 +37,9 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
                 switch (page.Kind)
                 {
                     case WinBM.Recipe.Page.EnumKind.Init:
-                        page.Env ??= new PageEnv();
-                        page.Env.Spec ??= new SpecEnv[] { };
-                        page.Env.Spec.Concat(this.Env);
+                        page.Init ??= new PageInit();
+                        page.Init.Spec ??= new SpecInit[] { };
+                        page.Init.Spec.Concat(this.Init);
                         break;
                     case WinBM.Recipe.Page.EnumKind.Config:
                         page.Config ??= new PageConfig();

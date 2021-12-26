@@ -67,7 +67,7 @@ namespace WinBM.PowerShell.Cmdlet
                     }
                 }
 
-                rancher.EnvProcess(list.
+                rancher.InitProcess(list.
                     Where(x => x.Kind == WinBM.Recipe.Page.EnumKind.Init).ToList());
                 rancher.ConfigProcess(list.
                     Where(x => x.Kind == WinBM.Recipe.Page.EnumKind.Config).ToList());

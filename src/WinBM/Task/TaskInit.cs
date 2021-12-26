@@ -7,7 +7,7 @@ using WinBM.Lib;
 
 namespace WinBM.Task
 {
-    public class TaskEnv : TaskBase
+    public class TaskInit : TaskBase
     {
         protected enum EnvironmentScope
         {

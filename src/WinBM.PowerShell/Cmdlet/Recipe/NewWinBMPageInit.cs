@@ -11,7 +11,7 @@ using WinBM.PowerShell.Lib;
 namespace WinBM.PowerShell.Cmdlet.Recipe
 {
     [Cmdlet(VerbsCommon.New, "WinBMPageEnv")]
-    public class NewWinBMPageEnv : PSCmdlet
+    public class NewWinBMPageInit : PSCmdlet
     {
         [Parameter]
         public string Name { get; set; }

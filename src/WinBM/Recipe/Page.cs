@@ -42,8 +42,8 @@ namespace WinBM.Recipe
         [YamlMember(Alias = "metadata")]
         public Metadata Metadata { get; set; }
 
-        [YamlMember(Alias = "env")]
-        public PageEnv Env { get; set; }
+        [YamlMember(Alias = "init")]
+        public PageInit Init { get; set; }
 
         [YamlMember(Alias = "config")]
         public PageConfig Config { get; set; }
@@ -189,7 +189,7 @@ namespace WinBM.Recipe
                     page.Metadata.Priority = "0";
                 }
 
-                //  Kindに一致したコンテンツ(Env/Config/Output/Job)を残して削除
+                //  Kindに一致したコンテンツ(Init/Config/Output/Job)を残して削除
                 PropertyInfo[] props = page.GetType().
                     GetProperties(BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Instance).
                     Where(x => x.Name != "Kind" && x.Name != "Metadata" && x.Name != "Serial" && x.Name != "FilePath" && x.Name != "Index").
