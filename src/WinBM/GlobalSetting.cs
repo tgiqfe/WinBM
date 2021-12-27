@@ -32,21 +32,21 @@ namespace WinBM
         /// <summary>
         /// DryRunモードのON/OFF
         /// </summary>
-        public bool DryRun { get; set; }
+        //public bool DryRun { get; set; }
 
         //public bool StepInit { get; set; }     //  InitはStepの対象外
-        public bool StepConfig { get; set; }
-        public bool StepOutput { get; set; }
-        public bool StepRequire { get; set; }
-        public bool StepWork { get; set; }
+        //public bool StepConfig { get; set; }
+        //public bool StepOutput { get; set; }
+        //public bool StepRequire { get; set; }
+        //public bool StepWork { get; set; }
 
-        public string[] PluginFiles { get; set; }
+        //public string[] PluginFiles { get; set; }
 
-        public string PluginDirectory { get; set; }
+        //public string PluginDirectory { get; set; }
 
-        public string WorkDirectory { get; set; }
+        //public string WorkDirectory { get; set; }
 
-        public Dictionary<string, string> PluginParam { get; set; }
+        //public Dictionary<string, string> PluginParam { get; set; }
 
         #region Init process
 
@@ -63,13 +63,15 @@ namespace WinBM
 
         public void Init()
         {
-            this.DryRun = false;
-            this.PluginFiles = null;
-            this.PluginDirectory = null;
-            this.WorkDirectory = null;
+            //this.DryRun = false;
+            //this.PluginFiles = null;
+            //this.PluginDirectory = null;
+            //this.WorkDirectory = null;
         }
 
         #endregion
+
+        /*
         #region Load/Save
 
         /// <summary>
@@ -128,6 +130,8 @@ namespace WinBM
         }
 
         #endregion
+        */
+
         #region Log
 
         public void WriteLog(LogLevel level, string message)

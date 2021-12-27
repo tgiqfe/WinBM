@@ -126,5 +126,23 @@ namespace WinBM
         }
 
         #endregion
+        #region Plugin parameter
+
+        /// <summary>
+        /// プラグインファイルのパスを指定
+        /// </summary>
+        public string[] PluginFiles { get; set; }
+
+        /// <summary>
+        /// プラグインファイルを保存している場所の指定
+        /// </summary>
+        public string PluginDirectory { get; set; }
+
+        /// <summary>
+        /// プラグイン側で使用するパラメータ
+        /// </summary>
+        public Dictionary<string, string> PluginParam { get; set; }
+
+        #endregion
     }
 }

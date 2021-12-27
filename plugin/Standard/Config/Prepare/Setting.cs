@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using WinBM;
 using WinBM.Task;
 
+//  削除OK
+
 namespace Standard.Config.Prepare
 {
     internal class Setting : TaskConfig
@@ -34,39 +36,43 @@ namespace Standard.Config.Prepare
         [Keys("plugindir", "plugindirectory")]
         protected string _PluginDirectory { get; set; }
 
+        /*
         [TaskParameter]
         [Keys("persistent", "persist")]
         protected bool _Persistent { get; set; }
+        */
 
         public override void MainProcess()
         {
-            Manager.Setting.StepConfig = this.StepConfig;
+            //Manager.Setting.StepConfig = this.StepConfig;
 
-            Manager.Setting.StepOutput = this.StepOutput;
+            //Manager.Setting.StepOutput = this.StepOutput;
 
-            Manager.Setting.StepRequire = this.StepRequire;
+            //Manager.Setting.StepRequire = this.StepRequire;
 
-            Manager.Setting.StepWork = this.StepWork;
-            
-            if (_PluginFiles?.Length > 0)
-            {
-                Manager.Setting.PluginFiles = this._PluginFiles;
-            }
+            //Manager.Setting.StepWork = this.StepWork;
 
-            if (!string.IsNullOrEmpty(_PluginDirectory))
-            {
-                Manager.Setting.PluginDirectory = this._PluginDirectory;
-            }
+            //if (_PluginFiles?.Length > 0)
+            //{
+            //Manager.PluginFiles = this._PluginFiles;
+            //}
 
-            if (_Persistent)
-            {
-                this.IsPostSpec = true;
-            }
+            //if (!string.IsNullOrEmpty(_PluginDirectory))
+            //{
+            //Manager.PluginDirectory = this._PluginDirectory;
+            //}
+
+            //if (_Persistent)
+            //{
+            //this.IsPostSpec = true;
+            //}
         }
 
+        /*
         public override void PostSpec()
         {
             Manager.Setting.Save();
         }
+        */
     }
 }

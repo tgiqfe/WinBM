@@ -66,7 +66,7 @@ namespace WinBM.PowerShell.Cmdlet
                 var manager = new SessionManager()
                 {
                     Cmdlet = this,
-                    Setting = GlobalSetting.Load(),
+                    //Setting = GlobalSetting.Load(),
                 };
                 var rancher = new Rancher(manager);
                 rancher.InitProcess(pageList.

@@ -65,13 +65,13 @@ namespace WinBM.Task
             //  プラグインファイルのパスのセット
             if (_PluginFiles?.Length > 0)
             {
-                Manager.Setting.PluginFiles = this._PluginFiles;
+                Manager.PluginFiles = this._PluginFiles;
             }
 
             //  プラグインファイルの保存先ディレクトリのセット
             if (!string.IsNullOrEmpty(_PluginDirectory))
             {
-                Manager.Setting.PluginDirectory = this._PluginDirectory;
+                Manager.PluginDirectory = this._PluginDirectory;
             }
 
             if (this._Scope == TargetScope.Process)

@@ -19,7 +19,7 @@ namespace WinBM.Cmd
             {
                 var manager = new SessionManager()
                 {
-                    Setting = GlobalSetting.Load(),
+                    //Setting = GlobalSetting.Load(),
                     Stepable = true,
                     Interactive = true,
                 };

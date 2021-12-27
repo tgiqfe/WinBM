@@ -57,7 +57,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
             var manager = new SessionManager()
             {
                 Cmdlet = this,
-                Setting = GlobalSetting.Load(),
+                //Setting = GlobalSetting.Load(),
             };
             var rancher = new Rancher(manager);
             rancher.InitProcess(list.

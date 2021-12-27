@@ -22,36 +22,42 @@ namespace Audit.Config.Prepare
         [Keys("watchdbdir", "watchdb", "watchdbdirectory")]
         protected string _WatchDBDir{ get;set; }
 
+        /*
         [TaskParameter]
         [Keys("persistent", "persist")]
         protected bool _Persistent { get; set; }
+        */
 
         public override void MainProcess()
         {
-            Manager.Setting.PluginParam ??= new Dictionary<string, string>();
+            Manager.PluginParam ??= new Dictionary<string, string>();
 
             if (!string.IsNullOrEmpty(_MonitorFile))
             {
-                Manager.Setting.PluginParam[Item.AUDIT_MONITORFILE] = this._MonitorFile;
+                Manager.PluginParam[Item.AUDIT_MONITORFILE] = this._MonitorFile;
             }
             if (!string.IsNullOrEmpty(_SinceDBFile))
             {
-                Manager.Setting.PluginParam[Item.AUDIT_SINCEDBFILE] = this._SinceDBFile;
+                Manager.PluginParam[Item.AUDIT_SINCEDBFILE] = this._SinceDBFile;
             }
             if (!string.IsNullOrEmpty(_WatchDBDir))
             {
-                Manager.Setting.PluginParam[Item.AUDIT_WATCHDBDIR] = this._WatchDBDir;
+                Manager.PluginParam[Item.AUDIT_WATCHDBDIR] = this._WatchDBDir;
             }
 
+            /*
             if (_Persistent)
             {
                 this.IsPostSpec = true;
             }
+            */
         }
 
+        /*
         public override void PostSpec()
         {
             Manager.Setting.Save();
         }
+        */
     }
 }
