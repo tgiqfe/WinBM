@@ -82,10 +82,6 @@ metadata:
   priority: 200 + 15 + %weight%
 job:
   work:
-  - task: Standard/Prepare/Env
-    param:
-      set: |-
-        wait = 3
   - task: Standard/Message/StdOut
     param:
       messageResolvEnv: 'Wait: %wait%'
