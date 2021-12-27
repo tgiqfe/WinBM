@@ -9,14 +9,10 @@ namespace WinBM.Task
 {
     public class TaskInit : TaskBase
     {
-        protected enum EnvironmentScope
+        protected enum TargetScope
         {
             Process, File
         }
-
-        [TaskParameter(Mandatory = true, EqualSign = '=', Delimiter = '\n')]
-        [Keys("set", "envset", "envs", "environment", "environments")]
-        protected Dictionary<string, string> _EnvSet { get; set; }
 
         /// <summary>
         /// 環境変数の適用範囲のスコープ。無指定の場合は[Process]
@@ -24,15 +20,30 @@ namespace WinBM.Task
         [TaskParameter]
         [Keys("target", "envtarget", "targetenv", "scope", "targetscope", "envscope")]
         [Values("process,proc,proces", "file,recipefile")]
-        protected EnvironmentScope _Target { get; set; }
+        protected TargetScope _Scope { get; set; }
+
+
+        [TaskParameter(Mandatory = true, EqualSign = '=', Delimiter = '\n')]
+        [Keys("set", "envset", "envs", "environment", "environments")]
+        protected Dictionary<string, string> _EnvSet { get; set; }
+
+        [TaskParameter(Resolv = true, Delimiter = ';')]
+        [Keys("plugins", "pluginfiles")]
+        protected string[] _PluginFiles { get; set; }
+
+        [TaskParameter(Resolv = true)]
+        [Keys("plugindir", "plugindirectory")]
+        protected string _PluginDirectory { get; set; }
+
 
         public override void MainProcess()
         {
+            //  環境変数のセット
             try
             {
                 foreach (KeyValuePair<string, string> pair in _EnvSet)
                 {
-                    if (this._Target == EnvironmentScope.File)
+                    if (this._Scope == TargetScope.File)
                     {
                         FileScope.Add(this.FilePath, pair.Key, pair.Value);
                     }
@@ -52,7 +63,19 @@ namespace WinBM.Task
                 Manager.Setting.WriteLog(LogLevel.Debug, e.ToString());
             }
 
-            if (this._Target == EnvironmentScope.Process)
+            //  プラグインファイルのパスのセット
+            if (_PluginFiles?.Length > 0)
+            {
+                Manager.Setting.PluginFiles = this._PluginFiles;
+            }
+
+            //  プラグインファイルの保存先ディレクトリのセット
+            if (!string.IsNullOrEmpty(_PluginDirectory))
+            {
+                Manager.Setting.PluginDirectory = this._PluginDirectory;
+            }
+
+            if (this._Scope == TargetScope.Process)
             {
                 this.IsPostPage = true;
             }

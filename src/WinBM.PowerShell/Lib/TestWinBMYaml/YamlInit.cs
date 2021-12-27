@@ -54,7 +54,7 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
                 return new List<YamlNodeCollection>();
             };
 
-            foreach (var collection in searchContent("env:", "spec:", LineType.InitSpec))
+            foreach (var collection in searchContent("init:", "spec:", LineType.InitSpec))
             {
                 var spec = new YamlInit();
                 foreach (YamlNode node in collection)

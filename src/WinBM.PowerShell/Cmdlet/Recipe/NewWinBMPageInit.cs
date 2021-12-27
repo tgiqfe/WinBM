@@ -10,7 +10,7 @@ using WinBM.PowerShell.Lib;
 
 namespace WinBM.PowerShell.Cmdlet.Recipe
 {
-    [Cmdlet(VerbsCommon.New, "WinBMPageEnv")]
+    [Cmdlet(VerbsCommon.New, "WinBMPageInit")]
     public class NewWinBMPageInit : PSCmdlet
     {
         [Parameter]
