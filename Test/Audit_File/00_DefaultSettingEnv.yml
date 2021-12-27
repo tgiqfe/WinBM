@@ -1,23 +1,35 @@
 ---
-kind: Config
+kind: Init
 metadata:
   name: DefaultsettingEnv
-  description: 環境変数セッティング。テスト事に変更する場合はここを修正
+  description: 環境変数セッティング。テスト毎に変更する場合はここを修正
   priority: -100
-config:
+init:
   spec:
-  - task: Standard/Prepare/Env
+  - name: Init01
+    description: ビルドタイプ指定
+    param:
+      set: |-
+        BUILD_TYPE = Debug
+  - name: Init02
     description: マイドキュメント配下の Workディレクトリ配下で展開している前提で記載
     param:
       set: |-
+        TestDir = %RECIPE_DIRECTORY_NAME%
         LOGFILE = %USERPROFILE%\Desktop\WinBMTest\TestLog_%DATE_FOR_PATH%.log
         SINCE_DB = %USERPROFILE%\Desktop\WinBMTest\sincedbd_%DATE_FOR_PATH%.json
-        BUILD_TYPE = Debug
-        TestDir = test_Audit_File
         TestNum01 = WBtest01
         TestNum02 = WBtest02
         TestNum03 = WBtest03
         TestNum04 = WBtest04
         TestNum05 = WBtest05
         AuditMonitor = %USERPROFILE%\Documents\Work\WinBM\plugin\AuditMonitor\bin\%BUILD_TYPE%\net6.0\AuditMonitor.exe
-
+  - name: Init03
+    description: プラグインパス指定
+    param:
+      plugins: |-
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Audit\bin\%BUILD_TYPE%\net6.0\Audit.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\IO\bin\%BUILD_TYPE%\net6.0\IO.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Standard\bin\%BUILD_TYPE%\net6.0\Standard.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Web\bin\%BUILD_TYPE%\net6.0\Web.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\OSVersion\bin\%BUILD_TYPE%\net6.0\OSVersion.dll

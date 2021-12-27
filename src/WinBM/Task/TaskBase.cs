@@ -479,6 +479,25 @@ namespace WinBM.Task
                 {
                     text = text.Replace("%TASK_NAME%", this.TaskName, StringComparison.OrdinalIgnoreCase);
                 }
+
+                if(text.Contains("%RECIPE_FILE_PATH%", StringComparison.OrdinalIgnoreCase))
+                {
+                    text = text.Replace("%RECIPE_FILE_PATH%", this.FilePath, StringComparison.OrdinalIgnoreCase);
+                }
+                if (text.Contains("%RECIPE_FILE_NAME%", StringComparison.OrdinalIgnoreCase))
+                {
+                    text = text.Replace("%RECIPE_FILE_NAME%", System.IO.Path.GetFileName(this.FilePath), StringComparison.OrdinalIgnoreCase);
+                }
+                if (text.Contains("%RECIPE_DIRECTORY_PATH%", StringComparison.OrdinalIgnoreCase))
+                {
+                    text = text.Replace("%RECIPE_DIRECTORY_PATH%", System.IO.Path.GetDirectoryName(this.FilePath), StringComparison.OrdinalIgnoreCase);
+                }
+                if (text.Contains("%RECIPE_DIRECTORY_NAME%", StringComparison.OrdinalIgnoreCase))
+                {
+                    text = text.Replace("%RECIPE_DIRECTORY_NAME%", System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(this.FilePath)), StringComparison.OrdinalIgnoreCase);
+                }
+
+
                 if (text.Contains("%TASK_DLL%", StringComparison.OrdinalIgnoreCase))
                 {
                     string[] namespaceArray = this.GetType().Namespace.Split('.');

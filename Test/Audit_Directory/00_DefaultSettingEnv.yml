@@ -1,7 +1,7 @@
 ---
 kind: Init
 metadata:
-  name: DefaultsettingEnv2
+  name: DefaultsettingEnv
   description: 環境変数セッティング。テスト毎に変更する場合はここを修正
   priority: -100
 init:
@@ -15,7 +15,7 @@ init:
     description: マイドキュメント配下の Workディレクトリ配下で展開している前提で記載
     param:
       set: |-
-        TestDir = test_Audit_Directory
+        TestDir = %RECIPE_DIRECTORY_NAME%
         LOGFILE = %USERPROFILE%\Desktop\WinBMTest\TestLog_%DATE_FOR_PATH%.log
         SINCE_DB = %USERPROFILE%\Desktop\WinBMTest\sincedbd_%DATE_FOR_PATH%.json
         TestNum01 = WBtest01
