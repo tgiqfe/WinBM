@@ -22,12 +22,6 @@ namespace Audit.Config.Prepare
         [Keys("watchdbdir", "watchdb", "watchdbdirectory")]
         protected string _WatchDBDir{ get;set; }
 
-        /*
-        [TaskParameter]
-        [Keys("persistent", "persist")]
-        protected bool _Persistent { get; set; }
-        */
-
         public override void MainProcess()
         {
             Manager.PluginParam ??= new Dictionary<string, string>();
@@ -44,20 +38,6 @@ namespace Audit.Config.Prepare
             {
                 Manager.PluginParam[Item.AUDIT_WATCHDBDIR] = this._WatchDBDir;
             }
-
-            /*
-            if (_Persistent)
-            {
-                this.IsPostSpec = true;
-            }
-            */
         }
-
-        /*
-        public override void PostSpec()
-        {
-            Manager.Setting.Save();
-        }
-        */
     }
 }

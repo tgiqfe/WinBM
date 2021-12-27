@@ -10,8 +10,6 @@ namespace WinBM
 {
     public class SessionManager
     {
-        public GlobalSetting Setting { get; set; }
-
         /// <summary>
         /// Step(pause)が可能かどうか。
         /// 対話モードの場合のみ可能にさせるように、呼び出し側で設定すること。

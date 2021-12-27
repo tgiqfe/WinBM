@@ -36,7 +36,6 @@ namespace WinBM.PowerShell.Cmdlet
                 var manager = new SessionManager()
                 {
                     Cmdlet = this,
-                    //Setting = GlobalSetting.Load(),
                     Stepable = true,
                     Interactive = true,
                 };
