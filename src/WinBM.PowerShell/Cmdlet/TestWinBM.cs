@@ -63,6 +63,7 @@ namespace WinBM.PowerShell.Cmdlet
             else if (isSuccess)
             {
                 //  Initのみ読み込み
+                WinBM.GlobalLog.Init();
                 var manager = new SessionManager()
                 {
                     Cmdlet = this,

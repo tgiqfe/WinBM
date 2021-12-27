@@ -33,7 +33,7 @@ namespace WinBM
             {
                 if (page.Metadata.Skip ?? false)
                 {
-                    _Manager.Setting.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
+                    GlobalLog.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
                     continue;
                 }
 
@@ -47,7 +47,7 @@ namespace WinBM
                     {
                         if (spec.Skip ?? false)
                         {
-                            _Manager.Setting.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
+                            GlobalLog.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
                             continue;
                         }
 
@@ -86,7 +86,7 @@ namespace WinBM
             {
                 if (page.Metadata.Skip ?? false)
                 {
-                    _Manager.Setting.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
+                    GlobalLog.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
                     continue;
                 }
 
@@ -99,7 +99,7 @@ namespace WinBM
                     {
                         if (spec.Skip ?? false)
                         {
-                            _Manager.Setting.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
+                            GlobalLog.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
                             continue;
                         }
 
@@ -166,7 +166,7 @@ namespace WinBM
             {
                 if (page.Metadata.Skip ?? false)
                 {
-                    _Manager.Setting.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
+                    GlobalLog.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
                     continue;
                 }
 
@@ -179,7 +179,7 @@ namespace WinBM
                     {
                         if (spec.Skip ?? false)
                         {
-                            _Manager.Setting.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
+                            GlobalLog.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
                             continue;
                         }
 
@@ -246,7 +246,7 @@ namespace WinBM
 
                 if (page.Metadata.Skip ?? false)
                 {
-                    _Manager.Setting.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
+                    GlobalLog.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
                     continue;
                 }
 
@@ -260,7 +260,7 @@ namespace WinBM
                     {
                         if (spec.Skip ?? false)
                         {
-                            _Manager.Setting.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
+                            GlobalLog.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
                             continue;
                         }
 
@@ -344,7 +344,7 @@ namespace WinBM
                         }
                         if (spec.Skip ?? false)
                         {
-                            _Manager.Setting.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
+                            GlobalLog.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
                             continue;
                         }
 
@@ -510,7 +510,7 @@ namespace WinBM
 
             if (type == null)
             {
-                _Manager.Setting.WriteLog(LogLevel.Warn, "Failed activate. \"{0}\"", typeName);
+                GlobalLog.WriteLog(LogLevel.Warn, "Failed activate. \"{0}\"", typeName);
                 return null;
             }
             return Activator.CreateInstance(type) as T;

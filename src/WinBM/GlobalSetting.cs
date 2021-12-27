@@ -132,6 +132,7 @@ namespace WinBM
         #endregion
         */
 
+        /*
         #region Log
 
         public void WriteLog(LogLevel level, string message)
@@ -149,5 +150,6 @@ namespace WinBM
         }
 
         #endregion
+        */
     }
 }

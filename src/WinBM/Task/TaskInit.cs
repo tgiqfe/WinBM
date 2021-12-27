@@ -58,8 +58,8 @@ namespace WinBM.Task
             }
             catch (Exception e)
             {
-                Manager.Setting.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
-                Manager.Setting.WriteLog(LogLevel.Debug, e.ToString());
+                GlobalLog.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
+                GlobalLog.WriteLog(LogLevel.Debug, e.ToString());
             }
 
             //  プラグインファイルのパスのセット

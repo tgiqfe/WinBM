@@ -32,6 +32,7 @@ namespace WinBM.PowerShell.Cmdlet
 
             if (!string.IsNullOrEmpty(RecipeFile))
             {
+                WinBM.GlobalLog.Init();
                 var manager = new SessionManager()
                 {
                     Cmdlet = this,

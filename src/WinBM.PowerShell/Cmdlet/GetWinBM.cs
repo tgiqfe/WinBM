@@ -54,6 +54,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
             }
 
             //  Initのみ読み込み
+            WinBM.GlobalLog.Init();
             var manager = new SessionManager()
             {
                 Cmdlet = this,
