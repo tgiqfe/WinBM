@@ -19,7 +19,7 @@ namespace WinBM
         public bool Stepable { get; set; }
 
         /// <summary>
-        /// 対話モードであると指定。呼び出し側で設定すること。
+        /// 対話モードであるという宣言。呼び出し側で設定すること。
         /// </summary>
         public bool Interactive { get; set; }
 

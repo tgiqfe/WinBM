@@ -1,0 +1,98 @@
+---
+kind: Init
+metadata:
+  priority: -1000
+init:
+  spec:
+  - param:
+      set: BUILD_TYPE = Debug
+  - param:
+      scope: Process
+      set: |-
+        LOGFILE = %USERPROFILE%\Desktop\WinBMTest\TestLog_%DATE_FOR_PATH%.log
+        SINCE_DB = %USERPROFILE%\Desktop\WinBMTest\sincedbd_%DATE_FOR_PATH%.json
+        AuditMonitor = %USERPROFILE%\Documents\Work\WinBM\plugin\AuditMonitor\bin\%BUILD_TYPE%\net6.0\AuditMonitor.exe
+      plugins: |-
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Audit\bin\%BUILD_TYPE%\net6.0\Audit.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\IO\bin\%BUILD_TYPE%\net6.0\IO.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Standard\bin\%BUILD_TYPE%\net6.0\Standard.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Web\bin\%BUILD_TYPE%\net6.0\Web.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\OSVersion\bin\%BUILD_TYPE%\net6.0\OSVersion.dll
+  - param:
+      scope: File
+      set: wait = 2
+
+---
+kind: Output
+metadata:
+  priority: 100
+output:
+  spec:
+  - task: Standard/Console/StdOut
+
+---
+kind: Job
+metadata:
+  priority: 101
+job:
+  work:
+  - task: Standard/Prepare/Env
+    param:
+      set: |-
+        AAAA = 12341234
+        BBBB = 56785678
+      scope: File
+  - task: Standard/Message/StdOut
+    param:
+      textResolvEnv: 'test ⇒ AAAA: %AAAA%'
+  - task: Standard/Prepare/Env
+    param:
+      set: |-
+        CCCC = ABCDABCD
+      scope: Page
+  - task: Standard/Message/StdOut
+    param:
+      textResolvEnv: 'test ⇒ CCCC: %CCCC%'
+
+---
+kind: Job
+metadata:
+  name: test
+  priority: (102 + 1) * 1.5
+job:
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      textResolvEnv: 'test ⇒ BBBB: %BBBB%'
+  - task: Standard/Message/StdOut
+    param:
+      textResolvEnv: 'test ⇒ Waight: %Weight%'
+  - task: Standard/Message/StdOut
+    param:
+      textResolvEnv: 'test ⇒ WEIGHT: %WEIGHT%'
+  - task: Standard/Message/StdOut
+    param:
+      textResolvEnv: 'test ⇒ CCCC: %CCCC%'
+
+---
+kind: Job
+metadata:
+  priority: 200 + 15
+job:
+  work:
+  - task: Standard/Prepare/Env
+    param:
+      set: |-
+        wait = 3
+  - task: Standard/Message/StdOut
+    param:
+      messageResolvEnv: 'Wait: %wait%'
+  - task: Standard/Message/StdOut
+    param:
+      messageResolvenv: '%DATETIME%'
+  - task: Standard/Execute/Sleep
+    param:
+      seconds: '%wait%'
+  - task: Standard/Message/StdOut
+    param:
+      messageResolvenv: '%DATETIME%'

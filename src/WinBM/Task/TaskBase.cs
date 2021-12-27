@@ -498,7 +498,7 @@ namespace WinBM.Task
                     text = text.Replace("%TASK_CLASS%", this.GetType().Name, StringComparison.OrdinalIgnoreCase);
                 }
 
-                FileScope.FileScopeList.
+                FileScope.FileScopeList?.
                     Where(x => x.IsMathPath(this.FilePath)).
                     ToList().
                     ForEach(x => x.Resolv(ref text));

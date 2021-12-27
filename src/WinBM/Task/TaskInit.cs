@@ -22,7 +22,6 @@ namespace WinBM.Task
         [Values("process,proc,proces", "file,recipefile")]
         protected TargetScope _Scope { get; set; }
 
-
         [TaskParameter(Mandatory = true, EqualSign = '=', Delimiter = '\n')]
         [Keys("set", "envset", "envs", "environment", "environments")]
         protected Dictionary<string, string> _EnvSet { get; set; }

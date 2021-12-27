@@ -10,6 +10,7 @@ namespace WinBM
 {
     public class GlobalSetting
     {
+        /*
         #region Private Parameter
 
         public static readonly string WorkDir = Environment.UserName == "SYSTEM" ?
@@ -25,6 +26,7 @@ namespace WinBM
         public static readonly string LogFile = Path.Combine(LogDir, DateTime.Now.ToString("yyyyMMdd") + ".log");
 
         #endregion
+        */
 
         [BsonId]
         public int Serial { get; set; } = 1;
@@ -50,6 +52,7 @@ namespace WinBM
 
         #region Init process
 
+        /*
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -60,6 +63,7 @@ namespace WinBM
                 Directory.CreateDirectory(LogDir);
             }
         }
+        */
 
         public void Init()
         {
