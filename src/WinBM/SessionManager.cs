@@ -10,8 +10,6 @@ namespace WinBM
 {
     public class SessionManager
     {
-        public GlobalSetting Setting { get; set; }
-
         /// <summary>
         /// Step(pause)が可能かどうか。
         /// 対話モードの場合のみ可能にさせるように、呼び出し側で設定すること。
@@ -19,7 +17,7 @@ namespace WinBM
         public bool Stepable { get; set; }
 
         /// <summary>
-        /// 対話モードであると指定。呼び出し側で設定すること。
+        /// 対話モードであるという宣言。呼び出し側で設定すること。
         /// </summary>
         public bool Interactive { get; set; }
 
@@ -124,6 +122,24 @@ namespace WinBM
             //_ProgressBarOutputList?.ForEach(x => x.Write());
             _ProgressBarOutputList?.ForEach(x => x.Write(line, max, cursor, description));
         }
+
+        #endregion
+        #region Plugin parameter
+
+        /// <summary>
+        /// プラグインファイルのパスを指定
+        /// </summary>
+        public string[] PluginFiles { get; set; }
+
+        /// <summary>
+        /// プラグインファイルを保存している場所の指定
+        /// </summary>
+        public string PluginDirectory { get; set; }
+
+        /// <summary>
+        /// プラグイン側で使用するパラメータ
+        /// </summary>
+        public Dictionary<string, string> PluginParam { get; set; }
 
         #endregion
     }

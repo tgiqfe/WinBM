@@ -17,10 +17,10 @@ namespace OSVersion.Require
         {
             if (_OSVersionInfoDBFile == null)
             {
-                if ((Manager.Setting.PluginParam?.ContainsKey(Item.OSVERSION_OSVERSIONINFODBFILE) ?? false) &&
-                    !string.IsNullOrEmpty(Manager.Setting.PluginParam[Item.OSVERSION_OSVERSIONINFODBFILE]))
+                if ((Manager.PluginParam?.ContainsKey(Item.OSVERSION_OSVERSIONINFODBFILE) ?? false) &&
+                    !string.IsNullOrEmpty(Manager.PluginParam[Item.OSVERSION_OSVERSIONINFODBFILE]))
                 {
-                    _OSVersionInfoDBFile = Manager.Setting.PluginParam[Item.OSVERSION_OSVERSIONINFODBFILE];
+                    _OSVersionInfoDBFile = Manager.PluginParam[Item.OSVERSION_OSVERSIONINFODBFILE];
                 }
                 else
                 {

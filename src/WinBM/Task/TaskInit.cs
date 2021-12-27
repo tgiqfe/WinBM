@@ -22,7 +22,6 @@ namespace WinBM.Task
         [Values("process,proc,proces", "file,recipefile")]
         protected TargetScope _Scope { get; set; }
 
-
         [TaskParameter(Mandatory = true, EqualSign = '=', Delimiter = '\n')]
         [Keys("set", "envset", "envs", "environment", "environments")]
         protected Dictionary<string, string> _EnvSet { get; set; }
@@ -34,6 +33,8 @@ namespace WinBM.Task
         [TaskParameter(Resolv = true)]
         [Keys("plugindir", "plugindirectory")]
         protected string _PluginDirectory { get; set; }
+
+
 
         public override void MainProcess()
         {
@@ -58,20 +59,20 @@ namespace WinBM.Task
             }
             catch (Exception e)
             {
-                Manager.Setting.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
-                Manager.Setting.WriteLog(LogLevel.Debug, e.ToString());
+                GlobalLog.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
+                GlobalLog.WriteLog(LogLevel.Debug, e.ToString());
             }
 
             //  プラグインファイルのパスのセット
             if (_PluginFiles?.Length > 0)
             {
-                Manager.Setting.PluginFiles = this._PluginFiles;
+                Manager.PluginFiles = this._PluginFiles;
             }
 
             //  プラグインファイルの保存先ディレクトリのセット
             if (!string.IsNullOrEmpty(_PluginDirectory))
             {
-                Manager.Setting.PluginDirectory = this._PluginDirectory;
+                Manager.PluginDirectory = this._PluginDirectory;
             }
 
             if (this._Scope == TargetScope.Process)

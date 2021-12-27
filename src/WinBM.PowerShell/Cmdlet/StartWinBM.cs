@@ -32,10 +32,10 @@ namespace WinBM.PowerShell.Cmdlet
 
             if (!string.IsNullOrEmpty(RecipeFile))
             {
+                WinBM.GlobalLog.Init();
                 var manager = new SessionManager()
                 {
                     Cmdlet = this,
-                    Setting = GlobalSetting.Load(),
                     Stepable = true,
                     Interactive = true,
                 };

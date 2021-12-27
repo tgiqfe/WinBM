@@ -54,10 +54,10 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
             }
 
             //  Initのみ読み込み
+            WinBM.GlobalLog.Init();
             var manager = new SessionManager()
             {
                 Cmdlet = this,
-                Setting = GlobalSetting.Load(),
             };
             var rancher = new Rancher(manager);
             rancher.InitProcess(list.

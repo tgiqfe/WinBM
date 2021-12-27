@@ -33,7 +33,7 @@ namespace WinBM
             {
                 if (page.Metadata.Skip ?? false)
                 {
-                    _Manager.Setting.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
+                    GlobalLog.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
                     continue;
                 }
 
@@ -47,7 +47,7 @@ namespace WinBM
                     {
                         if (spec.Skip ?? false)
                         {
-                            _Manager.Setting.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
+                            GlobalLog.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
                             continue;
                         }
 
@@ -86,7 +86,7 @@ namespace WinBM
             {
                 if (page.Metadata.Skip ?? false)
                 {
-                    _Manager.Setting.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
+                    GlobalLog.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
                     continue;
                 }
 
@@ -99,12 +99,11 @@ namespace WinBM
                     {
                         if (spec.Skip ?? false)
                         {
-                            _Manager.Setting.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
+                            GlobalLog.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
                             continue;
                         }
 
-                        bool onStep =
-                            _Manager.Stepable && (_Manager.Setting.StepConfig || (page.Metadata.Step ?? false));
+                        bool onStep = _Manager.Stepable && (page.Metadata.Step ?? false);
 
                         string tempTaskLabel = spec.Task.ToLower();
                         if (!registeredTask.Contains(tempTaskLabel))
@@ -167,7 +166,7 @@ namespace WinBM
             {
                 if (page.Metadata.Skip ?? false)
                 {
-                    _Manager.Setting.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
+                    GlobalLog.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
                     continue;
                 }
 
@@ -180,12 +179,11 @@ namespace WinBM
                     {
                         if (spec.Skip ?? false)
                         {
-                            _Manager.Setting.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
+                            GlobalLog.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
                             continue;
                         }
 
-                        bool onStep =
-                            _Manager.Stepable && (_Manager.Setting.StepOutput || (page.Metadata.Step ?? false));
+                        bool onStep = _Manager.Stepable && (page.Metadata.Step ?? false);
 
                         string tempTaskLabel = spec.Task.ToLower();
                         if (!registeredTask.Contains(tempTaskLabel))
@@ -248,7 +246,7 @@ namespace WinBM
 
                 if (page.Metadata.Skip ?? false)
                 {
-                    _Manager.Setting.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
+                    GlobalLog.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
                     continue;
                 }
 
@@ -262,12 +260,11 @@ namespace WinBM
                     {
                         if (spec.Skip ?? false)
                         {
-                            _Manager.Setting.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
+                            GlobalLog.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
                             continue;
                         }
 
-                        bool onStep =
-                            _Manager.Stepable && (_Manager.Setting.StepRequire || (page.Metadata.Step ?? false));
+                        bool onStep = _Manager.Stepable && (page.Metadata.Step ?? false);
 
                         TaskJob task = Activate<TaskJob>(spec, "Require");
                         if (task == null)
@@ -347,12 +344,11 @@ namespace WinBM
                         }
                         if (spec.Skip ?? false)
                         {
-                            _Manager.Setting.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
+                            GlobalLog.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
                             continue;
                         }
 
-                        bool onStep =
-                            _Manager.Stepable && (_Manager.Setting.StepWork || (page.Metadata.Step ?? false));
+                        bool onStep = _Manager.Stepable && (page.Metadata.Step ?? false);
 
                         TaskJob task = Activate<TaskJob>(spec, "Work");
                         if (task == null)
@@ -473,20 +469,20 @@ namespace WinBM
                 {
                     Assembly asm = null;
 
-                    if (_Manager.Setting.PluginFiles?.Length > 0)
+                    if (_Manager.PluginFiles?.Length > 0)
                     {
                         //  PluginFilesから探して読み込み
-                        string dllFile = _Manager.Setting.PluginFiles.FirstOrDefault(x =>
+                        string dllFile = _Manager.PluginFiles.FirstOrDefault(x =>
                             x.EndsWith(dllName + ".dll", StringComparison.OrdinalIgnoreCase));
                         if (dllFile != null)
                         {
                             asm = Assembly.LoadFrom(dllFile);
                         }
                     }
-                    else if (!string.IsNullOrEmpty(_Manager.Setting.PluginDirectory))
+                    else if (!string.IsNullOrEmpty(_Manager.PluginDirectory))
                     {
                         //  PluginDirectoryから探して読み込み
-                        string dllFile = Directory.GetFiles(_Manager.Setting.PluginDirectory).FirstOrDefault(x =>
+                        string dllFile = Directory.GetFiles(_Manager.PluginDirectory).FirstOrDefault(x =>
                             x.EndsWith(dllName + ".dll", StringComparison.OrdinalIgnoreCase));
                         if (dllFile != null)
                         {
@@ -514,7 +510,7 @@ namespace WinBM
 
             if (type == null)
             {
-                _Manager.Setting.WriteLog(LogLevel.Warn, "Failed activate. \"{0}\"", typeName);
+                GlobalLog.WriteLog(LogLevel.Warn, "Failed activate. \"{0}\"", typeName);
                 return null;
             }
             return Activator.CreateInstance(type) as T;

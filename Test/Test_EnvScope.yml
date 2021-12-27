@@ -5,8 +5,24 @@ metadata:
 init:
   spec:
   - param:
-      set: 'Weight = 10'
+      set: BUILD_TYPE = Debug
+  - param:
+      scope: Process
+      set: |-
+        LOGFILE = %USERPROFILE%\Desktop\WinBMTest\TestLog_%DATE_FOR_PATH%.log
+        SINCE_DB = %USERPROFILE%\Desktop\WinBMTest\sincedbd_%DATE_FOR_PATH%.json
+        AuditMonitor = %USERPROFILE%\Documents\Work\WinBM\plugin\AuditMonitor\bin\%BUILD_TYPE%\net6.0\AuditMonitor.exe
+      plugins: |-
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Audit\bin\%BUILD_TYPE%\net6.0\Audit.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\IO\bin\%BUILD_TYPE%\net6.0\IO.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Standard\bin\%BUILD_TYPE%\net6.0\Standard.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Web\bin\%BUILD_TYPE%\net6.0\Web.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\OSVersion\bin\%BUILD_TYPE%\net6.0\OSVersion.dll
+  - param:
       scope: File
+      set: |-
+        wait = 2
+        weight = 20
 
 ---
 kind: Output
@@ -63,13 +79,9 @@ job:
 ---
 kind: Job
 metadata:
-  priority: 200 + 15
+  priority: 200 + 15 + %weight%
 job:
   work:
-  - task: Standard/Prepare/Env
-    param:
-      set: |-
-        wait = 3
   - task: Standard/Message/StdOut
     param:
       messageResolvEnv: 'Wait: %wait%'

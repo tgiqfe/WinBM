@@ -29,10 +29,10 @@ namespace Audit.Work
 
             if (_AuditMonitorFile == null)
             {
-                if ((Manager.Setting.PluginParam?.ContainsKey(Item.AUDIT_MONITORFILE) ?? false) &&
-                    !string.IsNullOrEmpty(Manager.Setting.PluginParam[Item.AUDIT_MONITORFILE]))
+                if ((Manager.PluginParam?.ContainsKey(Item.AUDIT_MONITORFILE) ?? false) &&
+                    !string.IsNullOrEmpty(Manager.PluginParam[Item.AUDIT_MONITORFILE]))
                 {
-                    _AuditMonitorFile = Manager.Setting.PluginParam[Item.AUDIT_MONITORFILE];
+                    _AuditMonitorFile = Manager.PluginParam[Item.AUDIT_MONITORFILE];
                 }
                 else
                 {
@@ -80,10 +80,10 @@ namespace Audit.Work
         {
             if (_SinceDBFile == null)
             {
-                if ((Manager.Setting.PluginParam?.ContainsKey(Item.AUDIT_SINCEDBFILE) ?? false) &&
-                    !string.IsNullOrEmpty(Manager.Setting.PluginParam[Item.AUDIT_SINCEDBFILE]))
+                if ((Manager.PluginParam?.ContainsKey(Item.AUDIT_SINCEDBFILE) ?? false) &&
+                    !string.IsNullOrEmpty(Manager.PluginParam[Item.AUDIT_SINCEDBFILE]))
                 {
-                    _SinceDBFile = Manager.Setting.PluginParam[Item.AUDIT_SINCEDBFILE];
+                    _SinceDBFile = Manager.PluginParam[Item.AUDIT_SINCEDBFILE];
                 }
                 else
                 {
@@ -118,10 +118,10 @@ namespace Audit.Work
         {
             if (_SinceDBFile == null)
             {
-                if ((Manager.Setting.PluginParam?.ContainsKey(Item.AUDIT_SINCEDBFILE) ?? false) &&
-                    !string.IsNullOrEmpty(Manager.Setting.PluginParam[Item.AUDIT_SINCEDBFILE]))
+                if ((Manager.PluginParam?.ContainsKey(Item.AUDIT_SINCEDBFILE) ?? false) &&
+                    !string.IsNullOrEmpty(Manager.PluginParam[Item.AUDIT_SINCEDBFILE]))
                 {
-                    _SinceDBFile = Manager.Setting.PluginParam[Item.AUDIT_SINCEDBFILE];
+                    _SinceDBFile = Manager.PluginParam[Item.AUDIT_SINCEDBFILE];
                 }
                 else
                 {
@@ -172,10 +172,10 @@ namespace Audit.Work
         {
             if (_WatchDBDir == null)
             {
-                if ((Manager.Setting.PluginParam?.ContainsKey(Item.AUDIT_WATCHDBDIR) ?? false) &&
-                    !string.IsNullOrEmpty(Manager.Setting.PluginParam[Item.AUDIT_WATCHDBDIR]))
+                if ((Manager.PluginParam?.ContainsKey(Item.AUDIT_WATCHDBDIR) ?? false) &&
+                    !string.IsNullOrEmpty(Manager.PluginParam[Item.AUDIT_WATCHDBDIR]))
                 {
-                    _WatchDBDir = Manager.Setting.PluginParam[Item.AUDIT_WATCHDBDIR];
+                    _WatchDBDir = Manager.PluginParam[Item.AUDIT_WATCHDBDIR];
                 }
                 else
                 {

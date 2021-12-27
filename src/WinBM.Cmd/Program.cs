@@ -17,9 +17,10 @@ namespace WinBM.Cmd
             var param = new ArgumentParameter(args);
             if (param.Enabled)
             {
+                WinBM.GlobalLog.Init();
                 var manager = new SessionManager()
                 {
-                    Setting = GlobalSetting.Load(),
+                    //Setting = GlobalSetting.Load(),
                     Stepable = true,
                     Interactive = true,
                 };
