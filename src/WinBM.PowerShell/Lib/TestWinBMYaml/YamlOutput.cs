@@ -129,7 +129,16 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
         {
             using (var asr = new AdvancedStringReader(node.Value))
             {
-                this.Param = YamlFunctions.GetNodeCollections(asr, LineType.OutputSpecParam)[0].ToDictionary();
+                var parameters = YamlFunctions.GetNodeCollections(asr, LineType.OutputSpecParam);
+                if (parameters == null || parameters.Count == 0)
+                {
+                    node.Value = "(Empty)";
+                    this.Illegals ??= new IllegalParamCollection();
+                    Illegals.AddIllegalValue(node);
+                    return;
+                }
+
+                this.Param = parameters[0].ToDictionary();
             }
         }
     }

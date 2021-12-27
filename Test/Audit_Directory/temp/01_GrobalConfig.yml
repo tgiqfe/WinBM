@@ -6,6 +6,16 @@ metadata:
   priority: -99
 config:
   spec:
+  - name: GlobalConfig
+    task: Standard/Prepare/Setting
+    param:
+      plugins: |-
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Audit\bin\%BUILD_TYPE%\net6.0\Audit.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\IO\bin\%BUILD_TYPE%\net6.0\IO.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Standard\bin\%BUILD_TYPE%\net6.0\Standard.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\Web\bin\%BUILD_TYPE%\net6.0\Web.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\OSVersion\bin\%BUILD_TYPE%\net6.0\OSVersion.dll
+      persistent: true
   - name: AuditSetting
     task: Audit/Prepare/Setting
     skip: true
@@ -71,6 +81,7 @@ job:
     param:
       milliseconds: 500
     
+
 ---
 kind: Job
 metadata:
