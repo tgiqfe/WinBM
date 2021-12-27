@@ -500,7 +500,6 @@ namespace WinBM
                             Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
                             "plugin",
                             $"{dllName}.dll");
-                        //asm = Assembly.LoadFrom($"plugin\\{dllName}.dll");
                         asm = Assembly.LoadFrom(tempDllPath);
                     }
                     Module module = asm.GetModule($"{dllName}.dll");

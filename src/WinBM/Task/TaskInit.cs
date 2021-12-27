@@ -35,7 +35,6 @@ namespace WinBM.Task
         [Keys("plugindir", "plugindirectory")]
         protected string _PluginDirectory { get; set; }
 
-
         public override void MainProcess()
         {
             //  環境変数のセット
