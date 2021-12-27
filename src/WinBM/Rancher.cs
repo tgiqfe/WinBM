@@ -54,6 +54,7 @@ namespace WinBM
                         TaskInit task = new TaskInit();
                         task.Manager = _Manager;
                         task.FilePath = page.FilePath;
+                        task.Index = page.Index;
                         task.PageName = page.Metadata.Name;
                         task.SpecName = spec.Name;
                         task.SpecType = "Init";
@@ -71,6 +72,7 @@ namespace WinBM
         }
 
         #endregion
+
         #region Process Config
 
         /// <summary>
@@ -119,6 +121,7 @@ namespace WinBM
 
                             task.Manager = _Manager;
                             task.FilePath = page.FilePath;
+                            task.Index = page.Index;
                             task.PageName = page.Metadata.Name;
                             task.SpecName = spec.Name;
                             task.SpecType = "Config";
@@ -198,6 +201,7 @@ namespace WinBM
 
                             task.Manager = _Manager;
                             task.FilePath = page.FilePath;
+                            task.Index = page.Index;
                             task.PageName = page.Metadata.Name;
                             task.SpecName = spec.Name;
                             task.SpecType = "Output";
@@ -287,6 +291,7 @@ namespace WinBM
 
                         task.Manager = _Manager;
                         task.FilePath = page.FilePath;
+                        task.Index = page.Index;
                         task.PageName = page.Metadata.Name;
                         task.SpecName = spec.Name;
                         task.SpecType = "Require";
@@ -371,6 +376,7 @@ namespace WinBM
 
                         task.Manager = _Manager;
                         task.FilePath = page.FilePath;
+                        task.Index = page.Index;
                         task.PageName = page.Metadata.Name;
                         task.SpecName = spec.Name;
                         task.SpecType = "Work";

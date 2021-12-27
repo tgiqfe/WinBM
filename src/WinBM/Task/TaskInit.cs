@@ -23,7 +23,7 @@ namespace WinBM.Task
         protected TargetScope _Scope { get; set; }
 
         [TaskParameter(Mandatory = true, EqualSign = '=', Delimiter = '\n')]
-        [Keys("set", "envset", "envs", "environment", "environments")]
+        [Keys("set", "envset", "envs", "env", "environment", "environments")]
         protected Dictionary<string, string> _EnvSet { get; set; }
 
         [TaskParameter(Resolv = true, Delimiter = ';')]

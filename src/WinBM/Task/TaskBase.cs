@@ -66,6 +66,11 @@ namespace WinBM.Task
         public string FilePath { get; set; }
 
         /// <summary>
+        /// Recipe内のページ番号
+        /// </summary>
+        public int Index { get; set; }
+
+        /// <summary>
         /// OutputとRequireでの実行結果を格納
         /// - Initの場合のSuccess ⇒ -
         /// - Configの場合のSuccess ⇒ -
@@ -496,7 +501,10 @@ namespace WinBM.Task
                 {
                     text = text.Replace("%RECIPE_DIRECTORY_NAME%", System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(this.FilePath)), StringComparison.OrdinalIgnoreCase);
                 }
-
+                if (text.Contains("%PAGE_INDEX%", StringComparison.OrdinalIgnoreCase))
+                {
+                    text = text.Replace("%PAGE_INDEX%", this.Index.ToString(), StringComparison.OrdinalIgnoreCase);
+                }
 
                 if (text.Contains("%TASK_DLL%", StringComparison.OrdinalIgnoreCase))
                 {

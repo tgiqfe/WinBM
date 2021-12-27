@@ -63,6 +63,11 @@ namespace WinBM.Recipe
             string priority = this.Priority;
             for (int i = 0; i < 5 && priority.Contains("%"); i++)
             {
+                if (priority.Contains("%PAGE_INDEX%", StringComparison.OrdinalIgnoreCase))
+                {
+                    priority = priority.Replace("%PAGE_INDEX%", _index.ToString(), StringComparison.OrdinalIgnoreCase);
+                }
+
                 FileScope.FileScopeList?.
                     Where(x => x.IsMathPath(_filePath)).
                     ToList().
@@ -80,12 +85,22 @@ namespace WinBM.Recipe
         private string _filePath = null;
 
         /// <summary>
+        /// Priority値計算時にPage番号を取得する為に使用
+        /// </summary>
+        private int _index = 0;
+
+        /// <summary>
         /// ファイルパスをセット。デシリアライズ時にセット。
         /// </summary>
         /// <param name="filePath"></param>
         public void SetFilePath(string filePath)
         {
             this._filePath = filePath;
+        }
+
+        public void SetIndex(int index)
+        {
+            this._index = index;
         }
 
         #endregion
