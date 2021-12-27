@@ -16,7 +16,7 @@ namespace IO.Work.Directory
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Get : IOTaskWork
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath", "dirpath", "directorypath")]
         protected string[] _Path { get; set; }
 
@@ -40,7 +40,6 @@ namespace IO.Work.Directory
             string name = Path.GetFileName(target);
             string fullPath = Path.GetFullPath(target);
 
-            //string access = DirectoryControl.AccessRulesToString(rules);
             string access = string.Join('/',
                 AccessRuleSummary.FromAccessRules(rules, PathType.Directory).
                     Select(x => x.ToString()));

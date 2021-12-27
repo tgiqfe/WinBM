@@ -15,15 +15,15 @@ namespace IO.Work.File
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Grant : IOTaskWork
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath")]
         protected string[] _Path { get; set; }
 
-        [TaskParameter(MandatoryAny = 1, ResolvEnv = true, Delimiter = '/')]
+        [TaskParameter(MandatoryAny = 1, Resolv = true, Delimiter = '/')]
         [Keys("access", "acess", "acces", "aces")]
         protected string[] _Access { get; set; }
 
-        [TaskParameter(MandatoryAny = 2, ResolvEnv = true)]
+        [TaskParameter(MandatoryAny = 2, Resolv = true)]
         [Keys("account", "acount")]
         protected string _Account { get; set; }
 

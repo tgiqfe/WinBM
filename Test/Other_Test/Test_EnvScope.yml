@@ -1,11 +1,10 @@
 ---
-kind: Config
+kind: Init
 metadata:
   priority: -1000
-config:
+init:
   spec:
-  - task: Standard/Prepare/Env
-    param:
+  - param:
       set: 'Weight = 10'
       scope: File
 

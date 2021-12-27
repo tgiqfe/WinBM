@@ -22,7 +22,7 @@ namespace WinBM.Task
         /// <summary>
         /// 環境変数を解決するかどうか
         /// </summary>
-        public bool ResolvEnv { get; set; }
+        public bool Resolv { get; set; }
 
         /// <summary>
         /// string配列の場合のデリミタ

@@ -29,7 +29,7 @@ namespace WinBM.Recipe
         public bool? Skip { get; set; }
 
         /// <summary>
-        /// treuの場合、Env/Config/Output/Require/Work単位で、pauseさせる。
+        /// treuの場合、Init/Config/Output/Require/Work単位で、pauseさせる。
         /// </summary>
         [YamlMember(Alias = "step")]
         public bool? Step { get; set; }
@@ -37,7 +37,7 @@ namespace WinBM.Recipe
         /// <summary>
         /// 優先順位。値が低いほど優先順位が高い
         /// Config, Output ⇒ spec内の各宣言で、taskが重複した場合に、Proprityが低いほうを使用
-        /// Env, Job ⇒ Priorityの昇順の順番で実行。
+        /// Init, Job ⇒ Priorityの昇順の順番で実行。
         /// </summary>
         [YamlMember(Alias = "priority")]
         public string Priority { get; set; }

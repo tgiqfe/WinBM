@@ -17,23 +17,23 @@ namespace IO.Work.Registry
         //  SourcePath + SourceName + DestinationName ⇒ 同じキー内で値を移動
         //  SourcePath + DestinationPath + SourceName ⇒ 別キーの中に元と同じ名前の値を移動
 
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("sourcepath", "srcpath", "src", "source", "sourcekey", "srckey", "path", "keypath")]
         protected string _SourcePath2 { get; set; }
 
-        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("sourcepath", "srcpath", "src", "source", "sourcekey", "srckey", "path", "keypath")]
         protected string[] _SourcePath { get; set; }
 
-        [TaskParameter(ResolvEnv = true)]
+        [TaskParameter(Resolv = true)]
         [Keys("destinationpath", "dstpath", "dst", "destination", "destinationkey", "dstkey")]
         protected string _DestinationPath { get; set; }
 
-        [TaskParameter(ResolvEnv = true, Delimiter = '\n')]
+        [TaskParameter(Resolv = true, Delimiter = '\n')]
         [Keys("sourcename", "srcname", "name", "name", "namae", "registryname", "regname", "paramname")]
         protected string[] _SourceName { get; set; }
 
-        [TaskParameter(ResolvEnv = true)]
+        [TaskParameter(Resolv = true)]
         [Keys("destinationname", "dstname")]
         protected string _DestinationName { get; set; }
 

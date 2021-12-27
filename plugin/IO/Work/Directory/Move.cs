@@ -13,11 +13,11 @@ namespace IO.Work.Directory
 {
     internal class Move : IOTaskWork
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("sourcepath", "srcpath", "src", "source", "sourcedirectory", "sourcefolder", "sourcedir", "srcdir", "path", "directorypath", "folderpath")]
         protected string[] _SourcePath { get; set; }
 
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("destinationpath", "dstpath", "dst", "destination", "destinationdirectory", "destinationfolder", "destinationdir", "dstdir")]
         protected string _DestinationPath { get; set; }
 

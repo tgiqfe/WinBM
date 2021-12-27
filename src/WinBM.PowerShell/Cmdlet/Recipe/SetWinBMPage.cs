@@ -19,7 +19,7 @@ namespace WinBM.PowerShell.Cmdlet
         public Metadata Metadata { get; set; }
 
         [Parameter]
-        public PageEnv Env { get; set; }
+        public PageInit Init { get; set; }
 
         [Parameter]
         public PageConfig Config { get; set; }
@@ -51,20 +51,20 @@ namespace WinBM.PowerShell.Cmdlet
 
             switch (this.Kind)
             {
-                case WinBM.Recipe.Page.EnumKind.Env:
-                    page.Env = this.Env;
+                case WinBM.Recipe.Page.EnumKind.Init:
+                    page.Init = this.Init;
                     page.Config = null;
                     page.Output = null;
                     page.Job = null;
                     break;
                 case WinBM.Recipe.Page.EnumKind.Config:
-                    page.Env = null;
+                    page.Init = null;
                     page.Config = this.Config;
                     page.Output = null;
                     page.Job = null;
                     break;
                 case WinBM.Recipe.Page.EnumKind.Output:
-                    page.Env = null;
+                    page.Init = null;
                     page.Config = null;
                     page.Output = new PageOutput();
                     //if (this.Output != null && this.Output.Length > 0)
@@ -75,7 +75,7 @@ namespace WinBM.PowerShell.Cmdlet
                     page.Job = null;
                     break;
                 case WinBM.Recipe.Page.EnumKind.Job:
-                    page.Env = null; 
+                    page.Init = null; 
                     page.Config = null;
                     page.Output = null;
                     page.Job = new PageJob();

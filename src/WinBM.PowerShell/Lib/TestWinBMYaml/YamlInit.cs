@@ -7,7 +7,7 @@ using System.IO;
 
 namespace WinBM.PowerShell.Lib.TestWinBMYaml
 {
-    internal class YamlEnv
+    internal class YamlInit
     {
         public string Name { get; set; }
         public string Description { get; set; }
@@ -17,9 +17,9 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
 
         public IllegalParamCollection Illegals { get; set; }
 
-        public static List<YamlEnv> Create(string content)
+        public static List<YamlInit> Create(string content)
         {
-            var resultList = new List<YamlEnv>();
+            var resultList = new List<YamlInit>();
 
             Func<string, string, LineType, List<YamlNodeCollection>> searchContent = (category, spec, type) =>
             {
@@ -54,9 +54,9 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
                 return new List<YamlNodeCollection>();
             };
 
-            foreach (var collection in searchContent("env:", "spec:", LineType.EnvSpec))
+            foreach (var collection in searchContent("init:", "spec:", LineType.InitSpec))
             {
-                var spec = new YamlEnv();
+                var spec = new YamlInit();
                 foreach (YamlNode node in collection)
                 {
                     switch (node.Key)
@@ -119,7 +119,7 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
         {
             using (var asr = new AdvancedStringReader(node.Value))
             {
-                this.Param = YamlFunctions.GetNodeCollections(asr, LineType.EnvSpecParam)[0].ToDictionary();
+                this.Param = YamlFunctions.GetNodeCollections(asr, LineType.InitSpecParam)[0].ToDictionary();
             }
         }
     }

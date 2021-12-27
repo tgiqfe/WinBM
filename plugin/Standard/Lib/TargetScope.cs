@@ -4,7 +4,7 @@ namespace Standard.Lib
     /// <summary>
     /// 環境変数をセットする範囲
     /// </summary>
-    enum EnvironmentScope
+    enum TargetScope
     {
         Process = 0,
         User = 1,

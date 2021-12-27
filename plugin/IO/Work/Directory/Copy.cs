@@ -13,11 +13,11 @@ namespace IO.Work.Directory
 {
     internal class Copy : IOTaskWork
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("sourcepath", "srcpath", "src", "source", "sourcedirectory", "sourcefolder", "sourcedir", "srcdir", "path", "directorypath", "folderpath")]
         protected string[] _SourcePath { get; set; }
 
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("destinationpath", "dstpath", "dst", "destination", "destinationdirectory", "destinationfolder", "destinationdir", "dstdir")]
         protected string _DestinationPath { get; set; }
 
@@ -25,11 +25,11 @@ namespace IO.Work.Directory
         [Keys("force", "forse")]
         protected bool _Force { get; set; }
 
-        [TaskParameter(ResolvEnv = true)]
+        [TaskParameter(Resolv = true)]
         [Keys("excludefile", "exfile", "xf", "xfile")]
         protected string[] _ExcludeFile { get; set; }
 
-        [TaskParameter(ResolvEnv = true)]
+        [TaskParameter(Resolv = true)]
         [Keys("excludedirectory", "excludefolder", "excludedir", "exdirectory", "exfolder", "exdir", "xd", "xdirectory", "xfolder", "xdir")]
         protected string[] _ExcludeDirectory { get; set; }
 

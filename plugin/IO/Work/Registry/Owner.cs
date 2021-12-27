@@ -15,17 +15,21 @@ namespace IO.Work.Registry
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Owner : IOTaskWorkRegistry
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "registrypath", "targetpath", "key", "registrykey", "targetkey", "regkey", "target")]
         protected string[] _Path { get; set; }
 
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("account", "acount", "owner", "own")]
         protected string _Account { get; set; }
 
         [TaskParameter]
         [Keys("recurse", "recursive", "rec", "recurs")]
         protected bool _Recurse { get; set; }
+
+        private bool _hasToken = false;
+        private bool? _isAdmin = null;
+        private bool _abortRecurse = false;
 
         public override void MainProcess()
         {
@@ -37,89 +41,68 @@ namespace IO.Work.Registry
             TargetRegistryKeyProcess(_Path, writable: true, OwnerRegistryAction);
         }
 
-        private void OwnerRegistryAction(RegistryKey target)
+        private void OwnerRegistryAction(RegistryKey targetKey)
         {
-            bool hasToken = false;
-
             var account = new NTAccount(_Account);
 
-            Action<RegistryKey> takeOwnerKey = null;
-            takeOwnerKey = (targetKey) =>
+            if (_Recurse)
             {
-                try
+                Action<RegistryKey> recursiveTree = null;
+                recursiveTree = (target) =>
                 {
-                    RegistrySecurity security = targetKey.GetAccessControl();
-                    security.SetOwner(account);
-                    targetKey.SetAccessControl(security);
-                }
-                catch (InvalidOperationException ioe)
-                {
-                    //  一度所有者変更を失敗した後、管理者権限で動作していないならば終了
-                    AppDomain.CurrentDomain.SetPrincipalPolicy(PrincipalPolicy.WindowsPrincipal);
-                    WindowsPrincipal wp = (WindowsPrincipal)System.Threading.Thread.CurrentPrincipal;
-                    bool isAdmin = wp.IsInRole(WindowsBuiltInRole.Administrator);
-                    if (!isAdmin)
+                    TakeOwnerRegistryKey(target, account);
+                    foreach (string child in target.GetSubKeyNames())
                     {
-                        Manager.WriteLog(LogLevel.Info, "The process is not running as a Trusted user.");
-                        return;
-                    }
-
-                    Manager.WriteLog(LogLevel.Debug, "{0} {1}", this.TaskName, ioe.Message);
-                    Manager.WriteLog(LogLevel.Info, "Get TokenManipulator SE_RESTORE_NAME.");
-
-                    hasToken = true;
-                    TokenManipulator.AddPrivilege(TokenManipulator.SE_RESTORE_NAME);
-                    RegistrySecurity security = targetKey.GetAccessControl();
-                    security.SetOwner(account);
-                    targetKey.SetAccessControl(security);
-                }
-                catch (Exception e)
-                {
-                    Manager.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
-                    Manager.WriteLog(LogLevel.Debug, e.ToString());
-                    this.Success = false;
-                }
-
-                //  再帰処理有りの場合
-                if (_Recurse)
-                {
-                    foreach (string keyName in targetKey.GetSubKeyNames())
-                    {
-                        using (RegistryKey subKey = targetKey.OpenSubKey(keyName, true))
+                        using (RegistryKey childKey = target.OpenSubKey(child, true))
                         {
-                            takeOwnerKey(subKey);
+                            recursiveTree(childKey);
                         }
                     }
-                }
-            };
+                };
+                recursiveTree(targetKey);
+            }
+            else
+            {
+                TakeOwnerRegistryKey(targetKey, account);
+            }
 
-            takeOwnerKey(target);
-
-            if (hasToken)
+            if (_hasToken)
             {
                 TokenManipulator.RemovePrivilege(TokenManipulator.SE_RESTORE_NAME);
             }
+        }
 
-
-            /*
-            //  ここに再帰処理を実装する予定
+        private void TakeOwnerRegistryKey(RegistryKey targetKey, NTAccount account)
+        {
+            if (_abortRecurse) { return; }
 
             try
             {
-                RegistrySecurity security = target.GetAccessControl();
-                security.SetOwner(new NTAccount(_Account));
-                target.SetAccessControl(security);
+                RegistrySecurity security = targetKey.GetAccessControl();
+                security.SetOwner(account);
+                targetKey.SetAccessControl(security);
             }
             catch (InvalidOperationException ioe)
             {
+                //  一度所有者変更を失敗した後、管理者権限で動作していないならば終了
+                if (CheckAdmin())
+                {
+                    Manager.WriteLog(LogLevel.Info, "The process is not running as a Trusted user.");
+                    this.Success = false;
+                    _abortRecurse = true;
+                    return;
+                }
                 Manager.WriteLog(LogLevel.Debug, "{0} {1}", this.TaskName, ioe.Message);
                 Manager.WriteLog(LogLevel.Info, "Get TokenManipulator SE_RESTORE_NAME.");
 
-                TokenManipulator.AddPrivilege(TokenManipulator.SE_RESTORE_NAME);
-                RegistrySecurity security = target.GetAccessControl();
-                security.SetOwner(new NTAccount(_Account));
-                target.SetAccessControl(security);
-                TokenManipulator.RemovePrivilege(TokenManipulator.SE_RESTORE_NAME);
+                if (!_hasToken)
+                {
+                    _hasToken = true;
+                    TokenManipulator.AddPrivilege(TokenManipulator.SE_RESTORE_NAME);
+                }
+                RegistrySecurity security = targetKey.GetAccessControl();
+                security.SetOwner(account);
+                targetKey.SetAccessControl(security);
             }
             catch (Exception e)
             {
@@ -127,7 +110,17 @@ namespace IO.Work.Registry
                 Manager.WriteLog(LogLevel.Debug, e.ToString());
                 this.Success = false;
             }
-            */
+        }
+
+        private bool CheckAdmin()
+        {
+            if (_isAdmin == null)
+            {
+                AppDomain.CurrentDomain.SetPrincipalPolicy(PrincipalPolicy.WindowsPrincipal);
+                WindowsPrincipal wp = (WindowsPrincipal)System.Threading.Thread.CurrentPrincipal;
+                _isAdmin = wp.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+            return (bool)_isAdmin;
         }
     }
 }

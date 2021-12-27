@@ -21,15 +21,14 @@ namespace WinBM
             this._Manager = manager;
         }
 
-        #region Process Env
+        #region Process Init
 
         /// <summary>
-        /// Env
+        /// Init
         /// </summary>
-        public void EnvProcess(List<Page> list)
+        public void InitProcess(List<Page> list)
         {
-            //  Env
-            var registeredTask = new List<string>();
+            //  Init
             foreach (Page page in list.OrderBy(x => x.Metadata.GetPriority()))
             {
                 if (page.Metadata.Skip ?? false)
@@ -38,12 +37,13 @@ namespace WinBM
                     continue;
                 }
 
-                var postSpecList = new List<TaskEnv>();
+                //  恐らく使用しないのでコメントアウト。将来使用する場合はコメントを解除
+                //var postSpecList = new List<TaskInit>();
 
-                //  Env
-                if (page.Env.Spec != null)
+                //  Init
+                if (page.Init.Spec != null)
                 {
-                    foreach (SpecEnv spec in page.Env.Spec)
+                    foreach (SpecInit spec in page.Init.Spec)
                     {
                         if (spec.Skip ?? false)
                         {
@@ -51,12 +51,12 @@ namespace WinBM
                             continue;
                         }
 
-                        TaskEnv task = new TaskEnv();
+                        TaskInit task = new TaskInit();
                         task.Manager = _Manager;
                         task.FilePath = page.FilePath;
                         task.PageName = page.Metadata.Name;
                         task.SpecName = spec.Name;
-                        task.SpecType = "Env";
+                        task.SpecType = "Init";
                         task.SetParam(spec.Param);
 
                         if (task.CheckParam())
@@ -500,7 +500,6 @@ namespace WinBM
                             Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
                             "plugin",
                             $"{dllName}.dll");
-                        //asm = Assembly.LoadFrom($"plugin\\{dllName}.dll");
                         asm = Assembly.LoadFrom(tempDllPath);
                     }
                     Module module = asm.GetModule($"{dllName}.dll");

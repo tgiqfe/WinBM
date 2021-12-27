@@ -19,11 +19,11 @@ namespace Audit.Work.Registry
         [Keys("id", "serial", "serialkey", "number", "uniquekey")]
         protected string _Id { get; set; }
 
-        [TaskParameter(ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Resolv = true, Delimiter = ';')]
         [Keys("path", "registrypath", "targetpath", "key", "registrykey", "targetkey", "regkey", "target")]
         protected string[] _Path { get; set; }
 
-        [TaskParameter(ResolvEnv = true, Delimiter = '\n')]
+        [TaskParameter(Resolv = true, Delimiter = '\n')]
         [Keys("name", "name", "namae", "registryname", "regname", "paramname")]
         protected string[] _Name { get; set; }
 

@@ -24,7 +24,7 @@ namespace Standard.Work.Execute
         [Keys("arguments", "argument", "args", "arg")]
         protected string _Arguments { get; set; }
 
-        [TaskParameter(ResolvEnv = true)]
+        [TaskParameter(Resolv = true)]
         [Keys("work", "workdirectory", "workfolder")]
         protected string _Work { get; set; }
 

@@ -19,14 +19,14 @@ namespace Audit.Work.Log
         /// <summary>
         /// 読み込み対象のログファイルへのパス
         /// </summary>
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("path", "filepath", "target", "targetpath")]
         protected string _Path { get; set; }
 
         /// <summary>
         /// ログファイルに含まれる文字列
         /// </summary>
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("contains", "contain", "containstext", "text")]
         protected string _ContainsText { get; set; }
 

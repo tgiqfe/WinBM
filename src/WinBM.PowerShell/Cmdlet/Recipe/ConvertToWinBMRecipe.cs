@@ -83,12 +83,12 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
 
                 switch (page.Kind)
                 {
-                    case WinBM.Recipe.Page.EnumKind.Env:
-                        if(page.Env.Spec != null)
+                    case WinBM.Recipe.Page.EnumKind.Init:
+                        if(page.Init.Spec != null)
                         {
-                            foreach (SpecEnv spec in page.Env.Spec)
+                            foreach (SpecInit spec in page.Init.Spec)
                             {
-                                varPage.Env.Add(GetCommandEnv(spec));
+                                varPage.Init.Add(GetCommandInit(spec));
                             }
                         }
                         break;
@@ -163,10 +163,10 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
             return sb.ToString();
         }
 
-        private string GetCommandEnv(SpecEnv spec)
+        private string GetCommandInit(SpecInit spec)
         {
             var sb = new StringBuilder();
-            sb.Append("New-WinBMPageEnv");
+            sb.Append("New-WinBMPageInit");
             if (!string.IsNullOrEmpty(spec.Name))
             {
                 sb.Append($" -Name \"{spec.Name}\"");
@@ -348,7 +348,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
         {
             public string Kind { get; set; }
             public string Metadata { get; set; }
-            public List<string> Env { get; set; }
+            public List<string> Init { get; set; }
             public List<string> Config { get; set; }
             public List<string> Output { get; set; }
             public List<string> Require { get; set; }
@@ -356,7 +356,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
 
             public VarPage()
             {
-                this.Env = new List<string>();
+                this.Init = new List<string>();
                 this.Config = new List<string>();
                 this.Output = new List<string>();
                 this.Require = new List<string>();
@@ -371,8 +371,8 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
 
                 switch (Kind)
                 {
-                    case "Env":
-                        Env.Select((x, index) => $"$env_{pageNum}_{index} = {x}").
+                    case "Init":
+                        Init.Select((x, index) => $"$init_{pageNum}_{index} = {x}").
                             ToList().
                             ForEach(x => sb.AppendLine(x));
                         break;
@@ -408,10 +408,10 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
             {
                 switch (Kind)
                 {
-                    case "Env":
-                        return string.Format(" -Env @({0})",
+                    case "Init":
+                        return string.Format(" -Init @({0})",
                             string.Join(", ",
-                                Env.Select((x, index) => $"$env_{pageNum}_{index}")));
+                                Init.Select((x, index) => $"$init_{pageNum}_{index}")));
                     case "Config":
                         return string.Format(" -Config @({0})",
                             string.Join(", ",

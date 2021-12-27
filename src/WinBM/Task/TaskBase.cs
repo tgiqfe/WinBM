@@ -23,7 +23,7 @@ namespace WinBM.Task
 
         /// <summary>
         /// specの種類
-        /// Env / Config / Output / Require / Workの5種類
+        /// Init / Config / Output / Require / Workの5種類
         /// Rancherで呼び出し時にセット
         /// </summary>
         public string SpecType { get; set; }
@@ -67,7 +67,7 @@ namespace WinBM.Task
 
         /// <summary>
         /// OutputとRequireでの実行結果を格納
-        /// - Envの場合のSuccess ⇒ -
+        /// - Initの場合のSuccess ⇒ -
         /// - Configの場合のSuccess ⇒ -
         /// - Outputの場合のSuccess ⇒ パラメータに問題無し。OutputManagerに追加する
         /// - Requireの場合のSuccess ⇒ 事前条件チェックに成功。
@@ -144,7 +144,7 @@ namespace WinBM.Task
                         if (type == typeof(string))
                         {
                             //  環境変数の解決
-                            if (paramAttr.ResolvEnv)
+                            if (paramAttr.Resolv)
                             {
                                 matchValue = ExpandEnvironment(matchValue);
                             }
@@ -171,7 +171,7 @@ namespace WinBM.Task
                                     prop.SetValue(this, tempInt);
                                 }
                             }
-                            else if (paramAttr.ResolvEnv)
+                            else if (paramAttr.Resolv)
                             {
                                 matchValue = ExpandEnvironment(matchValue);
                                 var num = CalculateText.ToInt(matchValue, nullable: true);
@@ -190,7 +190,7 @@ namespace WinBM.Task
                                     prop.SetValue(this, tempLong);
                                 }
                             }
-                            else if (paramAttr.ResolvEnv)
+                            else if (paramAttr.Resolv)
                             {
                                 matchValue = ExpandEnvironment(matchValue);
                                 var num = CalculateText.ToLong(matchValue, nullable: true);
@@ -209,7 +209,7 @@ namespace WinBM.Task
                                     prop.SetValue(this, tempDouble);
                                 }
                             }
-                            else if (paramAttr.ResolvEnv)
+                            else if (paramAttr.Resolv)
                             {
                                 matchValue = ExpandEnvironment(matchValue);
                                 var num = CalculateText.ToDouble(matchValue, nullable: true);
@@ -233,7 +233,7 @@ namespace WinBM.Task
                                 ToArray();
 
                             //  環境変数の解決
-                            if (paramAttr.ResolvEnv)
+                            if (paramAttr.Resolv)
                             {
                                 array = array.Select(x => ExpandEnvironment(x)).ToArray();
                             }
@@ -249,7 +249,7 @@ namespace WinBM.Task
                                 ToArray();
 
                             //  環境変数の解決
-                            if (paramAttr.ResolvEnv)
+                            if (paramAttr.Resolv)
                             {
                                 array = array.Select(x => ExpandEnvironment(x)).ToArray();
                             }
@@ -443,69 +443,69 @@ namespace WinBM.Task
         };
 
         /// <summary>
-        /// TaskParameterでResolvEnv=trueだった場合の、環境変数の解決
+        /// TaskParameterでResolv=trueだった場合の、環境変数の解決
         /// </summary>
-        /// <param name="env"></param>
+        /// <param name="text"></param>
         /// <returns></returns>
-        protected string ExpandEnvironment(string env)
+        protected string ExpandEnvironment(string text)
         {
-            for (int i = 0; i < 5 && env.Contains("%"); i++)
+            for (int i = 0; i < 5 && text.Contains("%"); i++)
             {
-                if (env.Contains("%DATE_FOR_PATH%", StringComparison.OrdinalIgnoreCase))
+                if (text.Contains("%DATE_FOR_PATH%", StringComparison.OrdinalIgnoreCase))
                 {
-                    env = env.Replace("%DATE_FOR_PATH%", DateTime.Now.ToString("yyyyMMdd"), StringComparison.OrdinalIgnoreCase);
+                    text = text.Replace("%DATE_FOR_PATH%", DateTime.Now.ToString("yyyyMMdd"), StringComparison.OrdinalIgnoreCase);
                 }
-                if (env.Contains("%TIME_FOR_PATH%", StringComparison.OrdinalIgnoreCase))
+                if (text.Contains("%TIME_FOR_PATH%", StringComparison.OrdinalIgnoreCase))
                 {
-                    env = env.Replace("%TIME_FOR_PATH%", DateTime.Now.ToString("HHmmss"), StringComparison.OrdinalIgnoreCase);
+                    text = text.Replace("%TIME_FOR_PATH%", DateTime.Now.ToString("HHmmss"), StringComparison.OrdinalIgnoreCase);
                 }
-                if (env.Contains("%DATETIME%", StringComparison.OrdinalIgnoreCase))
+                if (text.Contains("%DATETIME%", StringComparison.OrdinalIgnoreCase))
                 {
-                    env = env.Replace("%DATETIME%", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), StringComparison.OrdinalIgnoreCase);
+                    text = text.Replace("%DATETIME%", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"), StringComparison.OrdinalIgnoreCase);
                 }
-                if (env.Contains("%PAGE_NAME%", StringComparison.OrdinalIgnoreCase))
+                if (text.Contains("%PAGE_NAME%", StringComparison.OrdinalIgnoreCase))
                 {
-                    env = env.Replace("%PAGE_NAME%", this.PageName, StringComparison.OrdinalIgnoreCase);
+                    text = text.Replace("%PAGE_NAME%", this.PageName, StringComparison.OrdinalIgnoreCase);
                 }
-                if (env.Contains("%SPEC_NAME%", StringComparison.OrdinalIgnoreCase))
+                if (text.Contains("%SPEC_NAME%", StringComparison.OrdinalIgnoreCase))
                 {
-                    env = env.Replace("%SPEC_NAME%", this.SpecName, StringComparison.OrdinalIgnoreCase);
+                    text = text.Replace("%SPEC_NAME%", this.SpecName, StringComparison.OrdinalIgnoreCase);
                 }
-                if (env.Contains("%SPEC_TYPE%", StringComparison.OrdinalIgnoreCase))
+                if (text.Contains("%SPEC_TYPE%", StringComparison.OrdinalIgnoreCase))
                 {
-                    env = env.Replace("%SPEC_TYPE%", this.SpecType, StringComparison.OrdinalIgnoreCase);
+                    text = text.Replace("%SPEC_TYPE%", this.SpecType, StringComparison.OrdinalIgnoreCase);
                 }
-                if (env.Contains("%TASK_NAME%", StringComparison.OrdinalIgnoreCase))
+                if (text.Contains("%TASK_NAME%", StringComparison.OrdinalIgnoreCase))
                 {
-                    env = env.Replace("%TASK_NAME%", this.TaskName, StringComparison.OrdinalIgnoreCase);
+                    text = text.Replace("%TASK_NAME%", this.TaskName, StringComparison.OrdinalIgnoreCase);
                 }
-                if (env.Contains("%TASK_DLL%", StringComparison.OrdinalIgnoreCase))
+                if (text.Contains("%TASK_DLL%", StringComparison.OrdinalIgnoreCase))
                 {
                     string[] namespaceArray = this.GetType().Namespace.Split('.');
-                    env = namespaceArray.Length >= 1 ?
-                        env.Replace("%TASK_DLL%", namespaceArray[0], StringComparison.OrdinalIgnoreCase) :
+                    text = namespaceArray.Length >= 1 ?
+                        text.Replace("%TASK_DLL%", namespaceArray[0], StringComparison.OrdinalIgnoreCase) :
                         "";
                 }
-                if (env.Contains("%TASK_CATEGORY%", StringComparison.OrdinalIgnoreCase))
+                if (text.Contains("%TASK_CATEGORY%", StringComparison.OrdinalIgnoreCase))
                 {
                     string[] namespaceArray = this.GetType().Namespace.Split('.');
-                    env = namespaceArray.Length >= 2 ?
-                        env.Replace("%TASK_CATEGORY%", namespaceArray[2], StringComparison.OrdinalIgnoreCase) :
+                    text = namespaceArray.Length >= 2 ?
+                        text.Replace("%TASK_CATEGORY%", namespaceArray[2], StringComparison.OrdinalIgnoreCase) :
                         "";
                 }
-                if (env.Contains("%TASK_CLASS%", StringComparison.OrdinalIgnoreCase))
+                if (text.Contains("%TASK_CLASS%", StringComparison.OrdinalIgnoreCase))
                 {
-                    env = env.Replace("%TASK_CLASS%", this.GetType().Name, StringComparison.OrdinalIgnoreCase);
+                    text = text.Replace("%TASK_CLASS%", this.GetType().Name, StringComparison.OrdinalIgnoreCase);
                 }
 
                 FileScope.FileScopeList.
                     Where(x => x.IsMathPath(this.FilePath)).
                     ToList().
-                    ForEach(x => x.Resolv(ref env));
+                    ForEach(x => x.Resolv(ref text));
 
-                env = Environment.ExpandEnvironmentVariables(env);
+                text = Environment.ExpandEnvironmentVariables(text);
             }
-            return env;
+            return text;
         }
 
         #endregion

@@ -13,11 +13,11 @@ namespace IO.Work.File
 {
     internal class Move : IOTaskWork
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("sourcepath", "srcpath", "src", "source", "sourcefile", "srcfile", "path", "filepath")]
         protected string[] _SourcePath { get; set; }
 
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("destinationpath", "dstpath", "dst", "destination", "destinationfile", "dstfile")]
         protected string _DestinationPath { get; set; }
 

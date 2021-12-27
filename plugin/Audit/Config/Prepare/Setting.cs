@@ -10,15 +10,15 @@ namespace Audit.Config.Prepare
 {
     internal class Setting : TaskConfig
     {
-        [TaskParameter(ResolvEnv = true)]
+        [TaskParameter(Resolv = true)]
         [Keys("monitrofile", "monitortarget")]
         protected string _MonitorFile { get; set; }
 
-        [TaskParameter(ResolvEnv = true)]
+        [TaskParameter(Resolv = true)]
         [Keys("sincedbfile", "sincedb")]
         protected string _SinceDBFile { get; set; }
 
-        [TaskParameter(ResolvEnv = true)]
+        [TaskParameter(Resolv = true)]
         [Keys("watchdbdir", "watchdb", "watchdbdirectory")]
         protected string _WatchDBDir{ get;set; }
 

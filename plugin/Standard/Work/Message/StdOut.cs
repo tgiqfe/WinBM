@@ -14,7 +14,7 @@ namespace Standard.Work.Message
         [Keys("message", "text")]
         protected string _Message { get; set; }
 
-        [TaskParameter(MandatoryAny = 2, ResolvEnv = true)]
+        [TaskParameter(MandatoryAny = 2, Resolv = true)]
         [Keys("messageresolvenv", "messageresolv", "textresolvenv", "textresolv")]
         protected string _MessageResolvEnv { get; set; }
 

@@ -17,19 +17,19 @@ namespace Audit.Work.Registry
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Compare : AuditTaskWork
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("keya", "key1", "registrykeya", "registrykey2", "registrya", "registry1", "rega", "reg1", "sourcepath", "srcpath", "src", "source", "path", "registrypath", "patha")]
         protected string _PathA { get; set; }
 
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("keyb", "key2", "registrykeyb", "registrykey2", "registryb", "registry2", "regb", "reg2", "destinationpath", "dstpath", "dst", "destination", "pathb")]
         protected string _PathB { get; set; }
 
-        [TaskParameter(ResolvEnv = true)]
+        [TaskParameter(Resolv = true)]
         [Keys("namea", "name1", "sourcename", "srcname", "registryname", "regname", "paramname")]
         protected string _NameA { get; set; }
 
-        [TaskParameter(ResolvEnv = true)]
+        [TaskParameter(Resolv = true)]
         [Keys("nameb", "name2", "destinationname", "dstname")]
         protected string _NameB { get; set; }
 

@@ -15,11 +15,11 @@ namespace IO.Work.File
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Revoke : IOTaskWork
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath")]
         protected string[] _Path { get; set; }
 
-        [TaskParameter(MandatoryAny = 1, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(MandatoryAny = 1, Resolv = true, Delimiter = ';')]
         [Keys("account", "acount", "owner", "own")]
         protected string[] _Account { get; set; }
 

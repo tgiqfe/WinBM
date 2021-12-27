@@ -9,7 +9,7 @@ namespace IO.Require.Directory
 {
     internal class Exists : TaskJob
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("path", "filepath", "target", "targetpath", "dirpath", "directorypath")]
         protected string _Path { get; set; }
 

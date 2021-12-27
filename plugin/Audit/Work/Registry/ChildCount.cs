@@ -15,7 +15,7 @@ namespace Audit.Work.Registry
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class ChildCount : AuditTaskWork
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "registrypath", "targetpath", "key", "registrykey", "targetkey", "regkey", "target")]
         protected string[] _Path { get; set; }
 

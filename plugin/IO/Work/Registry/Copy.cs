@@ -13,19 +13,19 @@ namespace IO.Work.Registry
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Copy : IOTaskWorkRegistry
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("sourcepath", "srcpath", "src", "source", "sourcekey", "srckey", "path", "keypath")]
         protected string[] _SourcePath { get; set; }
 
-        [TaskParameter(ResolvEnv = true)]
+        [TaskParameter(Resolv = true)]
         [Keys("destinationpath", "dstpath", "dst", "destination", "destinationkey", "dstkey")]
         protected string _DestinationPath { get; set; }
 
-        [TaskParameter(ResolvEnv = true, Delimiter = '\n')]
+        [TaskParameter(Resolv = true, Delimiter = '\n')]
         [Keys("sourcename", "srcname", "name", "name", "namae", "registryname", "regname", "paramname")]
         protected string[] _SourceName { get; set; }
 
-        [TaskParameter(ResolvEnv = true)]
+        [TaskParameter(Resolv = true)]
         [Keys("destinationname", "dstname")]
         protected string _DestinationName { get; set; }
 
@@ -33,7 +33,7 @@ namespace IO.Work.Registry
         [Keys("force", "forse")]
         protected bool _Force { get; set; }
 
-        [TaskParameter(ResolvEnv = true, Delimiter = ';')]
+        [TaskParameter(Resolv = true, Delimiter = ';')]
         [Keys("excludekey", "exkey", "xkey", "excludepath", "expath", "xpath", "exclude", "ex")]
         protected string[] _ExcludeKey { get; set; }
 

@@ -32,7 +32,7 @@ namespace Standard.Config.Prepare
         [TaskParameter]
         [Keys("target", "envtarget", "targetenv", "scope", "targetscope", "envscope")]
         [Values("process,proc,proces", "user,usr", "machine,mashine,masin,computer", "file,recipefile", "page,pag,pege")]
-        protected EnvironmentScope _Target { get; set; }
+        protected TargetScope _Scope { get; set; }
 
         public override void MainProcess()
         {
@@ -40,7 +40,7 @@ namespace Standard.Config.Prepare
             {
                 foreach (KeyValuePair<string, string> pair in _EnvSet)
                 {
-                    if (this._Target == EnvironmentScope.File)
+                    if (this._Scope == TargetScope.File)
                     {
                         WinBM.Lib.FileScope.Add(this.FilePath, pair.Key, pair.Value);
                     }
@@ -60,7 +60,7 @@ namespace Standard.Config.Prepare
                 Manager.WriteLog(LogLevel.Debug, e.ToString());
             }
 
-            if (this._Target == EnvironmentScope.Process)
+            if (this._Scope == TargetScope.Process)
             {
                 this.IsPostPage = true;
             }

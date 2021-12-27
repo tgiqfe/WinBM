@@ -27,7 +27,7 @@ namespace Web.Work.File
         /// ダウンロードしたファイルの保存先フォルダー
         /// ファイル名は、URLの最後の値から判定
         /// </summary>
-        [TaskParameter(MandatoryAny = 1, ResolvEnv = true)]
+        [TaskParameter(MandatoryAny = 1, Resolv = true)]
         [Keys("outputdirectory", "savedirectory", "destinationdirectory", "outputdir", "savedir", "destinationdir")]
         protected string _OutputDirectory { get; set; }
 
@@ -35,7 +35,7 @@ namespace Web.Work.File
         /// ダウンロードしたファイルの保存先パス。
         /// _OutputDirectory,_Pathのどちらかが必須。_Pathはファイル名も含めて指定
         /// </summary>
-        [TaskParameter(MandatoryAny = 2, ResolvEnv = true)]
+        [TaskParameter(MandatoryAny = 2, Resolv = true)]
         [Keys("outputpath", "savepath", "destinationpath")]
         protected string _Path { get; set; }
 

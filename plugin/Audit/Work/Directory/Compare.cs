@@ -17,11 +17,11 @@ namespace Audit.Work.Directory
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Compare : AuditTaskWork
     {
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("directorya", "directory1", "dira", "dir2", "sourcepath", "srcpath", "src", "source", "path", "directorypath", "patha")]
         protected string _PathA { get; set; }
 
-        [TaskParameter(Mandatory = true, ResolvEnv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("directoryb", "directory2", "dirb", "dir2", "destinationpath", "dstpath", "dst", "destination", "pathb")]
         protected string _PathB { get; set; }
 

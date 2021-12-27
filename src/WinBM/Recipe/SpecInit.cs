@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WinBM.Recipe
 {
-    public class SpecEnv : SpecBase
+    public class SpecInit : SpecBase
     {
     }
 }
