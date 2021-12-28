@@ -62,11 +62,19 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
                     }
                     else
                     {
+                        if (collection.Count == 0)
+                        {
+                            break;
+                        }
                         collection.AppendValue(Environment.NewLine + readLine.Trim());
                     }
                 }
                 else if (nowIndent > indent)
                 {
+                    if (collection.Count == 0)
+                    {
+                        break;
+                    }
                     collection.AppendValue(Environment.NewLine + readLine.Trim());
                 }
             }
