@@ -22,7 +22,7 @@ namespace WinBM.Task
         [Values("process,proc,proces", "file,recipefile")]
         protected TargetScope _Scope { get; set; }
 
-        [TaskParameter(Mandatory = true, EqualSign = '=', Delimiter = '\n')]
+        [TaskParameter(EqualSign = '=', Delimiter = '\n')]
         [Keys("set", "envset", "envs", "env", "environment", "environments")]
         protected Dictionary<string, string> _EnvSet { get; set; }
 
@@ -36,47 +36,51 @@ namespace WinBM.Task
 
         public override void MainProcess()
         {
-            //  環境変数のセット
+            this.Success = true;
+
+            
             try
             {
-                foreach (KeyValuePair<string, string> pair in _EnvSet)
+                //  環境変数のセット
+                if(_EnvSet?.Count > 0)
                 {
-                    if (this._Scope == TargetScope.File)
+                    foreach (KeyValuePair<string, string> pair in _EnvSet)
                     {
-                        FileScope.Add(this.FilePath, pair.Key, pair.Value);
+                        if (this._Scope == TargetScope.File)
+                        {
+                            FileScope.Add(this.FilePath, pair.Key, pair.Value);
+                        }
+                        else
+                        {
+                            Environment.SetEnvironmentVariable(
+                                pair.Key,
+                                pair.Value,
+                                EnvironmentVariableTarget.Process);
+                        }
                     }
-                    else
+                    if (this._Scope == TargetScope.Process)
                     {
-                        Environment.SetEnvironmentVariable(
-                            pair.Key,
-                            pair.Value,
-                            EnvironmentVariableTarget.Process);
+                        this.IsPostPage = true;
                     }
                 }
-                this.Success = true;
+
+                //  プラグインファイルのパスのセット
+                if (_PluginFiles?.Length > 0)
+                {
+                    Manager.PluginFiles = this._PluginFiles;
+                    Console.WriteLine("tuikasita");
+                }
+
+                //  プラグインファイルの保存先ディレクトリのセット
+                if (!string.IsNullOrEmpty(_PluginDirectory))
+                {
+                    Manager.PluginDirectory = this._PluginDirectory;
+                }
             }
             catch (Exception e)
             {
                 GlobalLog.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
                 GlobalLog.WriteLog(LogLevel.Debug, e.ToString());
-            }
-
-            //  プラグインファイルのパスのセット
-            if (_PluginFiles?.Length > 0)
-            {
-                Manager.PluginFiles = this._PluginFiles;
-                Console.WriteLine("tuikasita");
-            }
-
-            //  プラグインファイルの保存先ディレクトリのセット
-            if (!string.IsNullOrEmpty(_PluginDirectory))
-            {
-                Manager.PluginDirectory = this._PluginDirectory;
-            }
-
-            if (this._Scope == TargetScope.Process)
-            {
-                this.IsPostPage = true;
             }
         }
 
