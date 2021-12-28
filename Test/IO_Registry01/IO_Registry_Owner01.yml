@@ -1,0 +1,69 @@
+---
+kind: Init
+metadata:
+  description: ファイル内環境変数
+init:
+  spec:
+  - param:
+      env: |-
+        FILE_INDEX = 100
+        TEST_TITLE = Owner
+      scope: File
+
+---
+kind: Job
+metadata:
+  description: 所有者変更テスト 準備
+  priority: '%FILE_INDEX% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Registry/Delete
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%'
+  - task: IO/Registry/Create
+    param:
+      path: |-
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample01
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample02
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample03
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample04
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample05
+        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample06
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample01\aaaa\bbbb\cccc'
+      name: TestTest
+      value: This is a test
+      type: REG_SZ
+
+---
+kind: Job
+metadata:
+  description: 所有者変更テスト
+  priority: '%FILE_INDEX% + %PAGE_INDEX%'
+job:
+  require:
+  - task: Standard/Computer/Admin
+  work:
+  - task: Audit/Registry/Watch
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample01'
+      id: registry_owner01
+      begin: true
+      owner: true
+  - task: IO/Registry/Owner
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample01'
+      owner: Administrator
+  - task: Audit/Registry/Watch
+    param:
+      id: registry_owner01
+  - task: IO/Registry/Owner
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample01'
+      owner: Administrator
+      recurse: true
+  - task: Audit/Registry/Watch
+    param:
+      id: registry_owner01
+

@@ -78,17 +78,4 @@ job:
         %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample01
         %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample02
 
----
-kind: Job
-metadata:
-  description: アクセスWatch
-  priority: 203
-job:
-  work:
-  - task: Audit/Directory/Watch
-    param:
-      path: |-
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample03
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\Watch\Sample04
-      id: audit_directory_watch02
-      begin: true
+#　アクセスWatchはまだ途中

@@ -56,7 +56,7 @@ namespace IO.Work.File
             catch (InvalidOperationException ioe)
             {
                 //  一度所有者変更を失敗した後、管理者権限で動作していないならば終了
-                if (CheckAdmin())
+                if (!CheckAdmin())
                 {
                     Manager.WriteLog(LogLevel.Info, "The process is not running as a Trusted user.");
                     this.Success = false;

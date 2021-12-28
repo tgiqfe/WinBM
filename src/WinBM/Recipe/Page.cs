@@ -176,7 +176,6 @@ namespace WinBM.Recipe
             {
                 //  Metadata設定の修正
                 count++;
-                page.Index = count;
                 page.Metadata ??= new Metadata();
                 if (string.IsNullOrEmpty(page.Metadata.Name))
                 {
@@ -188,6 +187,10 @@ namespace WinBM.Recipe
                 {
                     page.Metadata.Priority = "0";
                 }
+
+                //  Page番号をセット
+                page.Index = count;
+                page.Metadata.SetIndex(count);
 
                 //  Kindに一致したコンテンツ(Init/Config/Output/Job)を残して削除
                 PropertyInfo[] props = page.GetType().

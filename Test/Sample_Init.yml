@@ -3,7 +3,7 @@ kind: Init
 metadata:
   name: EnvSample
   description: サンプル
-  priority: 100
+  priority: 100 + %PAGE_INDEX%
 init:
   spec:
   - param:
@@ -23,6 +23,8 @@ init:
 
 ---
 kind: Output
+metadata:
+  priority: '%PAGE_INDEX%'
 output:
   spec:
   - task: Standard/Console/StdOut
@@ -31,11 +33,14 @@ output:
 kind: Job
 metadata:
   description: Envで指定した環境変数
-  priority: '101 + %wait%'
+  priority: '101 + %wait% + %PAGE_INDEX%'
 job:
   work:
   - task: Standard/Message/StdOut
     param:
       messageResolvEnv: 'AAAA: %AAAA%'
+  - task: Standard/Message/StdOut
+    param:
+      messageResolvEnv: '%PAGE_INDEX%'
 
 
