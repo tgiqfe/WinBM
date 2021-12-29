@@ -12,6 +12,8 @@ metadata:
   description: デフォルトユーザープロファイルのバックアップ
   priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
+  require:
+  - task: Standard/Computer/Admin
   work:
   - task: LocalAccount/Profile/Backup
     param:
