@@ -37,7 +37,6 @@ namespace OSVersion.Require.Windows
                 return;
             }
 
-
             //  現在実行中のOSが、_Rangeのいずれかの範囲に含まれていたらSuccess
             foreach (string range in _Range)
             {

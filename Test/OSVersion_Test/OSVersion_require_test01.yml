@@ -16,6 +16,8 @@ job:
     failed: abort
     param:
       range: v1507~v21H2
+      server: true
+  work:
   - task: Standard/Message/StdOut
     param:
       message: 'this PC is within: v1507 - v21H2.'
