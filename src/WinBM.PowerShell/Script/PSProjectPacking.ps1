@@ -22,6 +22,7 @@ $additionalFiles = @{
     "..\..\..\..\..\plugin\Audit\bin\Debug\net6.0\Audit.dll" = ".\plugin\Audit.dll";
     "..\..\..\..\..\plugin\Web\bin\Debug\net6.0\Web.dll" = ".\plugin\Web.dll";
     "..\..\..\..\..\plugin\OSVersion\bin\Debug\net6.0\OSVersion.dll" = ".\plugin\OSVersion.dll";
+    "..\..\..\..\..\plugin\LocalAccount\bin\Debug\net6.0\LocalAccount.dll" = ".\plugin\LocalAccount.dll";
 }
 
 # ================================================================

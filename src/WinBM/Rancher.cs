@@ -522,6 +522,7 @@ namespace WinBM
                 GlobalLog.WriteLog(LogLevel.Warn, "Failed activate. \"{0}\"", typeName);
                 return null;
             }
+
             return Activator.CreateInstance(type) as T;
         }
 

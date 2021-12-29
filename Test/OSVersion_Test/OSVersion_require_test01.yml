@@ -4,6 +4,7 @@ init:
   spec:
   - param:
       env: 'File_Wait = 300'
+      scope: file
 
 ---
 kind: Job

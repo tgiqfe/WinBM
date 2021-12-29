@@ -1,0 +1,30 @@
+---
+kind: Init
+init:
+  spec:
+  - param:
+      env: 'FILE_WAIT = 300'
+      scope: File
+
+---
+kind: Job
+metadata:
+  description: デフォルトユーザープロファイルのバックアップ
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: LocalAccount/Profile/Backup
+    param:
+      account: ''
+      dst: C:\Users\Default_backup
+      force: false
+
+---
+kind: Job
+metadata:
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      message: 'kokonikita'

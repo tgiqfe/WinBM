@@ -14,7 +14,7 @@ using System.Security.Principal;
 namespace LocalAccount.Work.Profile
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Backup : TaskBase
+    internal class Backup : TaskJob
     {
         [TaskParameter(Mandatory = true)]
         [Keys("account", "acount", "username", "user")]
@@ -45,7 +45,8 @@ namespace LocalAccount.Work.Profile
                 Registry.GetValue(
                     @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList",
                     "Default",
-                    "") as string : getUserProfilePath(_UserName);
+                    "") as string :
+                getUserProfilePath(_UserName);
 
             string getUserProfilePath(string userName)
             {
@@ -74,7 +75,12 @@ namespace LocalAccount.Work.Profile
                 proc.Start();
                 proc.WaitForExit();
             }
-            File.SetAttributes(_BackupPath, File.GetAttributes(_BackupPath) | FileAttributes.Hidden);
+
+            if (Directory.Exists(_BackupPath))
+            {
+                File.SetAttributes(_BackupPath, File.GetAttributes(_BackupPath) | FileAttributes.Hidden);
+                Success = true;
+            }
         }
     }
 }

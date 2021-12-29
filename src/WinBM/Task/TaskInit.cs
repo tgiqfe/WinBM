@@ -68,7 +68,6 @@ namespace WinBM.Task
                 if (_PluginFiles?.Length > 0)
                 {
                     Manager.PluginFiles = this._PluginFiles;
-                    Console.WriteLine("tuikasita");
                 }
 
                 //  プラグインファイルの保存先ディレクトリのセット

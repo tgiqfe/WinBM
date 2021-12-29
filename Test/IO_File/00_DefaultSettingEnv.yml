@@ -33,3 +33,4 @@ init:
         %USERPROFILE%\Documents\Work\WinBM\plugin\Standard\bin\%BUILD_TYPE%\net6.0\Standard.dll
         %USERPROFILE%\Documents\Work\WinBM\plugin\Web\bin\%BUILD_TYPE%\net6.0\Web.dll
         %USERPROFILE%\Documents\Work\WinBM\plugin\OSVersion\bin\%BUILD_TYPE%\net6.0\OSVersion.dll
+        %USERPROFILE%\Documents\Work\WinBM\plugin\LocalAccount\bin\%BUILD_TYPE%\net6.0\LocalAccount.dll
