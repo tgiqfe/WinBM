@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
@@ -6,13 +6,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="System.Management" Version="6.0.0" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Reference Include="WinBM">
 			<HintPath>..\..\src\WinBM\bin\Debug\net6.0\WinBM.dll</HintPath>
 		</Reference>
 	</ItemGroup>
-
 </Project>

@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web", "Web\Web.csproj", "{B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuditMonitor", "AuditMonitor\AuditMonitor.csproj", "{D91D0AD6-64D1-4106-8BCA-95471190A93A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OSVersion", "OSVersion\OSVersion.csproj", "{A811ABBA-2470-4F66-BF71-C4D8E993C3A9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OSVersion", "OSVersion\OSVersion.csproj", "{A811ABBA-2470-4F66-BF71-C4D8E993C3A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalAccount", "LocalAccount\LocalAccount.csproj", "{63CEAD34-AFDB-478B-A4B9-AD7E46B838DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +47,10 @@ Global
 		{A811ABBA-2470-4F66-BF71-C4D8E993C3A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A811ABBA-2470-4F66-BF71-C4D8E993C3A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A811ABBA-2470-4F66-BF71-C4D8E993C3A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63CEAD34-AFDB-478B-A4B9-AD7E46B838DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63CEAD34-AFDB-478B-A4B9-AD7E46B838DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63CEAD34-AFDB-478B-A4B9-AD7E46B838DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63CEAD34-AFDB-478B-A4B9-AD7E46B838DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
