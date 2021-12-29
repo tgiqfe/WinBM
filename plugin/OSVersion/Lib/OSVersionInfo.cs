@@ -151,6 +151,12 @@ namespace OSVersion.Lib
             return result is not null;
         }
 
+        public static bool TryParse(string s, string osName, out OSVersionInfo result)
+        {
+            result = GetAnyOS(osName, s);
+            return result is not null;
+        }
+
         public static OSVersionInfo GetMinVersion()
         {
             return OSVersion.Lib.Other.MinMax.CreateMinimum();
@@ -190,8 +196,33 @@ namespace OSVersion.Lib
         }
 
         #endregion
+        #region Get AnyOS
+
+        public static OSVersionInfo GetAnyOS(string osName, string versionName)
+        {
+            return GetAnyOS(osName, versionName, new OSVersionInfoCollection(loadDefault: true));
+        }
+
+        public static OSVersionInfo GetAnyOS(string osName, string versionName, OSVersionInfoCollection collection)
+        {
+            var osCollection = collection.Where(x => x.Name.Equals(osName, StringComparison.OrdinalIgnoreCase));
+            OSVersionInfo result =
+                osCollection.FirstOrDefault(x => x.VersionName.Equals(versionName, StringComparison.OrdinalIgnoreCase)) ??
+                osCollection.FirstOrDefault(x => x.Alias.Any(y => y.Equals(versionName, StringComparison.OrdinalIgnoreCase))) ??
+                osCollection.FirstOrDefault(x => x.Version.Equals(versionName)) ??
+                osCollection.FirstOrDefault(x => x.BuildVersion.Equals(versionName));
+            if (result is not null)
+            {
+                result.Edition = null;
+                result.EndSupportDate = null;
+            }
+            return result;
+        }
+
+        #endregion
         #region GetWindows
 
+        //  Windows (クライアントOS)
         public static OSVersionInfo GetWindows(int versionSerial, OSVersionInfoCollection collection)
         {
             var windowsCollection = collection.Where(x => x.OSFamily == OSFamily.Windows).Where(x => !x.IsServer);
@@ -201,7 +232,6 @@ namespace OSVersion.Lib
                 result.Edition = null;
                 result.EndSupportDate = null;
             }
-
             return result;
         }
 
@@ -228,7 +258,6 @@ namespace OSVersion.Lib
                 result.Edition = null;
                 result.EndSupportDate = null;
             }
-
             return result;
         }
 
@@ -237,6 +266,7 @@ namespace OSVersion.Lib
             return GetWindows(versionName, new OSVersionInfoCollection(loadDefault: true));
         }
 
+        //  Windows Server
         public static OSVersionInfo GetWindowsServer(int versionSerial, OSVersionInfoCollection collection)
         {
             var winSVCollection = collection.Where(x => x.OSFamily == OSFamily.Windows).Where(x => x.IsServer);
@@ -246,7 +276,6 @@ namespace OSVersion.Lib
                 result.Edition = null;
                 result.EndSupportDate = null;
             }
-
             return result;
         }
 
@@ -272,7 +301,6 @@ namespace OSVersion.Lib
                 result.Edition = null;
                 result.EndSupportDate = null;
             }
-
             return result;
         }
 

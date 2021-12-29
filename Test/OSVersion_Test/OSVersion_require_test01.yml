@@ -1,0 +1,26 @@
+---
+kind: Init
+init:
+  spec:
+  - param:
+      env: 'File_Wait = 300'
+      scope: file
+
+---
+kind: Job
+metadata:
+  description: OSVersionチェック
+  priority: '%File_Wait% + %PAGE_INDEX%'
+job:
+  require:
+  - task: OSVersion/Windows/Within
+    failed: abort
+    param:
+      range: v1507~v21H2
+      server: true
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      message: 'this PC is within: v1507 - v21H2.'
+
+

@@ -44,6 +44,23 @@ namespace OSVersion.Lib
                             outTempMax :
                             null;
 
+                    //  MinとMaxとで、OS名が異なる場合は再取得
+                    if ((tempMin is not null && tempMax is not null) && tempMin.Name != tempMax.Name)
+                    {
+                        OSVersionInfo tempMin2 = OSVersionInfo.TryParse(minStr, tempMax.Name, out OSVersionInfo outTempMin2) ?
+                            outTempMin2 : null;
+                        OSVersionInfo tempMax2 = OSVersionInfo.TryParse(maxStr, tempMin.Name, out OSVersionInfo outTempMax2) ?
+                            outTempMax2 : null;
+                        if (tempMin2 is not null && tempMax2 is null)
+                        {
+                            tempMin = tempMin2;
+                        }
+                        if (tempMin2 is null && tempMax2 is not null)
+                        {
+                            tempMax = tempMax2;
+                        }
+                    }
+
                     if (tempMin is not null && tempMax is not null)
                     {
                         this.Enabled = true;
@@ -56,7 +73,12 @@ namespace OSVersion.Lib
 
         public bool Within(OSVersionInfo info)
         {
-            return Enabled && Min <= info && Max >= info;
+            string name = info?.Name;
+            if (name == this.Min?.Name && name == this.Max?.Name)
+            {
+                return Enabled && Min <= info && Max >= info;
+            }
+            return false;
         }
 
         public override string ToString()

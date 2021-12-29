@@ -16,7 +16,7 @@ namespace OSVersion.Lib.Windows
                 OSFamily = OSFamily.Windows,
                 VersionName = "21H2",
                 Serial = 2109,
-                Alias = new string[] { "Released Version", "ReleasedVersion" },
+                Alias = new string[] { "Released Version", "ReleasedVersion", "v21H2" },
                 Version = "10.0.22000",
                 Edition = edition,
                 ReleaseDate = new DateTime(2021, 10, 5),
