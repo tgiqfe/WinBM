@@ -56,7 +56,12 @@ namespace OSVersion.Lib
 
         public bool Within(OSVersionInfo info)
         {
-            return Enabled && Min <= info && Max >= info;
+            string name = info?.Name;
+            if (name == this.Min?.Name && name == this.Max?.Name)
+            {
+                return Enabled && Min <= info && Max >= info;
+            }
+            return false;
         }
 
         public override string ToString()

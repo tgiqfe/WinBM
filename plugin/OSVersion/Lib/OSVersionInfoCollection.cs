@@ -221,6 +221,12 @@ namespace OSVersion.Lib
 
         public void Save(string dbPath)
         {
+            string parent = System.IO.Path.GetDirectoryName(dbPath);
+            if (!System.IO.Directory.Exists(parent))
+            {
+                System.IO.Directory.CreateDirectory(parent);
+            }
+
             using (var sw = new StreamWriter(dbPath, false, Encoding.UTF8))
             {
                 string json = JsonSerializer.Serialize(this, new JsonSerializerOptions()
