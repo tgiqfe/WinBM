@@ -1,0 +1,44 @@
+---
+kind: Init
+init:
+  spec:
+  - param:
+      env: 'FILE_WAIT = 301'
+      scope: File
+
+---
+kind: Job
+metadata:
+  description: プロファイル関連の環境変数のセット1
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: LocalAccount/Profile/Env
+    param:
+      account: ''
+      profilePath: defProfilePath
+  - task: Standard/Message/StdOut
+    param:
+      messageResolv: 'デフォルトプロファイルパス: %DEFPROFILEPATH%'
+
+---
+kind: Job
+metadata:
+  description: プロファイル関連の環境変数のセット2
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: LocalAccount/Profile/Env
+    param:
+      account: Administrator
+      name: targetName
+      sid: targetSid
+      profilePath: targetProfilePath
+  - task: Standard/Message/StdOut
+    param:
+      messageResolv: |-
+        名前: %TARGETNAME%
+        SID: %TARGETSID%
+        プロファイルパス: %TARGETPROFILEPATH%
+
+

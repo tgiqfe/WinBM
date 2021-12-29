@@ -16,11 +16,11 @@ namespace LocalAccount.Work.Profile
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Backup : TaskJob
     {
-        [TaskParameter(Mandatory = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("account", "acount", "username", "user")]
         protected string _UserName { get; set; }
 
-        [TaskParameter(Resolv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("output", "outputpath", "outputdirectory", "outputdir",
             "bakcup", "backuppath", "backupdirectory", "backupdir",
             "destination", "destinationpath", "destinationdirectory", "destinationdir",
@@ -54,7 +54,7 @@ namespace LocalAccount.Work.Profile
                 return new ManagementClass("Win32_UserProfile").
                     GetInstances().
                     OfType<ManagementObject>().
-                    Where(x => x["SID"] as string == "sid").
+                    Where(x => x["SID"] as string == sid).
                     Select(x => x["LocalPath"] as string).
                     First();
             }
