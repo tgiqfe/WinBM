@@ -198,8 +198,7 @@ namespace WinBM.Recipe
                     Where(x => x.Name != "Kind" && x.Name != "Metadata" && x.Name != "Serial" && x.Name != "FilePath" && x.Name != "Index").
                     ToArray();
                 foreach (PropertyInfo prop in props)
-                {
-                    if (prop.Name == page.Kind.ToString())
+                {                    if (prop.Name == page.Kind.ToString())
                     {
                         var pageBase = (prop.GetValue(page) as PageBase);
                         pageBase.PostDeserialize(page.Metadata.Name);

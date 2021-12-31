@@ -67,15 +67,18 @@ namespace WinBM.PowerShell.Cmdlet
                     }
                 }
 
-                rancher.InitProcess(list.
-                    Where(x => x.Kind == WinBM.Recipe.Page.EnumKind.Init).ToList());
-                rancher.ConfigProcess(list.
-                    Where(x => x.Kind == WinBM.Recipe.Page.EnumKind.Config).ToList());
-                rancher.OutputProcess(list.
-                    Where(x => x.Kind == WinBM.Recipe.Page.EnumKind.Output).ToList());
-                rancher.JobProcess(list.
-                    Where(x => x.Kind == WinBM.Recipe.Page.EnumKind.Job).ToList());
-                rancher.PostPageProcess();
+                if (list?.Count > 0)
+                {
+                    rancher.InitProcess(list.
+                        Where(x => x.Kind == WinBM.Recipe.Page.EnumKind.Init).ToList());
+                    rancher.ConfigProcess(list.
+                        Where(x => x.Kind == WinBM.Recipe.Page.EnumKind.Config).ToList());
+                    rancher.OutputProcess(list.
+                        Where(x => x.Kind == WinBM.Recipe.Page.EnumKind.Output).ToList());
+                    rancher.JobProcess(list.
+                        Where(x => x.Kind == WinBM.Recipe.Page.EnumKind.Job).ToList());
+                    rancher.PostPageProcess();
+                }
             }
         }
 
