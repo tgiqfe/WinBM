@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Management;
 using Microsoft.Win32;
 using System.Security.Principal;
+using LocalAccount.Lib;
 
 namespace LocalAccount.Work.Profile
 {
@@ -41,13 +42,19 @@ namespace LocalAccount.Work.Profile
             }
 
             //  UserNameがEmptyの場合、Defaultユーザープロファイルとして扱う
+            /*
             string profilePath = _UserName == "" ?
                 Registry.GetValue(
                     @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList",
                     "Default",
                     "") as string :
                 getUserProfilePath(_UserName);
+            */
+            string profilePath = _UserName == "" ?
+                ProfileFunctions.GetDefaultProfilePath() :
+                ProfileFunctions.GetProfilePath(_UserName);
 
+            /*
             string getUserProfilePath(string userName)
             {
                 string sid = new NTAccount(userName).Translate(typeof(SecurityIdentifier)).Value;
@@ -58,7 +65,13 @@ namespace LocalAccount.Work.Profile
                     Select(x => x["LocalPath"] as string).
                     First();
             }
+            */
 
+            if(profilePath == null)
+            {
+                Manager.WriteLog(LogLevel.Warn, "Failed to get the ProfilePath.");
+                return;
+            }
             if (!Directory.Exists(profilePath))
             {
                 Manager.WriteLog(LogLevel.Warn, "Target directory is missing. \"{0}\"", profilePath);
