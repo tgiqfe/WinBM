@@ -4,6 +4,7 @@ namespace Standard.Lib
     /// <summary>
     /// 環境変数をセットする範囲
     /// </summary>
+    /*
     enum TargetScope
     {
         Process = 0,
@@ -12,4 +13,5 @@ namespace Standard.Lib
         File = 3,
         Page = 4,
     }
+    */
 }

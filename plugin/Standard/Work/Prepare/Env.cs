@@ -19,6 +19,15 @@ namespace Standard.Work.Prepare
     /// </summary>
     internal class Env : TaskJob
     {
+        protected enum TargetScope
+        {
+            Process = 0,
+            User = 1,
+            Machine = 2,
+            File = 3,
+            Page = 4,
+        }
+
         [TaskParameter(Mandatory = true, Delimiter = '\n', EqualSign = '=')]
         [Keys("set", "envset", "envs", "environment", "environments")]
         protected Dictionary<string, string> _EnvSet { get; set; }
@@ -29,7 +38,7 @@ namespace Standard.Work.Prepare
         [TaskParameter]
         [Keys("target", "envtarget", "targetenv", "scope", "targetscope", "envscope")]
         [Values("process,proc,proces", "user,usr", "machine,mashine,masin,computer", "file,recipefile", "page,pag,pege")]
-        protected TargetScope _Target { get; set; }
+        protected TargetScope _Scope { get; set; }
 
         public override void MainProcess()
         {
@@ -37,7 +46,7 @@ namespace Standard.Work.Prepare
             {
                 foreach (KeyValuePair<string, string> pair in _EnvSet)
                 {
-                    if (this._Target == TargetScope.File)
+                    if (this._Scope == TargetScope.File)
                     {
                         WinBM.Lib.FileScope.Add(this.FilePath, pair.Key, pair.Value);
                     }
@@ -46,7 +55,7 @@ namespace Standard.Work.Prepare
                         Environment.SetEnvironmentVariable(
                             pair.Key,
                             pair.Value,
-                            _Target switch
+                            _Scope switch
                             {
                                 TargetScope.Process => EnvironmentVariableTarget.Process,
                                 TargetScope.User => EnvironmentVariableTarget.User,
@@ -64,11 +73,11 @@ namespace Standard.Work.Prepare
                 Manager.WriteLog(LogLevel.Debug, e.ToString());
             }
 
-            if (this._Target == TargetScope.Page)
+            if (this._Scope == TargetScope.Page)
             {
                 this.IsPostSpec = true;
             }
-            if(this._Target == TargetScope.Process)
+            if(this._Scope == TargetScope.Process)
             {
                 this.IsPostPage = true;
             }
