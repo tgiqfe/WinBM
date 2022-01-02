@@ -38,7 +38,6 @@ namespace WinBM.Task
         {
             this.Success = true;
 
-            
             try
             {
                 //  環境変数のセット

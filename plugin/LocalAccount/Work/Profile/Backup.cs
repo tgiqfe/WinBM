@@ -10,17 +10,18 @@ using System.Diagnostics;
 using System.Management;
 using Microsoft.Win32;
 using System.Security.Principal;
+using LocalAccount.Lib;
 
 namespace LocalAccount.Work.Profile
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Backup : TaskJob
     {
-        [TaskParameter(Mandatory = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("account", "acount", "username", "user")]
         protected string _UserName { get; set; }
 
-        [TaskParameter(Resolv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("output", "outputpath", "outputdirectory", "outputdir",
             "bakcup", "backuppath", "backupdirectory", "backupdir",
             "destination", "destinationpath", "destinationdirectory", "destinationdir",
@@ -41,24 +42,36 @@ namespace LocalAccount.Work.Profile
             }
 
             //  UserNameがEmptyの場合、Defaultユーザープロファイルとして扱う
+            /*
             string profilePath = _UserName == "" ?
                 Registry.GetValue(
                     @"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList",
                     "Default",
                     "") as string :
                 getUserProfilePath(_UserName);
+            */
+            string profilePath = _UserName == "" ?
+                ProfileFunctions.GetDefaultProfilePath() :
+                ProfileFunctions.GetProfilePath(_UserName);
 
+            /*
             string getUserProfilePath(string userName)
             {
                 string sid = new NTAccount(userName).Translate(typeof(SecurityIdentifier)).Value;
                 return new ManagementClass("Win32_UserProfile").
                     GetInstances().
                     OfType<ManagementObject>().
-                    Where(x => x["SID"] as string == "sid").
+                    Where(x => x["SID"] as string == sid).
                     Select(x => x["LocalPath"] as string).
                     First();
             }
+            */
 
+            if(profilePath == null)
+            {
+                Manager.WriteLog(LogLevel.Warn, "Failed to get the ProfilePath.");
+                return;
+            }
             if (!Directory.Exists(profilePath))
             {
                 Manager.WriteLog(LogLevel.Warn, "Target directory is missing. \"{0}\"", profilePath);
