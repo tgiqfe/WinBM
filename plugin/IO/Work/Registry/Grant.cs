@@ -57,9 +57,7 @@ namespace IO.Work.Registry
 
             if (_Access?.Length > 0)
             {
-                _accessRuleSummary = AccessRuleSummary.FromAccessString(
-                    string.Join("/", _Access),
-                    PathType.Registry);
+                _accessRuleSummary = AccessRuleSummary.FromAccessString(string.Join("/", _Access), PathType.Registry);
             }
             if ((_accessRuleSummary == null || _accessRuleSummary.Length == 0) && !string.IsNullOrEmpty(_Account))
             {

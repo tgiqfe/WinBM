@@ -52,7 +52,7 @@ namespace Audit.Work.Registry
 
         [TaskParameter]
         [Keys("norecursive", "norec", "norecurs")]
-        protected bool _NoRecursive { get; set; }
+        protected bool _NoRecurse { get; set; }
 
         [TaskParameter]
         [Keys("accessallmatch", "aclallmatch", "aclall")]
@@ -77,9 +77,14 @@ namespace Audit.Work.Registry
             if ((_accessRuleSummary == null || _accessRuleSummary.Length == 0) && !string.IsNullOrEmpty(_Account))
             {
                 _Account = PredefinedAccount.Resolv(_Account);
-                _accessRuleSummary = AccessRuleSummary.FromAccessString($"{_Account};{_Rights};{_AccessControl}", PathType.Registry);
-
-                //  ↑ここのAccess文字列の指定間違い。
+                _accessRuleSummary = AccessRuleSummary.FromAccessString(
+                    string.Format("{0};{1};{2};{3};{4}",
+                        _Account,
+                        _Rights,
+                        _NoRecurse ? "None" : "ContainerInherit",
+                        "None",
+                        _AccessControl),
+                    PathType.Registry);
             }
 
             if (_accessRuleSummary?.Length > 0)

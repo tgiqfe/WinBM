@@ -50,7 +50,7 @@ namespace Audit.Work.Directory
 
         [TaskParameter]
         [Keys("norecursive", "norec", "norecurs")]
-        protected bool _NoRecursive { get; set; }
+        protected bool _NoRecurse { get; set; }
 
         [TaskParameter]
         [Keys("accessallmatch", "aclallmatch", "aclall")]
@@ -79,7 +79,7 @@ namespace Audit.Work.Directory
                     string.Format("{0};{1};{2};{3};{4}",
                         _Account,
                         _Rights,
-                        _NoRecursive ? "None" : "ContainerInherit,ObjectInherit",
+                        _NoRecurse ? "None" : "ContainerInherit,ObjectInherit",
                         "None",
                         _AccessControl),
                     PathType.Directory);
