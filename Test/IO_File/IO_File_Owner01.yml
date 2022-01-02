@@ -1,0 +1,26 @@
+---
+kind: Init
+init:
+  spec:
+  - param:
+      env: |-
+        FILE_WAIT = 300
+
+---
+kind: Job
+metadata:
+  description: 所有者確認用Requireのテスト
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  require:
+  - task: IO/File/Owner
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\sample.txt'
+      account: Administrator
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      message: OK
+  
+
+
