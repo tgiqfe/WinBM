@@ -79,6 +79,15 @@ namespace Audit.Work.File
                 dictionary["Check_Access"] =
                     string.Join("/", _accessRuleSummary.Select(x => x.ToString()));
             }
+            if (!string.IsNullOrEmpty(_Owner))
+            {
+                _Owner = PredefinedAccount.Resolv(_Owner);
+                dictionary["Check_Owner"] = _Owner;
+            }
+            if (_Inherited != null)
+            {
+                dictionary["Check_Inherited"] = _Inherited.ToString();
+            }
 
             if (!string.IsNullOrEmpty(_Owner))
             {

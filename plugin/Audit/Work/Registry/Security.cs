@@ -80,35 +80,11 @@ namespace Audit.Work.Registry
                 _accessRuleSummary = AccessRuleSummary.FromAccessString($"{_Account};{_Rights};{_AccessControl}", PathType.Registry);
             }
 
-            /*
-            //  アクセス文字列を準備。Access文字列指定/Account+Right指定の場合のみ準備。Inherited指定のみの場合は対象外
-            if (string.IsNullOrEmpty(_Access) && !string.IsNullOrEmpty(_Account))
-            {
-                _Account = PredefinedAccount.Resolv(_Account);
-                //_Access = $"{_Account};{_Rights};{_AccessControl}";
-                //  アクセス文字列を生成。
-                _Access = string.Format("{0};{1};{2};{3};{4}",
-                    _Account,
-                    _Rights,
-                    _NoRecursive ? "None" : "ContainerInherit",
-                    "None",
-                    _AccessControl);
-            }
-            */
-
             if (_accessRuleSummary?.Length > 0)
             {
                 dictionary["Check_Access"] =
                     string.Join("/", _accessRuleSummary.Select(x => x.ToString()));
             }
-
-            /*
-            if (!string.IsNullOrEmpty(_Access))
-            {
-                dictionary["Check_Access"] = _Access;
-            }
-            */
-
             if (!string.IsNullOrEmpty(_Owner))
             {
                 _Owner = PredefinedAccount.Resolv(_Owner);
@@ -189,23 +165,6 @@ namespace Audit.Work.Registry
                         this.Success = false;
                     }
                 }
-
-                /*
-                if (!string.IsNullOrEmpty(_Access))
-                {
-                    AuthorizationRuleCollection rule = security.GetAccessRules(true, false, typeof(NTAccount));
-                    string targetAccess = RegistryControl.AccessRulesToString(rule);
-                    if (targetAccess.Equals(_Access, StringComparison.OrdinalIgnoreCase))
-                    {
-                        dictionary[$"registryKey_{count}_Access_Match"] = targetAccess;
-                    }
-                    else
-                    {
-                        dictionary[$"registryKey_{count}_Access_NotMatch"] = targetAccess;
-                        this.Success = false;
-                    }
-                }
-                */
 
                 if (!string.IsNullOrEmpty(_Owner))
                 {
