@@ -78,12 +78,66 @@ namespace IO.Require.Registry
                 _accessRuleSummary = AccessRuleSummary.FromAccessString($"{_Account};{_Rights};{_AccessControl}", PathType.Registry);
             }
 
-            if(_Recursive)
+            TargetRegistryKeyProcess(_Path, writable: false, SecurityRegistryKeyAction);
         }
 
-        private void SecurityRegistryKeyAction(string target)
+        private void SecurityRegistryKeyAction(RegistryKey target)
         {
+            try
+            {
+                RegistrySecurity security = target.GetAccessControl();
 
+                if (_accessRuleSummary?.Length > 0)
+                {
+                    AuthorizationRuleCollection rules = security.GetAccessRules(true, false, typeof(NTAccount));
+                    string targetAccess =
+                        string.Join("/", AccessRuleSummary.FromAccessRules(rules, PathType.Registry).Select(x => x.ToString()));
+                    if (rules.Count == _accessRuleSummary.Length &&
+                        rules.OfType<AuthorizationRule>().All(x => _accessRuleSummary.Any(y => y.Compare(x))))
+                    {
+                        Manager.WriteLog(LogLevel.Info, "Access match: {0}", targetAccess);
+                    }
+                    else
+                    {
+                        Manager.WriteLog(LogLevel.Attention, "Access not match: {0}", targetAccess);
+                        this.Success = false;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(_Owner))
+                {
+                    string targetOwner = security.GetOwner(typeof(NTAccount)).Value;
+                    if (targetOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                    {
+                        Manager.WriteLog(LogLevel.Info, "Owner match: {0}", targetOwner);
+                    }
+                    else
+                    {
+                        Manager.WriteLog(LogLevel.Attention, "Owner not match: {0}", targetOwner);
+                        this.Success = false;
+                    }
+                }
+
+                if (_Inherited != null)
+                {
+                    bool targetInherited = !security.AreAccessRulesProtected;
+                    if (targetInherited == _Inherited)
+                    {
+                        Manager.WriteLog(LogLevel.Info, "Inherited match: {0}", targetInherited);
+                    }
+                    else
+                    {
+                        Manager.WriteLog(LogLevel.Attention, "Inherited not match: {0}", targetInherited);
+                        this.Success = false;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Manager.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
+                Manager.WriteLog(LogLevel.Debug, e.ToString());
+                this.Success = false;
+            }
         }
     }
 }
