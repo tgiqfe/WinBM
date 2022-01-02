@@ -27,8 +27,7 @@ namespace IO.Work.Directory
         [Keys("recurse", "recursive", "rec", "recurs")]
         protected bool _Recurse { get; set; }
 
-        private bool _hasToken = false;
-        private bool? _isAdmin = null;
+        private TrustedUser _trustedUser = null;
         private bool _abortRecurse = false;
 
         public override void MainProcess()
@@ -39,6 +38,8 @@ namespace IO.Work.Directory
             _Account = PredefinedAccount.Resolv(_Account);
 
             TargetDirectoryProcess(_Path, OwnerDirectoryAction);
+
+            _trustedUser?.RemovePrivilege();
         }
 
         private void OwnerDirectoryAction(string target)
@@ -61,11 +62,6 @@ namespace IO.Work.Directory
                 //  再帰処理無し
                 TakeOwnerDirectory(target, account);
             }
-
-            if (_hasToken)
-            {
-                TokenManipulator.RemovePrivilege(TokenManipulator.SE_RESTORE_NAME);
-            }
         }
 
         private void TakeOwnerDirectory(string targetDir, NTAccount account)
@@ -81,22 +77,19 @@ namespace IO.Work.Directory
             }
             catch (InvalidOperationException ioe)
             {
-                //  一度所有者変更を失敗した後、管理者権限で動作していないならば終了
-                if (!CheckAdmin())
+                //  一度所有者変更を失敗した場合、特権Token取得して再チャレンジ
+                _trustedUser ??= new TrustedUser();
+                if (!_trustedUser.Enabled)
                 {
                     Manager.WriteLog(LogLevel.Info, "The process is not running as a Trusted user.");
                     this.Success = false;
                     _abortRecurse = true;
                     return;
                 }
+
                 Manager.WriteLog(LogLevel.Debug, "{0} {1}", this.TaskName, ioe.Message);
                 Manager.WriteLog(LogLevel.Info, "Get TokenManipulator SE_RESTORE_NAME.");
 
-                if (!_hasToken)
-                {
-                    _hasToken = true;
-                    TokenManipulator.AddPrivilege(TokenManipulator.SE_RESTORE_NAME);
-                }
                 DirectorySecurity security = info.GetAccessControl();
                 security.SetOwner(account);
                 info.SetAccessControl(security);
@@ -122,22 +115,19 @@ namespace IO.Work.Directory
             }
             catch (InvalidOperationException ioe)
             {
-                //  一度所有者変更を失敗した後、管理者権限で動作していないならば終了
-                if (!CheckAdmin())
+                //  一度所有者変更を失敗した場合、特権Token取得して再チャレンジ
+                _trustedUser ??= new TrustedUser();
+                if (!_trustedUser.Enabled)
                 {
                     Manager.WriteLog(LogLevel.Info, "The process is not running as a Trusted user.");
                     this.Success = false;
                     _abortRecurse = true;
                     return;
                 }
+
                 Manager.WriteLog(LogLevel.Debug, "{0} {1}", this.TaskName, ioe.Message);
                 Manager.WriteLog(LogLevel.Info, "Get TokenManipulator SE_RESTORE_NAME.");
 
-                if (!_hasToken)
-                {
-                    _hasToken = true;
-                    TokenManipulator.AddPrivilege(TokenManipulator.SE_RESTORE_NAME);
-                }
                 FileSecurity security = info.GetAccessControl();
                 security.SetOwner(account);
                 info.SetAccessControl(security);
@@ -148,17 +138,6 @@ namespace IO.Work.Directory
                 Manager.WriteLog(LogLevel.Debug, e.ToString());
                 this.Success = false;
             }
-        }
-
-        private bool CheckAdmin()
-        {
-            if(_isAdmin == null)
-            {
-                AppDomain.CurrentDomain.SetPrincipalPolicy(PrincipalPolicy.WindowsPrincipal);
-                WindowsPrincipal wp = (WindowsPrincipal)System.Threading.Thread.CurrentPrincipal;
-                _isAdmin = wp.IsInRole(WindowsBuiltInRole.Administrator);
-            }
-            return (bool)_isAdmin;
         }
     }
 }
