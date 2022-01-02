@@ -164,6 +164,9 @@ namespace Audit.Work.Directory
 
                 if (!string.IsNullOrEmpty(_Owner))
                 {
+                    /*
+                     * 後日Recursive処理を追加で
+                     */
                     string targetOwner = security.GetOwner(typeof(NTAccount)).Value;
                     if (targetOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
                     {
