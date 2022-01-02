@@ -111,47 +111,51 @@ namespace IO.Require.Directory
 
                 if (!string.IsNullOrEmpty(_Owner))
                 {
-                    //  ↓出力するログ部分について、要検討
-
-                    Action<string, DirectorySecurity> recurseCheck = null;
+                    //  必要に応じて再帰的に所有者チェック。
+                    //  不一致を確認した時点で再起チェックは終了。
+                    //  不一致の場合は所有者名を返し、一致の場合はnullを返す。
+                    Func<string, DirectorySecurity, string> recurseCheck = null;
                     recurseCheck = (targetPath, targetSecurity) =>
                     {
-                        string targetOwner = targetSecurity.GetOwner(typeof(NTAccount)).Value;
-                        if (targetOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                        string owner = targetSecurity.GetOwner(typeof(NTAccount)).Value;
+                        if (owner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
                         {
-                            Manager.WriteLog(LogLevel.Info, "Owner match: {0}", targetOwner);
-                        }
-                        else
-                        {
-                            Manager.WriteLog(LogLevel.Attention, "Owner not match: {0}", targetOwner);
-                            this.Success = false;
-                            return;
-                        }
-
-                        if (!_NoRecurse)
-                        {
-                            foreach (string child in System.IO.Directory.GetFiles(target))
+                            if (!_NoRecurse)
                             {
-                                var childSecurity = new System.IO.FileInfo(child).GetAccessControl();
-                                string childOwner = childSecurity.GetOwner(typeof(NTAccount)).Value;
-                                if (childOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                                foreach (string child in System.IO.Directory.GetFiles(targetPath, "*", SearchOption.AllDirectories))
                                 {
-                                    Manager.WriteLog(LogLevel.Info, "Owner match: {0}", targetOwner);
+                                    var childSecurity = new System.IO.FileInfo(child).GetAccessControl();
+                                    string childOwner = childSecurity.GetOwner(typeof(NTAccount)).Value;
+                                    if (!childOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        return childOwner;
+                                    }
                                 }
-                                else
+                                foreach (string child in System.IO.Directory.GetDirectories(targetPath, "*", SearchOption.AllDirectories))
                                 {
-                                    Manager.WriteLog(LogLevel.Attention, "Owner not match: {0}", targetOwner);
-                                    this.Success = false;
-                                    return;
+                                    var childSecurity = new System.IO.DirectoryInfo(child).GetAccessControl();
+                                    string childOwner = childSecurity.GetOwner(typeof(NTAccount)).Value;
+                                    if (!childOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        return childOwner;
+                                    }
                                 }
                             }
-                            foreach (string child in System.IO.Directory.GetDirectories(target))
-                            {
-                                recurseCheck(child, new System.IO.DirectoryInfo(child).GetAccessControl());
-                            }
+                            return null;
                         }
+                        return owner;
                     };
-                    recurseCheck(target, security);
+
+                    string targetOwner = recurseCheck(target, security);
+                    if (targetOwner == null)
+                    {
+                        Manager.WriteLog(LogLevel.Info, "Owner match: {0}", targetOwner);
+                    }
+                    else
+                    {
+                        Manager.WriteLog(LogLevel.Attention, "Owner not match: {0}", targetOwner);
+                        this.Success = false;
+                    }
                 }
 
                 if (_Inherited != null)

@@ -113,35 +113,44 @@ namespace IO.Require.Registry
 
                 if (!string.IsNullOrEmpty(_Owner))
                 {
-                    //  ↓出力するログ部分について、要検討
-
-                    Action<RegistryKey, RegistrySecurity> recurseCheck = null;
+                    //  必要に応じて再帰的に所有者チェック。
+                    //  不一致を確認した時点で再起チェックは終了。
+                    //  不一致の場合は所有者名を返し、一致の場合はnullを返す。
+                    Func<RegistryKey, RegistrySecurity, string> recurseCheck = null;
                     recurseCheck = (targetKey, targetSecurity) =>
                     {
-                        string targetOwner = targetSecurity.GetOwner(typeof(NTAccount)).Value;
-                        if (targetOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                        string owner = targetSecurity.GetOwner(typeof(NTAccount)).Value;
+                        if (owner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
                         {
-                            Manager.WriteLog(LogLevel.Info, "Owner match: {0}", targetOwner);
-                        }
-                        else
-                        {
-                            Manager.WriteLog(LogLevel.Attention, "Owner not match: {0}", targetOwner);
-                            this.Success = false;
-                            return;
-                        }
-
-                        if (!_NoRecurse)
-                        {
-                            foreach (string child in targetKey.GetSubKeyNames())
+                            if (!_NoRecurse)
                             {
-                                using (RegistryKey childKey = targetKey.OpenSubKey(child, false))
+                                foreach (string child in targetKey.GetSubKeyNames())
                                 {
-                                    recurseCheck(childKey, childKey.GetAccessControl());
+                                    using (RegistryKey childKey = targetKey.OpenSubKey(child, false))
+                                    {
+                                        string childOwner = recurseCheck(childKey, childKey.GetAccessControl());
+                                        if (childOwner != null)
+                                        {
+                                            return childOwner;
+                                        }
+                                    }
                                 }
                             }
+                            return null;
                         }
+                        return owner;
                     };
-                    recurseCheck(target, security);
+
+                    string targetOwner = recurseCheck(target, security);
+                    if (targetOwner == null)
+                    {
+                        Manager.WriteLog(LogLevel.Info, "Owner match: {0}", targetOwner);
+                    }
+                    else
+                    {
+                        Manager.WriteLog(LogLevel.Attention, "Owner not match: {0}", targetOwner);
+                        this.Success = false;
+                    }
                 }
 
                 if (_Inherited != null)

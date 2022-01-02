@@ -164,47 +164,51 @@ namespace Audit.Work.Directory
 
                 if (!string.IsNullOrEmpty(_Owner))
                 {
-                    //  ↓出力するログ部分について、要検討
-
-                    Action<string, DirectorySecurity> recurseCheck = null;
+                    //  必要に応じて再帰的に所有者チェック。
+                    //  不一致を確認した時点で再起チェックは終了。
+                    //  不一致の場合は所有者名を返し、一致の場合はnullを返す。
+                    Func<string, DirectorySecurity, string> recurseCheck = null;
                     recurseCheck = (targetPath, targetSecurity) =>
                     {
-                        string targetOwner = targetSecurity.GetOwner(typeof(NTAccount)).Value;
-                        if (targetOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                        string owner = targetSecurity.GetOwner(typeof(NTAccount)).Value;
+                        if (owner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
                         {
-                            dictionary[$"directory_{count}_Owner_Match"] = targetOwner;
-                        }
-                        else
-                        {
-                            dictionary[$"directory_{count}_Owner_NotMatch"] = targetOwner;
-                            this.Success = false;
-                            return;
-                        }
-
-                        if (!_NoRecurse)
-                        {
-                            foreach (string child in System.IO.Directory.GetFiles(target))
+                            if (!_NoRecurse)
                             {
-                                var childSecurity = new System.IO.FileInfo(child).GetAccessControl();
-                                string childOwner = childSecurity.GetOwner(typeof(NTAccount)).Value;
-                                if (childOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                                foreach (string child in System.IO.Directory.GetFiles(targetPath, "*", SearchOption.AllDirectories))
                                 {
-                                    dictionary[$"directory_{count}_Owner_Match"] = targetOwner;
+                                    var childSecurity = new System.IO.FileInfo(child).GetAccessControl();
+                                    string childOwner = childSecurity.GetOwner(typeof(NTAccount)).Value;
+                                    if (!childOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        return childOwner;
+                                    }
                                 }
-                                else
+                                foreach (string child in System.IO.Directory.GetDirectories(targetPath, "*", SearchOption.AllDirectories))
                                 {
-                                    dictionary[$"directory_{count}_Owner_NotMatch"] = targetOwner;
-                                    this.Success = false;
-                                    return;
+                                    var childSecurity = new System.IO.DirectoryInfo(child).GetAccessControl();
+                                    string childOwner = childSecurity.GetOwner(typeof(NTAccount)).Value;
+                                    if (!childOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                                    {
+                                        return childOwner;
+                                    }
                                 }
                             }
-                            foreach (string child in System.IO.Directory.GetDirectories(target))
-                            {
-                                recurseCheck(child, new System.IO.DirectoryInfo(child).GetAccessControl());
-                            }
+                            return null;
                         }
+                        return owner;
                     };
-                    recurseCheck(target, security);
+
+                    string targetOwner = recurseCheck(target, security);
+                    if (targetOwner == null)
+                    {
+                        dictionary[$"directory_{count}_Owner_Match"] = targetOwner;
+                    }
+                    else
+                    {
+                        dictionary[$"directory_{count}_Owner_NotMatch"] = targetOwner;
+                        this.Success = false;
+                    }
                 }
 
                 if (_Inherited != null)
