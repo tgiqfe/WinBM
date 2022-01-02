@@ -113,19 +113,35 @@ namespace IO.Require.Registry
 
                 if (!string.IsNullOrEmpty(_Owner))
                 {
-                    /*
-                     * 後日Recursive処理を追加で
-                     */
-                    string targetOwner = security.GetOwner(typeof(NTAccount)).Value;
-                    if (targetOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                    //  ↓出力するログ部分について、要検討
+
+                    Action<RegistryKey, RegistrySecurity> recurseCheck = null;
+                    recurseCheck = (targetKey, targetSecurity) =>
                     {
-                        Manager.WriteLog(LogLevel.Info, "Owner match: {0}", targetOwner);
-                    }
-                    else
-                    {
-                        Manager.WriteLog(LogLevel.Attention, "Owner not match: {0}", targetOwner);
-                        this.Success = false;
-                    }
+                        string targetOwner = targetSecurity.GetOwner(typeof(NTAccount)).Value;
+                        if (targetOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                        {
+                            Manager.WriteLog(LogLevel.Info, "Owner match: {0}", targetOwner);
+                        }
+                        else
+                        {
+                            Manager.WriteLog(LogLevel.Attention, "Owner not match: {0}", targetOwner);
+                            this.Success = false;
+                            return;
+                        }
+
+                        if (!_NoRecurse)
+                        {
+                            foreach (string child in targetKey.GetSubKeyNames())
+                            {
+                                using (RegistryKey childKey = targetKey.OpenSubKey(child, false))
+                                {
+                                    recurseCheck(childKey, childKey.GetAccessControl());
+                                }
+                            }
+                        }
+                    };
+                    recurseCheck(target, security);
                 }
 
                 if (_Inherited != null)

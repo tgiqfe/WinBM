@@ -148,13 +148,13 @@ namespace Audit.Work.Registry
             AddAudit(dictionary, this._Invert);
         }
 
-        private void SecurityRegistryKeyCheck(RegistryKey targetKey, Dictionary<string, string> dictionary, int count)
+        private void SecurityRegistryKeyCheck(RegistryKey target, Dictionary<string, string> dictionary, int count)
         {
             try
             {
-                dictionary[$"registryKey_{count}"] = targetKey.Name;
+                dictionary[$"registryKey_{count}"] = target.Name;
 
-                RegistrySecurity security = targetKey.GetAccessControl();
+                RegistrySecurity security = target.GetAccessControl();
 
                 if (_accessRuleSummary?.Length > 0)
                 {
@@ -175,19 +175,35 @@ namespace Audit.Work.Registry
 
                 if (!string.IsNullOrEmpty(_Owner))
                 {
-                    /*
-                     * 後日Recursive処理を追加で
-                     */
-                    string targetOwner = security.GetOwner(typeof(NTAccount)).Value;
-                    if (targetOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                    //  ↓出力するログ部分について、要検討
+
+                    Action<RegistryKey, RegistrySecurity> recurseCheck = null;
+                    recurseCheck = (targetKey, targetSecurity) =>
                     {
-                        dictionary[$"registryKey_{count}_Owner_Match"] = targetOwner;
-                    }
-                    else
-                    {
-                        dictionary[$"registryKey_{count}_Owner_NotMatch"] = targetOwner;
-                        this.Success = false;
-                    }
+                        string targetOwner = targetSecurity.GetOwner(typeof(NTAccount)).Value;
+                        if (targetOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                        {
+                            dictionary[$"registryKey_{count}_Owner_Match"] = targetOwner;
+                        }
+                        else
+                        {
+                            dictionary[$"registryKey_{count}_Owner_NotMatch"] = targetOwner;
+                            this.Success = false;
+                            return;
+                        }
+
+                        if (!_NoRecurse)
+                        {
+                            foreach (string child in targetKey.GetSubKeyNames())
+                            {
+                                using (RegistryKey childKey = targetKey.OpenSubKey(child, false))
+                                {
+                                    recurseCheck(childKey, childKey.GetAccessControl());
+                                }
+                            }
+                        }
+                    };
+                    recurseCheck(target, security);
                 }
 
                 if (_Inherited != null)
