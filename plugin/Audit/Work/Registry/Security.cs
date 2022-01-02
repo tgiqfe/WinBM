@@ -78,6 +78,8 @@ namespace Audit.Work.Registry
             {
                 _Account = PredefinedAccount.Resolv(_Account);
                 _accessRuleSummary = AccessRuleSummary.FromAccessString($"{_Account};{_Rights};{_AccessControl}", PathType.Registry);
+
+                //  ↑ここのAccess文字列の指定間違い。
             }
 
             if (_accessRuleSummary?.Length > 0)
