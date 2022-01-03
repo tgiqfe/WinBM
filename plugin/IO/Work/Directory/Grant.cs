@@ -45,7 +45,7 @@ namespace IO.Work.Directory
         protected InheritedAction? _Inherited { get; set; }
 
         [TaskParameter]
-        [Keys("norecurse", "norecursive", "norec", "norecurs")]
+        [Keys("norecursive", "norec", "norecurs", "norecurse")]
         protected bool _NoRecurse { get; set; }
 
         private AccessRuleSummary[] _accessRuleSummary = null;

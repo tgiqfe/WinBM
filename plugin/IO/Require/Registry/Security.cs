@@ -11,10 +11,10 @@ using System.Security.AccessControl;
 using System.IO;
 using IO.Lib;
 
-namespace Audit.Work.Registry
+namespace IO.Require.Registry
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Security : AuditTaskWork
+    internal class Security : IOTaskRequireRegistry
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "registrypath", "targetpath", "key", "registrykey", "targetkey", "regkey", "target")]
@@ -66,9 +66,7 @@ namespace Audit.Work.Registry
 
         public override void MainProcess()
         {
-            var dictionary = new Dictionary<string, string>();
             this.Success = true;
-            int count = 0;
 
             if (_Access?.Length > 0)
             {
@@ -87,73 +85,13 @@ namespace Audit.Work.Registry
                     PathType.Registry);
             }
 
-            if (_accessRuleSummary?.Length > 0)
-            {
-                dictionary["Check_Access"] =
-                    string.Join("/", _accessRuleSummary.Select(x => x.ToString()));
-            }
-            if (!string.IsNullOrEmpty(_Owner))
-            {
-                _Owner = PredefinedAccount.Resolv(_Owner);
-                dictionary["Check_Owner"] = _Owner;
-            }
-            if (_Inherited != null)
-            {
-                dictionary["Check_Inherited"] = _Inherited.ToString();
-            }
-
-            foreach (string path in _Path)
-            {
-                string keyName = System.IO.Path.GetFileName(path);
-                if (keyName.Contains("*"))
-                {
-                    string parent = System.IO.Path.GetDirectoryName(path);
-                    using (RegistryKey parentKey = RegistryControl.GetRegistryKey(parent, false, false))
-                    {
-                        //  対象キーの親キーが存在しない場合
-                        if (parentKey == null)
-                        {
-                            Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", parent);
-                            return;
-                        }
-
-                        //  ワイルドカード指定
-                        System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(keyName);
-                        foreach (var childKeyName in
-                            parentKey.GetSubKeyNames().Where(x => wildcard.IsMatch(x)))
-                        {
-                            using (RegistryKey childKey = parentKey.OpenSubKey(childKeyName, false))
-                            {
-                                SecurityRegistryKeyCheck(childKey, dictionary, ++count);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    using (RegistryKey regKey = RegistryControl.GetRegistryKey(path, false, false))
-                    {
-                        //  対象のキーが存在しない場合
-                        if (regKey == null)
-                        {
-                            Manager.WriteLog(LogLevel.Warn, "Target is Missing. \"{0}\"", path);
-                            return;
-                        }
-
-                        SecurityRegistryKeyCheck(regKey, dictionary, ++count);
-                    }
-                }
-            }
-
-            AddAudit(dictionary, this._Invert);
+            TargetRegistryKeyProcess(_Path, writable: false, SecurityRegistryKeyAction);
         }
 
-        private void SecurityRegistryKeyCheck(RegistryKey target, Dictionary<string, string> dictionary, int count)
+        private void SecurityRegistryKeyAction(RegistryKey target)
         {
             try
             {
-                dictionary[$"registryKey_{count}"] = target.Name;
-
                 RegistrySecurity security = target.GetAccessControl();
 
                 if (_accessRuleSummary?.Length > 0)
@@ -164,11 +102,11 @@ namespace Audit.Work.Registry
                     if (rules.Count == _accessRuleSummary.Length &&
                         rules.OfType<AuthorizationRule>().All(x => _accessRuleSummary.Any(y => y.Compare(x))))
                     {
-                        dictionary[$"registryKey_{count}_Access_Match"] = targetAccess;
+                        Manager.WriteLog(LogLevel.Info, "Access match: {0}", targetAccess);
                     }
                     else
                     {
-                        dictionary[$"registryKey_{count}_Access_NotMatch"] = targetAccess;
+                        Manager.WriteLog(LogLevel.Attention, "Access not match: {0}", targetAccess);
                         this.Success = false;
                     }
                 }
@@ -206,11 +144,11 @@ namespace Audit.Work.Registry
                     string targetOwner = recurseCheck(target, security);
                     if (targetOwner == null)
                     {
-                        dictionary[$"registryKey_{count}_Owner_Match"] = _Owner;
+                        Manager.WriteLog(LogLevel.Info, "Owner match: {0}", targetOwner);
                     }
                     else
                     {
-                        dictionary[$"registryKey_{count}_Owner_NotMatch"] = targetOwner;
+                        Manager.WriteLog(LogLevel.Attention, "Owner not match: {0}", targetOwner);
                         this.Success = false;
                     }
                 }
@@ -220,11 +158,11 @@ namespace Audit.Work.Registry
                     bool targetInherited = !security.AreAccessRulesProtected;
                     if (targetInherited == _Inherited)
                     {
-                        dictionary[$"registryKey_{count}_Inherited_Match"] = targetInherited.ToString();
+                        Manager.WriteLog(LogLevel.Info, "Inherited match: {0}", targetInherited);
                     }
                     else
                     {
-                        dictionary[$"registryKey_{count}_Inherited_NotMatch"] = targetInherited.ToString();
+                        Manager.WriteLog(LogLevel.Attention, "Inherited not match: {0}", targetInherited);
                         this.Success = false;
                     }
                 }

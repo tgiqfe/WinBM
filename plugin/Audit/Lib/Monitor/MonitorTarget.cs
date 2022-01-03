@@ -111,8 +111,6 @@ namespace Audit.Lib.Monitor
             this.Name = name;
         }
 
-
-
         #region Check method
 
         public void CheckExists()
