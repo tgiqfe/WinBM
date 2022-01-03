@@ -57,11 +57,13 @@ namespace IO.Require.File
         protected bool _Invert { get; set; }
 
         private AccessRuleSummary[] _accessRuleSummary = null;
+        private UserAccount _ownerAccount = null;
 
         public override void MainProcess()
         {
             this.Success = true;
 
+            //  Access情報セット
             if (_Access?.Length > 0)
             {
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(string.Join("/", _Access), PathType.File);
@@ -71,6 +73,9 @@ namespace IO.Require.File
                 _Account = PredefinedAccount.Resolv(_Account);
                 _accessRuleSummary = AccessRuleSummary.FromAccessString($"{_Account};{_Rights};{_AccessControl}", PathType.File);
             }
+
+            //  Owner情報セット
+            _ownerAccount = new UserAccount(_Owner);
 
             TargetFileProcess(_Path, SecurityFileAction);
         }
@@ -103,7 +108,7 @@ namespace IO.Require.File
                 if (!string.IsNullOrEmpty(_Owner))
                 {
                     string targetOwner = security.GetOwner(typeof(NTAccount)).Value;
-                    if (targetOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                    if (_ownerAccount.IsMatch(targetOwner))
                     {
                         Manager.WriteLog(LogLevel.Info, "Owner match: {0}", targetOwner);
                     }

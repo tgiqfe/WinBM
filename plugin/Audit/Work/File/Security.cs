@@ -57,6 +57,7 @@ namespace Audit.Work.File
         protected bool _Invert { get; set; }
 
         private AccessRuleSummary[] _accessRuleSummary = null;
+        private UserAccount _ownerAccount = null;
 
         public override void MainProcess()
         {
@@ -81,19 +82,8 @@ namespace Audit.Work.File
             }
             if (!string.IsNullOrEmpty(_Owner))
             {
-                _Owner = PredefinedAccount.Resolv(_Owner);
-                dictionary["Check_Owner"] = _Owner;
-            }
-            if (_Inherited != null)
-            {
-                dictionary["Check_Inherited"] = _Inherited.ToString();
-            }
-
-            if (!string.IsNullOrEmpty(_Owner))
-            {
-                //  ついでに事前定義アカウントチェック
-                _Owner = PredefinedAccount.Resolv(_Owner);
-                dictionary["Check_Owner"] = _Owner;
+                _ownerAccount = new UserAccount(_Owner);
+                dictionary["Check_Owner"] = _ownerAccount.ToString();
             }
             if (_Inherited != null)
             {
@@ -167,7 +157,7 @@ namespace Audit.Work.File
                 if (!string.IsNullOrEmpty(_Owner))
                 {
                     string targetOwner = security.GetOwner(typeof(NTAccount)).Value;
-                    if (targetOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                    if (_ownerAccount.IsMatch(targetOwner))
                     {
                         dictionary[$"file_{count}_Owner_Match"] = targetOwner;
                     }

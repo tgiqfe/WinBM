@@ -15,17 +15,29 @@ namespace IO.Lib
 
         public UserAccount(string name)
         {
-            if (name.Contains("\\"))
+            if (string.IsNullOrEmpty(name)) { return; }
+
+            string resolvedName = Resolv(name);
+            if (resolvedName.Contains("\\"))
             {
-                this.Name = name.Substring(name.IndexOf("\\") + 1);
-                this.Domain = name.Substring(0, name.IndexOf("\\"));
+                this.Name = resolvedName.Substring(resolvedName.IndexOf("\\") + 1);
+                this.Domain = resolvedName.Substring(0, resolvedName.IndexOf("\\"));
             }
             else
             {
-                this.Name = name;
+                this.Name = resolvedName;
             }
         }
         public UserAccount(NTAccount ntAccount) : this(ntAccount.Value) { }
+
+        public override string ToString()
+        {
+            if (string.IsNullOrEmpty(this.Domain))
+            {
+                return this.Name;
+            }
+            return $"{this.Domain}\\{this.Name}";
+        }
 
         #region IsMatch method
 
@@ -55,6 +67,33 @@ namespace IO.Lib
         public bool IsMatch(NTAccount ntAccount)
         {
             return this.IsMatch(new UserAccount(ntAccount));
+        }
+
+        #endregion
+        #region Predefined
+
+        /// <summary>
+        /// 事前定義アカウント。初回呼び出し時にセット
+        /// </summary>
+        private static Dictionary<string, string> _preDefinedAccounts = null;
+
+        /// <summary>
+        /// 事前定義アカウントを解決
+        /// </summary>
+        /// <param name="name"></param>
+        public static string Resolv(string name)
+        {
+            _preDefinedAccounts ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "Administrators", "BUILTIN\\Administrators" },
+                { Environment.MachineName + "\\Administrators", "BUILTIN\\Administrators" },
+            };
+
+            if (_preDefinedAccounts.ContainsKey(name))
+            {
+                name = _preDefinedAccounts[name];
+            }
+            return name;
         }
 
         #endregion
