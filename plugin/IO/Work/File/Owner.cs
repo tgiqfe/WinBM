@@ -24,6 +24,7 @@ namespace IO.Work.File
         protected string _Account { get; set; }
 
         private TrustedUser _trustedUser = null;
+        private UserAccount _ownerAccount = null;
         private bool _abortRecurse = false;
 
         public override void MainProcess()
@@ -31,7 +32,7 @@ namespace IO.Work.File
             this.Success = true;
 
             //  事前定義アカウントチェック
-            _Account = PredefinedAccount.Resolv(_Account);
+            _ownerAccount = new UserAccount(_Account);
 
             TargetFileProcess(_Path, OwnerFileAction);
             
@@ -40,10 +41,10 @@ namespace IO.Work.File
 
         private void OwnerFileAction(string target)
         {
-            TakeOwnerFile(target, new NTAccount(_Account));
+            TakeOwnerFile(target);
         }
 
-        private void TakeOwnerFile(string targetFile, NTAccount account)
+        private void TakeOwnerFile(string targetFile)
         {
             if (_abortRecurse) { return; }
 
@@ -51,7 +52,7 @@ namespace IO.Work.File
             try
             {
                 FileSecurity security = info.GetAccessControl();
-                security.SetOwner(account);
+                security.SetOwner(_ownerAccount.NTAccount);
                 info.SetAccessControl(security);
             }
             catch (InvalidOperationException ioe)
@@ -70,7 +71,7 @@ namespace IO.Work.File
                 Manager.WriteLog(LogLevel.Info, "Get TokenManipulator SE_RESTORE_NAME.");
 
                 FileSecurity security = info.GetAccessControl();
-                security.SetOwner(account);
+                security.SetOwner(_ownerAccount.NTAccount);
                 info.SetAccessControl(security);
             }
             catch (Exception e)

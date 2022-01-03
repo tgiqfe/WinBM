@@ -28,6 +28,7 @@ namespace IO.Work.Directory
         protected bool _Recurse { get; set; }
 
         private TrustedUser _trustedUser = null;
+        private UserAccount _ownerAccount = null;
         private bool _abortRecurse = false;
 
         public override void MainProcess()
@@ -35,7 +36,7 @@ namespace IO.Work.Directory
             this.Success = true;
 
             //  事前定義アカウントチェック
-            _Account = PredefinedAccount.Resolv(_Account);
+            _ownerAccount = new UserAccount(_Account);
 
             TargetDirectoryProcess(_Path, OwnerDirectoryAction);
 
@@ -49,22 +50,22 @@ namespace IO.Work.Directory
             if (_Recurse)
             {
                 //  再帰処理有り
-                TakeOwnerDirectory(target, account);
+                TakeOwnerDirectory(target);
                 System.IO.Directory.GetDirectories(target, "*", SearchOption.AllDirectories).
                     ToList().
-                    ForEach(x => TakeOwnerDirectory(x, account));
+                    ForEach(x => TakeOwnerDirectory(x));
                 System.IO.Directory.GetFiles(target, "*", SearchOption.AllDirectories).
                     ToList().
-                    ForEach(x => TakeOwnerFile(x, account));
+                    ForEach(x => TakeOwnerFile(x));
             }
             else
             {
                 //  再帰処理無し
-                TakeOwnerDirectory(target, account);
+                TakeOwnerDirectory(target);
             }
         }
 
-        private void TakeOwnerDirectory(string targetDir, NTAccount account)
+        private void TakeOwnerDirectory(string targetDir)
         {
             if (_abortRecurse) { return; }
 
@@ -72,7 +73,7 @@ namespace IO.Work.Directory
             try
             {
                 DirectorySecurity security = info.GetAccessControl();
-                security.SetOwner(account);
+                security.SetOwner(_ownerAccount.NTAccount);
                 info.SetAccessControl(security);
             }
             catch (InvalidOperationException ioe)
@@ -91,7 +92,7 @@ namespace IO.Work.Directory
                 Manager.WriteLog(LogLevel.Info, "Get TokenManipulator SE_RESTORE_NAME.");
 
                 DirectorySecurity security = info.GetAccessControl();
-                security.SetOwner(account);
+                security.SetOwner(_ownerAccount.NTAccount);
                 info.SetAccessControl(security);
             }
             catch (Exception e)
@@ -102,7 +103,7 @@ namespace IO.Work.Directory
             }
         }
 
-        private void TakeOwnerFile(string targetFile, NTAccount account)
+        private void TakeOwnerFile(string targetFile)
         {
             if (_abortRecurse) { return; }
 
@@ -110,7 +111,7 @@ namespace IO.Work.Directory
             try
             {
                 FileSecurity security = info.GetAccessControl();
-                security.SetOwner(account);
+                security.SetOwner(_ownerAccount.NTAccount);
                 info.SetAccessControl(security);
             }
             catch (InvalidOperationException ioe)
@@ -129,7 +130,7 @@ namespace IO.Work.Directory
                 Manager.WriteLog(LogLevel.Info, "Get TokenManipulator SE_RESTORE_NAME.");
 
                 FileSecurity security = info.GetAccessControl();
-                security.SetOwner(account);
+                security.SetOwner(_ownerAccount.NTAccount);
                 info.SetAccessControl(security);
             }
             catch (Exception e)
