@@ -71,8 +71,10 @@ namespace Audit.Work.File
             }
             if ((_accessRuleSummary == null || _accessRuleSummary.Length == 0) && !string.IsNullOrEmpty(_Account))
             {
-                _Account = PredefinedAccount.Resolv(_Account);
-                _accessRuleSummary = AccessRuleSummary.FromAccessString($"{_Account};{_Rights};{_AccessControl}", PathType.File);
+                //_Account = PredefinedAccount.Resolv(_Account);
+                var userAccount = new UserAccount(_Account);
+                _accessRuleSummary = AccessRuleSummary.FromAccessString(
+                    $"{userAccount.FullName};{_Rights};{_AccessControl}", PathType.File);
             }
 
             if (_accessRuleSummary?.Length > 0)

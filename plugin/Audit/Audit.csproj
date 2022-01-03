@@ -12,7 +12,6 @@
 		<Compile Include="..\IO\Lib\FileEncoding.cs" Link="IOLib\FileEncoding.cs" />
 		<Compile Include="..\IO\Lib\InheritedAction.cs" Link="IOLib\InheritedAction.cs" />
 		<Compile Include="..\IO\Lib\PathType.cs" Link="IOLib\PathType.cs" />
-		<Compile Include="..\IO\Lib\PredefinedAccount.cs" Link="IOLib\PredefinedAccount.cs" />
 		<Compile Include="..\IO\Lib\RegistryControl.cs" Link="IOLib\RegistryControl.cs" />
 		<Compile Include="..\IO\Lib\UserAccount.cs" Link="IOLib\UserAccount.cs" />
 		<Compile Include="..\IO\Lib\Wildcard.cs" Link="IOLib\Wildcard.cs" />

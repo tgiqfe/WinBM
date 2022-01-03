@@ -63,11 +63,13 @@ namespace IO.Require.Registry
         protected bool _Invert { get; set; }
 
         private AccessRuleSummary[] _accessRuleSummary = null;
+        private UserAccount _ownerAccount = null;
 
         public override void MainProcess()
         {
             this.Success = true;
 
+            //  Access情報セット
             if (_Access?.Length > 0)
             {
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(string.Join("/", _Access), PathType.Registry);
@@ -85,6 +87,9 @@ namespace IO.Require.Registry
                         _AccessControl),
                     PathType.Registry);
             }
+
+            //  Owner情報セット
+            _ownerAccount = new UserAccount(_Owner);
 
             TargetRegistryKeyProcess(_Path, writable: false, SecurityRegistryKeyAction);
         }
@@ -121,7 +126,7 @@ namespace IO.Require.Registry
                     recurseCheck = (targetKey, targetSecurity) =>
                     {
                         string owner = targetSecurity.GetOwner(typeof(NTAccount)).Value;
-                        if (owner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                        if (_ownerAccount.IsMatch(owner))
                         {
                             if (!_NoRecurse)
                             {
