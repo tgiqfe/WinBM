@@ -28,13 +28,13 @@ namespace Audit.Work.Directory
 
             foreach (string path in _Path)
             {
-                ExistsDirectoryCheck(path, dictionary, ++count);
+                ExistsDirectoryAction(path, dictionary, ++count);
             }
 
             AddAudit(dictionary, this._Invert);
         }
 
-        private void ExistsDirectoryCheck(string target, Dictionary<string, string> dictionary, int count)
+        private void ExistsDirectoryAction(string target, Dictionary<string, string> dictionary, int count)
         {
             if (System.IO.Directory.Exists(target))
             {

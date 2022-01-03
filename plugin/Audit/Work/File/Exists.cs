@@ -33,13 +33,13 @@ namespace Audit.Work.File
 
             foreach(string path in _Path)
             {
-                ExistsFileCheck(path, dictionary, ++count);
+                ExistsFileAction(path, dictionary, ++count);
             }
 
             AddAudit(dictionary, this._Invert);
         }
 
-        private void ExistsFileCheck(string target, Dictionary<string, string> dictionary, int count)
+        private void ExistsFileAction(string target, Dictionary<string, string> dictionary, int count)
         {
             if (System.IO.File.Exists(target))
             {

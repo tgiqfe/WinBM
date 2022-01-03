@@ -127,7 +127,7 @@ namespace Audit.Work.Registry
                         {
                             using (RegistryKey childKey = parentKey.OpenSubKey(childKeyName, false))
                             {
-                                SecurityRegistryKeyCheck(childKey, dictionary, ++count);
+                                SecurityRegistryKeyAction(childKey, dictionary, ++count);
                             }
                         }
                     }
@@ -143,7 +143,7 @@ namespace Audit.Work.Registry
                             return;
                         }
 
-                        SecurityRegistryKeyCheck(regKey, dictionary, ++count);
+                        SecurityRegistryKeyAction(regKey, dictionary, ++count);
                     }
                 }
             }
@@ -151,7 +151,7 @@ namespace Audit.Work.Registry
             AddAudit(dictionary, this._Invert);
         }
 
-        private void SecurityRegistryKeyCheck(RegistryKey target, Dictionary<string, string> dictionary, int count)
+        private void SecurityRegistryKeyAction(RegistryKey target, Dictionary<string, string> dictionary, int count)
         {
             try
             {

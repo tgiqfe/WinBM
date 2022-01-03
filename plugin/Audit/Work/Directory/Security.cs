@@ -121,7 +121,7 @@ namespace Audit.Work.Directory
                     System.IO.Directory.GetDirectories(parent).
                         Where(x => wildcard.IsMatch(x)).
                         ToList().
-                        ForEach(x => SecurityDirectoryCheck(x, dictionary, ++count));
+                        ForEach(x => SecurityDirectoryAction(x, dictionary, ++count));
                 }
                 else
                 {
@@ -132,14 +132,14 @@ namespace Audit.Work.Directory
                         return;
                     }
 
-                    SecurityDirectoryCheck(path, dictionary, ++count);
+                    SecurityDirectoryAction(path, dictionary, ++count);
                 }
             }
 
             AddAudit(dictionary, this._Invert);
         }
 
-        private void SecurityDirectoryCheck(string target, Dictionary<string, string> dictionary, int count)
+        private void SecurityDirectoryAction(string target, Dictionary<string, string> dictionary, int count)
         {
             try
             {

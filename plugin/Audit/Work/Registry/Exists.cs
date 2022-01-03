@@ -49,18 +49,18 @@ namespace Audit.Work.Registry
             if (_Name?.Length > 0)
             {
                 //  名前指定有りの場合は、同キー配下の複数の名前をチェック
-                ExistsRegistryValueCheck(_Path[0], dictionary);
+                ExistsRegistryValueAction(_Path[0], dictionary);
             }
             else
             {
                 //  名前指定なしの為、複数キーのチェック
-                ExistsRegistryKeyCheck(_Path, dictionary);
+                ExistsRegistryKeyAction(_Path, dictionary);
             }
 
             AddAudit(dictionary, this._Invert);
         }
 
-        private void ExistsRegistryValueCheck(string target, Dictionary<string, string> dictionary)
+        private void ExistsRegistryValueAction(string target, Dictionary<string, string> dictionary)
         {
             using (var regKey = RegistryControl.GetRegistryKey(target, false, false))
             {
@@ -116,7 +116,7 @@ namespace Audit.Work.Registry
             }
         }
 
-        private void ExistsRegistryKeyCheck(string[] targets, Dictionary<string, string> dictionary)
+        private void ExistsRegistryKeyAction(string[] targets, Dictionary<string, string> dictionary)
         {
             int count = 0;
             foreach (string target in targets)
