@@ -106,7 +106,7 @@ namespace IO.Require.Registry
                     string targetAccess =
                         string.Join("/", AccessRuleSummary.FromAccessRules(rules, PathType.Registry).Select(x => x.ToString()));
                     if (rules.Count == _accessRuleSummary.Length &&
-                        rules.OfType<AuthorizationRule>().All(x => _accessRuleSummary.Any(y => y.Compare(x))))
+                        rules.OfType<AuthorizationRule>().All(x => _accessRuleSummary.Any(y => y.IsMatch(x))))
                     {
                         Manager.WriteLog(LogLevel.Info, "Access match: {0}", targetAccess);
                     }
