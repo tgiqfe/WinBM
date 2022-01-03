@@ -49,7 +49,7 @@ namespace IO.Require.Directory
         //  ########################
 
         [TaskParameter]
-        [Keys("norecursive", "norec", "norecurs")]
+        [Keys("norecursive", "norec", "norecurs", "norecurse")]
         protected bool _NoRecurse { get; set; }
 
         [TaskParameter]
@@ -61,11 +61,13 @@ namespace IO.Require.Directory
         protected bool _Invert { get; set; }
 
         private AccessRuleSummary[] _accessRuleSummary = null;
+        private UserAccount _ownerAccount = null;
 
         public override void MainProcess()
         {
             this.Success = true;
 
+            //  Access情報セット
             if (_Access?.Length > 0)
             {
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(string.Join("/", _Access), PathType.Directory);
@@ -82,6 +84,9 @@ namespace IO.Require.Directory
                         _AccessControl),
                     PathType.Directory);
             }
+
+            //  Owner情報セット
+            _ownerAccount = new UserAccount(_Owner);
 
             TargetDirectoryProcess(_Path, SecurityDirectoryAction);
         }
@@ -118,7 +123,7 @@ namespace IO.Require.Directory
                     recurseCheck = (targetPath, targetSecurity) =>
                     {
                         string owner = targetSecurity.GetOwner(typeof(NTAccount)).Value;
-                        if (owner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                        if (_ownerAccount.IsMatch(owner))
                         {
                             if (!_NoRecurse)
                             {
@@ -126,7 +131,7 @@ namespace IO.Require.Directory
                                 {
                                     var childSecurity = new System.IO.FileInfo(child).GetAccessControl();
                                     string childOwner = childSecurity.GetOwner(typeof(NTAccount)).Value;
-                                    if (!childOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                                    if (!_ownerAccount.IsMatch(childOwner))
                                     {
                                         return childOwner;
                                     }
@@ -135,7 +140,7 @@ namespace IO.Require.Directory
                                 {
                                     var childSecurity = new System.IO.DirectoryInfo(child).GetAccessControl();
                                     string childOwner = childSecurity.GetOwner(typeof(NTAccount)).Value;
-                                    if (!childOwner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                                    if (!_ownerAccount.IsMatch(childOwner))
                                     {
                                         return childOwner;
                                     }
@@ -149,7 +154,7 @@ namespace IO.Require.Directory
                     string targetOwner = recurseCheck(target, security);
                     if (targetOwner == null)
                     {
-                        Manager.WriteLog(LogLevel.Info, "Owner match: {0}", targetOwner);
+                        Manager.WriteLog(LogLevel.Info, "Owner match: {0}", _ownerAccount);
                     }
                     else
                     {

@@ -51,7 +51,7 @@ namespace IO.Require.Registry
         //  ########################
 
         [TaskParameter]
-        [Keys("norecursive", "norec", "norecurs")]
+        [Keys("norecursive", "norec", "norecurs", "norecurse")]
         protected bool _NoRecurse { get; set; }
 
         [TaskParameter]
