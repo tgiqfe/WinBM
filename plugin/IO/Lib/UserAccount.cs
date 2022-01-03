@@ -25,6 +25,16 @@ namespace IO.Lib
             }
         }
 
+        public string FullName
+        {
+            get
+            {
+                return string.IsNullOrEmpty(this.Domain) ?
+                    $"{this.Domain}\\{this.Name}" :
+                    $"{Environment.MachineName}\\{this.Name}";
+            }
+        }
+
         public UserAccount(string name)
         {
             if (string.IsNullOrEmpty(name)) { return; }

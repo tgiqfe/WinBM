@@ -190,11 +190,13 @@ namespace IO.Lib
                     accesses.ToList().ForEach(x =>
                     {
                         string[] fields = x.Split(';');
-                        fields[0] = PredefinedAccount.Resolv(fields[0]);
+                        //fields[0] = PredefinedAccount.Resolv(fields[0]);
+                        var userAccount = new UserAccount(fields[0]);
                         if (fields.Length >= 3)
                         {
                             list.Add(new AccessRuleSummary(
-                                new NTAccount(fields[0]),
+                                //new NTAccount(fields[0]),
+                                userAccount.NTAccount,
                                 GetFileSystemRights(fields[1]),
                                 GetAccessControlType(fields[2])));
                         }
@@ -204,11 +206,13 @@ namespace IO.Lib
                     accesses.ToList().ForEach(x =>
                     {
                         string[] fields = x.Split(';');
-                        fields[0] = PredefinedAccount.Resolv(fields[0]);
+                        //fields[0] = PredefinedAccount.Resolv(fields[0]);
+                        var userAccount = new UserAccount(fields[0]);
                         if (fields.Length >= 5)
                         {
                             list.Add(new AccessRuleSummary(
-                                new NTAccount(fields[0]),
+                                //new NTAccount(fields[0]),
+                                userAccount.NTAccount,
                                 GetFileSystemRights(fields[1]),
                                 GetInheritanceFlags(fields[2]),
                                 GetPropagationFlags(fields[3]),
@@ -220,11 +224,13 @@ namespace IO.Lib
                     accesses.ToList().ForEach(x =>
                     {
                         string[] fields = x.Split(';');
-                        fields[0] = PredefinedAccount.Resolv(fields[0]);
+                        //fields[0] = PredefinedAccount.Resolv(fields[0]);
+                        var userAccount = new UserAccount(fields[0]);
                         if (fields.Length >= 5)
                         {
                             list.Add(new AccessRuleSummary(
-                                new NTAccount(fields[0]),
+                                //new NTAccount(fields[0]),
+                                userAccount.NTAccount,
                                 GetRegistryRights(fields[1]),
                                 GetInheritanceFlags(fields[2]),
                                 GetPropagationFlags(fields[3]),
