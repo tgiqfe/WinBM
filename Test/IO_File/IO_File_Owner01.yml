@@ -9,18 +9,67 @@ init:
 ---
 kind: Job
 metadata:
-  description: 所有者確認用Requireのテスト
+  description: Require所有者チェックのテストの準備
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01'
+      force: true
+  - task: IO/File/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\sample02.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\sample03.txt
+
+---
+kind: Job
+metadata:
+  description: 所有者確認用Requireのテスト1
   priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   require:
-  - task: IO/File/Owner
+  - task: IO/File/Security
     param:
-      path: '%USERPROFILE%\Desktop\WinBMTest\sample.txt'
-      account: Administrator
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\sample01.txt'
+      owner: Administrator
   work:
   - task: Standard/Message/StdOut
     param:
-      message: OK
-  
+      message: Require失敗で表示されないはず
+
+---
+kind: Job
+metadata:
+  description: 所有者確認用Requireのテスト2
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/File/Owner
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\sample01.txt'
+      owner: 'Administrator'
+  - task: Audit/File/Security
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\sample01.txt'
+      owner: 'Administrator'
+
+---
+kind: Job
+metadata:
+  description: 所有者確認用Requireのテスト3
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  require:
+  - task: IO/File/Security
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\sample01.txt'
+      owner: Administrator
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      message: Require成功
 
 

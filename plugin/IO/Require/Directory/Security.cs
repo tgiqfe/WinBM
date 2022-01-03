@@ -5,15 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using WinBM;
 using WinBM.Task;
-using System.IO;
-using System.Security.AccessControl;
 using System.Security.Principal;
+using System.Security.AccessControl;
+using System.IO;
 using IO.Lib;
 
-namespace Audit.Work.Directory
+namespace IO.Require.Directory
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Security : AuditTaskWork
+    internal class Security : IOTaskRequire
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath")]
@@ -65,10 +65,9 @@ namespace Audit.Work.Directory
 
         public override void MainProcess()
         {
-            var dictionary = new Dictionary<string, string>();
             this.Success = true;
-            int count = 0;
 
+            //  Access情報セット
             if (_Access?.Length > 0)
             {
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(string.Join("/", _Access), PathType.Directory);
@@ -86,65 +85,17 @@ namespace Audit.Work.Directory
                     PathType.Directory);
             }
 
-            if (_accessRuleSummary?.Length > 0)
-            {
-                dictionary["Check_Access"] =
-                    string.Join("/", _accessRuleSummary.Select(x => x.ToString()));
-            }
-            if (!string.IsNullOrEmpty(_Owner))
-            {
-                _ownerAccount = new UserAccount(_Owner);
-                dictionary["Check_Owner"] = _ownerAccount.ToString();
-            }
-            if (_Inherited != null)
-            {
-                dictionary["Check_Inherited"] = _Inherited.ToString();
-            }
+            //  Owner情報セット
+            _ownerAccount = new UserAccount(_Owner);
 
-            foreach (string path in _Path)
-            {
-                if (Path.GetFileName(path).Contains("*"))
-                {
-                    Manager.WriteLog(LogLevel.Info, "{0} Wildcard Copy.", this.TaskName);
-
-                    //  対象ファイルの親フォルダーが存在しない場合
-                    string parent = Path.GetDirectoryName(path);
-                    if (!System.IO.Directory.Exists(parent))
-                    {
-                        Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", parent);
-                        return;
-                    }
-
-                    //  ワイルドカード指定
-                    System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(path);
-                    System.IO.Directory.GetDirectories(parent).
-                        Where(x => wildcard.IsMatch(x)).
-                        ToList().
-                        ForEach(x => SecurityDirectoryCheck(x, dictionary, ++count));
-                }
-                else
-                {
-                    //  対象ファイルが存在しない場合
-                    if (!System.IO.Directory.Exists(path))
-                    {
-                        Manager.WriteLog(LogLevel.Warn, "Target is Missing. \"{0}\"", path);
-                        return;
-                    }
-
-                    SecurityDirectoryCheck(path, dictionary, ++count);
-                }
-            }
-
-            AddAudit(dictionary, this._Invert);
+            TargetDirectoryProcess(_Path, SecurityDirectoryAction);
         }
 
-        private void SecurityDirectoryCheck(string target, Dictionary<string, string> dictionary, int count)
+        private void SecurityDirectoryAction(string target)
         {
             try
             {
-                dictionary[$"directory_{count}"] = target;
-
-                DirectorySecurity security = new System.IO.DirectoryInfo(target).GetAccessControl();
+                var security = new System.IO.DirectoryInfo(target).GetAccessControl();
 
                 if (_accessRuleSummary?.Length > 0)
                 {
@@ -154,11 +105,11 @@ namespace Audit.Work.Directory
                     if (rules.Count == _accessRuleSummary.Length &&
                         rules.OfType<AuthorizationRule>().All(x => _accessRuleSummary.Any(y => y.Compare(x))))
                     {
-                        dictionary[$"directory_{count}_Access_Match"] = targetAccess;
+                        Manager.WriteLog(LogLevel.Info, "Access match: {0}", targetAccess);
                     }
                     else
                     {
-                        dictionary[$"directory_{count}_Access_NotMatch"] = targetAccess;
+                        Manager.WriteLog(LogLevel.Attention, "Access not match: {0}", targetAccess);
                         this.Success = false;
                     }
                 }
@@ -203,11 +154,11 @@ namespace Audit.Work.Directory
                     string targetOwner = recurseCheck(target, security);
                     if (targetOwner == null)
                     {
-                        dictionary[$"directory_{count}_Owner_Match"] = _ownerAccount.ToString();
+                        Manager.WriteLog(LogLevel.Info, "Owner match: {0}", _ownerAccount);
                     }
                     else
                     {
-                        dictionary[$"directory_{count}_Owner_NotMatch"] = targetOwner;
+                        Manager.WriteLog(LogLevel.Attention, "Owner not match: {0}", targetOwner);
                         this.Success = false;
                     }
                 }
@@ -217,11 +168,11 @@ namespace Audit.Work.Directory
                     bool targetInherited = !security.AreAccessRulesProtected;
                     if (targetInherited == _Inherited)
                     {
-                        dictionary[$"directory_{count}_Inherited_Match"] = targetInherited.ToString();
+                        Manager.WriteLog(LogLevel.Info, "Inherited match: {0}", targetInherited);
                     }
                     else
                     {
-                        dictionary[$"directory_{count}_Inherited_NotMatch"] = targetInherited.ToString();
+                        Manager.WriteLog(LogLevel.Attention, "Inherited not match: {0}", targetInherited);
                         this.Success = false;
                     }
                 }

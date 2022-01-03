@@ -46,7 +46,7 @@ namespace IO.Work.Registry
         protected InheritedAction? _Inherited { get; set; }
 
         [TaskParameter]
-        [Keys("norecurse", "norecursive", "norec", "norecurs")]
+        [Keys("norecursive", "norec", "norecurs", "norecurse")]
         protected bool _NoRecurse { get; set; }
 
         private AccessRuleSummary[] _accessRuleSummary = null;
@@ -57,9 +57,7 @@ namespace IO.Work.Registry
 
             if (_Access?.Length > 0)
             {
-                _accessRuleSummary = AccessRuleSummary.FromAccessString(
-                    string.Join("/", _Access),
-                    PathType.Registry);
+                _accessRuleSummary = AccessRuleSummary.FromAccessString(string.Join("/", _Access), PathType.Registry);
             }
             if ((_accessRuleSummary == null || _accessRuleSummary.Length == 0) && !string.IsNullOrEmpty(_Account))
             {

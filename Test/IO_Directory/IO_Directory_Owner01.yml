@@ -1,0 +1,134 @@
+---
+kind: Init
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 400
+      scope: File
+
+---
+kind: Job
+metadata:
+  description: Require所有者チェックテストの準備
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01'
+  - task: IO/File/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample01\Example01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample01\Example02.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample02\Example01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample02\Example02.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample03\Example01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample04\Example02.txt
+
+---
+kind: Job
+metadata:
+  description: Ownerチェック1(topフォルダーのみ)
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  require:
+  - task: IO/Directory/Security
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample01'
+      owner: Administrator
+      noRecurse: true
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      message: require失敗の為、ここは表示されないはず
+
+---
+kind: Job
+metadata:
+  description: Ownerチェック1(配下ファイルを含む)
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  require:
+  - task: IO/Directory/Security
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample02'
+      owner: Administrator
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      message: require失敗の為、ここは表示されないはず
+
+---
+kind: job
+metadata:
+  description: Ownerチェック2
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Directory/Owner
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample01'
+      owner: Administrator
+  - task: IO/File/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample02\aaaa.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample02\bbbb.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample02\cccc.txt
+  - task: IO/Directory/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample02\ああああ
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample02\いいいい
+  - task: IO/Directory/Owner
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample02'
+      owner: Administrator
+      recurse: true
+  - task: Audit/Directory/Security
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample01'
+      owner: Administrator
+      noRecurse: true
+  - task: Audit/Directory/Security
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample02'
+      owner: Administrator
+
+---
+kind: Job
+metadata:
+  description: Ownerチェック3(topフォルダーのみ)
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  require:
+  - task: IO/Directory/Security
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample01'
+      owner: Administrator
+      noRecurse: true
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      message: require成功(topのみ)
+
+---
+kind: Job
+metadata:
+  description: Ownerチェック3(配下ファイルを含む)
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  require:
+  - task: IO/Directory/Security
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Owner01\Sample02'
+      owner: Administrator
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      message: require成功(配下含む)
+
+  
+
+

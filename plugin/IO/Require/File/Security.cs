@@ -10,10 +10,10 @@ using System.Security.AccessControl;
 using System.IO;
 using IO.Lib;
 
-namespace Audit.Work.File
+namespace IO.Require.File
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Security : AuditTaskWork
+    internal class Security : IOTaskRequire
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath")]
@@ -61,10 +61,9 @@ namespace Audit.Work.File
 
         public override void MainProcess()
         {
-            var dictionary = new Dictionary<string, string>();
             this.Success = true;
-            int count = 0;
 
+            //  Access情報セット
             if (_Access?.Length > 0)
             {
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(string.Join("/", _Access), PathType.File);
@@ -75,65 +74,17 @@ namespace Audit.Work.File
                 _accessRuleSummary = AccessRuleSummary.FromAccessString($"{_Account};{_Rights};{_AccessControl}", PathType.File);
             }
 
-            if (_accessRuleSummary?.Length > 0)
-            {
-                dictionary["Check_Access"] =
-                    string.Join("/", _accessRuleSummary.Select(x => x.ToString()));
-            }
-            if (!string.IsNullOrEmpty(_Owner))
-            {
-                _ownerAccount = new UserAccount(_Owner);
-                dictionary["Check_Owner"] = _ownerAccount.ToString();
-            }
-            if (_Inherited != null)
-            {
-                dictionary["Check_Inherited"] = _Inherited.ToString();
-            }
+            //  Owner情報セット
+            _ownerAccount = new UserAccount(_Owner);
 
-            foreach (string path in _Path)
-            {
-                if (Path.GetFileName(path).Contains("*"))
-                {
-                    Manager.WriteLog(LogLevel.Info, "{0} Wildcard Copy.", this.TaskName);
-
-                    //  対象ファイルの親フォルダーが存在しない場合
-                    string targetParent = Path.GetDirectoryName(path);
-                    if (!System.IO.Directory.Exists(targetParent))
-                    {
-                        Manager.WriteLog(LogLevel.Error, "Parent folder on source file is Missing. \"{0}\"", targetParent);
-                        return;
-                    }
-
-                    //  ワイルドカード指定
-                    System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(path);
-                    System.IO.Directory.GetFiles(targetParent).
-                        Where(x => wildcard.IsMatch(x)).
-                        ToList().
-                        ForEach(x => SecurityFileCheck(x, dictionary, ++count));
-                }
-                else
-                {
-                    //  対象ファイルが存在しない場合
-                    if (!System.IO.File.Exists(path))
-                    {
-                        Manager.WriteLog(LogLevel.Error, "Target file is Missing. \"{0}\"", path);
-                        return;
-                    }
-
-                    SecurityFileCheck(path, dictionary, ++count);
-                }
-            }
-
-            AddAudit(dictionary, this._Invert);
+            TargetFileProcess(_Path, SecurityFileAction);
         }
 
-        private void SecurityFileCheck(string target, Dictionary<string, string> dictionary, int count)
+        private void SecurityFileAction(string target)
         {
             try
             {
-                dictionary[$"file_{count}"] = target;
-
-                FileSecurity security = new System.IO.FileInfo(target).GetAccessControl();
+                var security = new System.IO.FileInfo(target).GetAccessControl();
 
                 //  アクセス権チェック
                 if (_accessRuleSummary?.Length > 0)
@@ -144,11 +95,11 @@ namespace Audit.Work.File
                     if (rules.Count == _accessRuleSummary.Length &&
                         rules.OfType<AuthorizationRule>().All(x => _accessRuleSummary.Any(y => y.Compare(x))))
                     {
-                        dictionary[$"file_{count}_Access_Match"] = targetAccess;
+                        Manager.WriteLog(LogLevel.Info, "Access match: {0}", targetAccess);
                     }
                     else
                     {
-                        dictionary[$"file_{count}_Access_NoMatch"] = targetAccess;
+                        Manager.WriteLog(LogLevel.Attention, "Access not match: {0}", targetAccess);
                         this.Success = false;
                     }
                 }
@@ -159,11 +110,11 @@ namespace Audit.Work.File
                     string targetOwner = security.GetOwner(typeof(NTAccount)).Value;
                     if (_ownerAccount.IsMatch(targetOwner))
                     {
-                        dictionary[$"file_{count}_Owner_Match"] = targetOwner;
+                        Manager.WriteLog(LogLevel.Info, "Owner match: {0}", targetOwner);
                     }
                     else
                     {
-                        dictionary[$"file_{count}_Owner_NoMatch"] = targetOwner;
+                        Manager.WriteLog(LogLevel.Attention, "Owner not match: {0}", targetOwner);
                         this.Success = false;
                     }
                 }
@@ -174,11 +125,11 @@ namespace Audit.Work.File
                     bool targetInherited = !security.AreAccessRulesProtected;
                     if (targetInherited == _Inherited)
                     {
-                        dictionary[$"file_{count}_Inherited_Match"] = targetInherited.ToString();
+                        Manager.WriteLog(LogLevel.Info, "Inherited match: {0}", targetInherited);
                     }
                     else
                     {
-                        dictionary[$"file_{count}_Inherited_NoMatch"] = targetInherited.ToString();
+                        Manager.WriteLog(LogLevel.Attention, "Inherited not match: {0}", targetInherited);
                         this.Success = false;
                     }
                 }

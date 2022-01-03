@@ -6,7 +6,7 @@ init:
   spec:
   - param:
       env: |-
-        FILE_INDEX = 100
+        FILE_WAIT = 500
         TEST_TITLE = Owner
       scope: File
 
@@ -14,56 +14,121 @@ init:
 kind: Job
 metadata:
   description: 所有者変更テスト 準備
-  priority: '%FILE_INDEX% + %PAGE_INDEX%'
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: IO/Registry/Delete
     param:
-      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%'
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Owner01'
   - task: IO/Registry/Create
     param:
       path: |-
-        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample01
-        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample02
-        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample03
-        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample04
-        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample05
-        HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample06
+        HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Owner01\Sample01
+        HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Owner01\Sample02
+        HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Owner01\Sample03
   - task: IO/Registry/Set
     param:
-      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample01\aaaa\bbbb\cccc'
-      name: TestTest
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Owner01\Sample01\aaaa\bbbb\cccc'
+      name: TestTest1
+      value: This is a test
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Owner01\Sample02\aaaa\bbbb\cccc'
+      name: TestTest2
       value: This is a test
       type: REG_SZ
 
 ---
 kind: Job
 metadata:
-  description: 所有者変更テスト
-  priority: '%FILE_INDEX% + %PAGE_INDEX%'
+  description: 所有者変更テスト1(topのみ)
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   require:
-  - task: Standard/Computer/Admin
+  - task: IO/Registry/Security
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Owner01\Sample01'
+      owner: Administrator
+      norecurse: true
   work:
-  - task: Audit/Registry/Watch
+  - task: Standard/Message/StdOut
     param:
-      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample01'
-      id: registry_owner01
-      begin: true
-      owner: true
+      message: Require失敗。ここは表示されない
+
+---
+kind: Job
+metadata:
+  description: 所有者変更テスト1(配下含む)
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  require:
+  - task: IO/Registry/Security
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Owner01\Sample02'
+      owner: Administrator
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      message: Require失敗。ここは表示されない
+
+---
+kind: Job
+metadata:
+  description: 所有者変更
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
   - task: IO/Registry/Owner
     param:
-      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample01'
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Owner01\Sample01'
       owner: Administrator
-  - task: Audit/Registry/Watch
-    param:
-      id: registry_owner01
   - task: IO/Registry/Owner
     param:
-      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%TestDir%\%TEST_TITLE%\Sample01'
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Owner01\Sample02'
       owner: Administrator
-      recurse: true
-  - task: Audit/Registry/Watch
+      recursive: true
+  - task: Audit/Registry/Security
     param:
-      id: registry_owner01
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Owner01\Sample01'
+      owner: Administrator
+      norecurse: true
+  - task: Audit/Registry/Security
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Owner01\Sample02'
+      owner: Administrator
+
+---
+kind: Job
+metadata:
+  description: 所有者変更テスト3(topのみ)
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  require:
+  - task: IO/Registry/Security
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Owner01\Sample01'
+      owner: Administrator
+      norecurse: true
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      message: Require成功(topのみ)
+
+---
+kind: Job
+metadata:
+  description: 所有者変更テスト3(配下含む)
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  require:
+  - task: IO/Registry/Security
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Owner01\Sample02'
+      owner: Administrator
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      message: Require成功(配下含む)
+
 
