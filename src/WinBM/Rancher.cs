@@ -38,7 +38,7 @@ namespace WinBM
                 }
 
                 //  恐らく使用しないのでコメントアウト。将来使用する場合はコメントを解除
-                //var postSpecList = new List<TaskInit>();
+                //var postPageList = new List<TaskInit>();
 
                 //  Init
                 if (page.Init.Spec != null)
@@ -92,7 +92,7 @@ namespace WinBM
                     continue;
                 }
 
-                var postSpecList = new List<TaskConfig>();
+                var postPageList = new List<TaskConfig>();
 
                 //  Config
                 if (page.Config.Spec != null)
@@ -137,7 +137,7 @@ namespace WinBM
                                 task.MainProcess();
                                 task.PostProcess();
 
-                                if (task.IsPostPage) { postSpecList.Add(task); }
+                                if (task.IsPostPage) { postPageList.Add(task); }
                                 if (task.IsPostRecipe) { _PostRecipeList.Add(task); }
                             }
                         }
@@ -147,7 +147,7 @@ namespace WinBM
                 }
 
                 //  Page内の全Config実行後の処理
-                postSpecList.ForEach(x => x.PostSpec());
+                postPageList.ForEach(x => x.PostSpec());
             }
         }
 
@@ -173,7 +173,7 @@ namespace WinBM
                     continue;
                 }
 
-                var postSpecList = new List<TaskOutput>();
+                var postPageList = new List<TaskOutput>();
 
                 //  Output
                 if (page.Output.Spec != null)
@@ -218,7 +218,7 @@ namespace WinBM
                                 task.PostProcess();
 
                                 if (task.Success) { _Manager.AddOutput(task); }
-                                if (task.IsPostPage) { postSpecList.Add(task); }
+                                if (task.IsPostPage) { postPageList.Add(task); }
                                 if (task.IsPostRecipe) { _PostRecipeList.Add(task); }
                             }
                         }
@@ -228,7 +228,7 @@ namespace WinBM
                 }
 
                 //  Page内の全Output実行後の処理
-                postSpecList.ForEach(x => x.PostSpec());
+                postPageList.ForEach(x => x.PostSpec());
             }
         }
 
