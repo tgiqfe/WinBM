@@ -15,7 +15,8 @@ namespace Standard.Work.Message
         protected string _Message { get; set; }
 
         [TaskParameter(MandatoryAny = 2, Resolv = true)]
-        [Keys("messageresolvenv", "messageresolv", "textresolvenv", "textresolv")]
+        [Keys("messageresolvenv", "messageresolv", "textresolvenv", "textresolv",
+            "messageresolveenv", "messageresolve", "textresolveenv", "textresolve")]
         protected string _MessageResolvEnv { get; set; }
 
         public override void MainProcess()

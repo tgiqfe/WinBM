@@ -1,0 +1,46 @@
+---
+kind: Output
+metadata:
+  description: コンソール出力
+  priority: 100
+output:
+  spec:
+  - task: Standard/Console/StdOut
+  - task: Standard/Console/Log
+
+---
+kind: Job
+metadata:
+  description: サンプル
+  priority: 100
+job:
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      message: AAAAAAAAAAAAAAAAAAAAAAA
+
+---
+kind: Job
+metadata:
+  description: サンプル
+  priority: 101
+job:
+  work:
+  - task: Standard/Message/StdOut_null
+    param:
+      message: BBBBBBBBBBBBBBBBBBBBBBB
+
+---
+kind: Job
+metadata:
+  description: サンプル
+  priority: 102
+job:
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      message_null: CCCCCCCCCCCCCCCCCCCCCCCCC
+
+
+
+

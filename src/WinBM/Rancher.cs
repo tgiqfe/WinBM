@@ -11,7 +11,7 @@ namespace WinBM
     public class Rancher
     {
         private List<Type> _LoadedTypes = Assembly.GetExecutingAssembly().GetTypes().ToList();
-        private List<TaskBase> _PostPageList = new List<TaskBase>();
+        private List<TaskBase> _PostRecipeList = new List<TaskBase>();
 
         private SessionManager _Manager = null;
 
@@ -38,7 +38,7 @@ namespace WinBM
                 }
 
                 //  恐らく使用しないのでコメントアウト。将来使用する場合はコメントを解除
-                //var postSpecList = new List<TaskInit>();
+                //var postPageList = new List<TaskInit>();
 
                 //  Init
                 if (page.Init.Spec != null)
@@ -64,7 +64,7 @@ namespace WinBM
                         {
                             task.MainProcess();
 
-                            if (task.IsPostPage) { _PostPageList.Add(task); }
+                            if (task.IsPostRecipe) { _PostRecipeList.Add(task); }
                         }
                     }
                 }
@@ -92,7 +92,7 @@ namespace WinBM
                     continue;
                 }
 
-                var postSpecList = new List<TaskConfig>();
+                var postPageList = new List<TaskConfig>();
 
                 //  Config
                 if (page.Config.Spec != null)
@@ -105,7 +105,9 @@ namespace WinBM
                             continue;
                         }
 
-                        bool onStep = _Manager.Stepable && (page.Metadata.Step ?? false);
+                        //bool onStep = _Manager.Stepable && (page.Metadata.Step ?? false);
+                        bool onStep =
+                            _Manager.Stepable && (_Manager.StepConfig || (page.Metadata.Step ?? false));
 
                         string tempTaskLabel = spec.Task.ToLower();
                         if (!registeredTask.Contains(tempTaskLabel))
@@ -115,7 +117,7 @@ namespace WinBM
                             TaskConfig task = Activate<TaskConfig>(spec, "Config");
                             if (task == null)
                             {
-                                _Manager.WriteLog(LogLevel.Debug, "Config skip. task name missing. \"{0}\"", spec.Task);
+                                GlobalLog.WriteLog(LogLevel.Debug, "Config skip. task name missing. \"{0}\"", spec.Task);
                                 continue;
                             }
 
@@ -137,8 +139,8 @@ namespace WinBM
                                 task.MainProcess();
                                 task.PostProcess();
 
-                                if (task.IsPostSpec) { postSpecList.Add(task); }
-                                if (task.IsPostPage) { _PostPageList.Add(task); }
+                                if (task.IsPostPage) { postPageList.Add(task); }
+                                if (task.IsPostRecipe) { _PostRecipeList.Add(task); }
                             }
                         }
 
@@ -147,7 +149,7 @@ namespace WinBM
                 }
 
                 //  Page内の全Config実行後の処理
-                postSpecList.ForEach(x => x.PostSpec());
+                postPageList.ForEach(x => x.PostSpec());
             }
         }
 
@@ -173,7 +175,7 @@ namespace WinBM
                     continue;
                 }
 
-                var postSpecList = new List<TaskOutput>();
+                var postPageList = new List<TaskOutput>();
 
                 //  Output
                 if (page.Output.Spec != null)
@@ -186,7 +188,9 @@ namespace WinBM
                             continue;
                         }
 
-                        bool onStep = _Manager.Stepable && (page.Metadata.Step ?? false);
+                        //bool onStep = _Manager.Stepable && (page.Metadata.Step ?? false);
+                        bool onStep =
+                            _Manager.Stepable && (_Manager.StepOutput || (page.Metadata.Step ?? false));
 
                         string tempTaskLabel = spec.Task.ToLower();
                         if (!registeredTask.Contains(tempTaskLabel))
@@ -195,7 +199,7 @@ namespace WinBM
                             TaskOutput task = Activate<TaskOutput>(spec, "Output");
                             if (task == null)
                             {
-                                _Manager.WriteLog(LogLevel.Debug, "Output skip. task name missing. \"{0}\"", spec.Task);
+                                GlobalLog.WriteLog(LogLevel.Debug, "Output skip. task name missing. \"{0}\"", spec.Task);
                                 continue;
                             }
 
@@ -218,8 +222,8 @@ namespace WinBM
                                 task.PostProcess();
 
                                 if (task.Success) { _Manager.AddOutput(task); }
-                                if (task.IsPostSpec) { postSpecList.Add(task); }
-                                if (task.IsPostPage) { _PostPageList.Add(task); }
+                                if (task.IsPostPage) { postPageList.Add(task); }
+                                if (task.IsPostRecipe) { _PostRecipeList.Add(task); }
                             }
                         }
 
@@ -228,7 +232,7 @@ namespace WinBM
                 }
 
                 //  Page内の全Output実行後の処理
-                postSpecList.ForEach(x => x.PostSpec());
+                postPageList.ForEach(x => x.PostSpec());
             }
         }
 
@@ -255,7 +259,7 @@ namespace WinBM
                 }
 
                 bool stop = false;
-                var postSpecList = new List<TaskJob>();
+                var postPageList = new List<TaskJob>();
 
                 //  Require
                 if (page.Job.Require != null)
@@ -268,7 +272,9 @@ namespace WinBM
                             continue;
                         }
 
-                        bool onStep = _Manager.Stepable && (page.Metadata.Step ?? false);
+                        //bool onStep = _Manager.Stepable && (page.Metadata.Step ?? false);
+                        bool onStep =
+                            _Manager.Stepable && (_Manager.StepRequire || (page.Metadata.Step ?? false));
 
                         TaskJob task = Activate<TaskJob>(spec, "Require");
                         if (task == null)
@@ -276,13 +282,13 @@ namespace WinBM
                             //  Requireでは、Failedがnullの場合はStop
                             if (spec.Failed == SpecJob.FailedAction.Stop || spec.Failed == null)
                             {
-                                _Manager.WriteLog(LogLevel.Debug, "Require stop. task name missing. \"{0}\"", spec.Task);
+                                GlobalLog.WriteLog(LogLevel.Debug, "Require stop. task name missing. \"{0}\"", spec.Task);
                                 stop = true;
                                 break;
                             }
                             else if (spec.Failed == SpecJob.FailedAction.Abort)
                             {
-                                _Manager.WriteLog(LogLevel.Debug, "Require abort. task name missing. \"{0}\"", spec.Task);
+                                GlobalLog.WriteLog(LogLevel.Debug, "Require abort. task name missing. \"{0}\"", spec.Task);
                                 abort = true;
                                 break;
                             }
@@ -323,8 +329,23 @@ namespace WinBM
                                     break;
                                 }
                             }
-                            if (task.IsPostSpec) { postSpecList.Add(task); }
-                            if (task.IsPostPage) { _PostPageList.Add(task); }
+                            if (task.IsPostPage) { postPageList.Add(task); }
+                            if (task.IsPostRecipe) { _PostRecipeList.Add(task); }
+                        }
+                        else
+                        {
+                            if (spec.Failed == SpecJob.FailedAction.Stop || spec.Failed == null)
+                            {
+                                _Manager.WriteLog(LogLevel.Attention, "Require stop.");
+                                stop = true;
+                                break;
+                            }
+                            else if (spec.Failed == SpecJob.FailedAction.Abort)
+                            {
+                                _Manager.WriteLog(LogLevel.Attention, "Require abort.");
+                                abort = true;
+                                break;
+                            }
                         }
 
                         if (onStep) { Console.ReadLine(); }
@@ -353,7 +374,9 @@ namespace WinBM
                             continue;
                         }
 
-                        bool onStep = _Manager.Stepable && (page.Metadata.Step ?? false);
+                        //bool onStep = _Manager.Stepable && (page.Metadata.Step ?? false);
+                        bool onStep =
+                            _Manager.Stepable && (_Manager.StepWork || (page.Metadata.Step ?? false));
 
                         TaskJob task = Activate<TaskJob>(spec, "Work");
                         if (task == null)
@@ -361,13 +384,13 @@ namespace WinBM
                             //  Workでは、Failedがnullの場合はContinue;
                             if (spec.Failed == SpecJob.FailedAction.Stop)
                             {
-                                _Manager.WriteLog(LogLevel.Debug, "Work stop. task name missing. \"{0}\"", spec.Task);
+                                GlobalLog.WriteLog(LogLevel.Debug, "Work stop. task name missing. \"{0}\"", spec.Task);
                                 stop = true;
                                 break;
                             }
                             else if (spec.Failed == SpecJob.FailedAction.Abort)
                             {
-                                _Manager.WriteLog(LogLevel.Debug, "Work stop. task name missing. \"{0}\"", spec.Task);
+                                GlobalLog.WriteLog(LogLevel.Debug, "Work stop. task name missing. \"{0}\"", spec.Task);
                                 abort = true;
                                 break;
                             }
@@ -409,8 +432,23 @@ namespace WinBM
                                     break;
                                 }
                             }
-                            if (task.IsPostSpec) { postSpecList.Add(task); }
-                            if (task.IsPostPage) { _PostPageList.Add(task); }
+                            if (task.IsPostPage) { postPageList.Add(task); }
+                            if (task.IsPostRecipe) { _PostRecipeList.Add(task); }
+                        }
+                        else
+                        {
+                            if (spec.Failed == SpecJob.FailedAction.Stop)
+                            {
+                                _Manager.WriteLog(LogLevel.Attention, "Work stop.");
+                                stop = true;
+                                break;
+                            }
+                            else if (spec.Failed == SpecJob.FailedAction.Abort)
+                            {
+                                _Manager.WriteLog(LogLevel.Attention, "Work abort.");
+                                abort = true;
+                                break;
+                            }
                         }
 
                         if (onStep) { Console.ReadLine(); }
@@ -419,7 +457,7 @@ namespace WinBM
                 if (abort) { break; }
 
                 //  Page内の全Job実行後の処理
-                postSpecList.ForEach(x => x.PostSpec());
+                postPageList.ForEach(x => x.PostSpec());
             }
         }
 
@@ -428,9 +466,9 @@ namespace WinBM
         /// <summary>
         /// 全Page終了後の処理
         /// </summary>
-        public void PostPageProcess()
+        public void PostRecipeProcess()
         {
-            _PostPageList.ForEach(x => x.PostPage());
+            _PostRecipeList.ForEach(x => x.PostPage());
         }
 
         #region Activate

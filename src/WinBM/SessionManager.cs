@@ -10,11 +10,35 @@ namespace WinBM
 {
     public class SessionManager
     {
+        #region Stepable
+
         /// <summary>
         /// Step(pause)が可能かどうか。
         /// 対話モードの場合のみ可能にさせるように、呼び出し側で設定すること。
         /// </summary>
         public bool Stepable { get; set; }
+
+        /// <summary>
+        /// Config部のStep
+        /// </summary>
+        public bool StepConfig { get; set; }
+
+        /// <summary>
+        /// output部のStep
+        /// </summary>
+        public bool StepOutput { get; set; }
+
+        /// <summary>
+        /// Require部のStep
+        /// </summary>
+        public bool StepRequire { get; set; }
+
+        /// <summary>
+        /// Work部のStep
+        /// </summary>
+        public bool StepWork { get; set; }
+
+        #endregion
 
         /// <summary>
         /// 対話モードであるという宣言。呼び出し側で設定すること。
