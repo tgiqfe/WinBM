@@ -1,5 +1,5 @@
 ﻿
-namespace Standard.Lib
+namespace IO.Lib
 {
     enum TargetScope
     {

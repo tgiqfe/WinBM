@@ -45,3 +45,29 @@ job:
       path: '%TEMP%'
       random: true
 
+---
+kind: Job
+metadata:
+  description: ランダムファイル作成テスト2
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/File/Create
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Create01\sample05.txt'
+      envSetPath: SAMPLE05_PATH
+      envSetName: SAMPLE05_NAME
+      scope: File
+  - task: Standard/Message/Log
+    param:
+      messageResolv: '%SAMPLE05_PATH% / %SAMPLE05_NAME%'
+  - task: Audit/Log/ContainsResolvEnv
+    param:
+      path: '%LOGFILE%'
+      contains:  '%SAMPLE05_PATH%'
+  - task: Audit/Log/ContainsResolvEnv
+    param:
+      path: '%LOGFILE%'
+      contains:  '%SAMPLE05_NAME%'
+
+
