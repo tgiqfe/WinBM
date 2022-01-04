@@ -5,28 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using WinBM;
 using WinBM.Task;
+using Standard.Lib;
 
 namespace Standard.Work.Prepare
 {
-    /// <summary>
-    /// [取り扱いスコープ]
-    ///   Process   ⇒ Env,Work
-    ///   User      ⇒ Workのみ
-    ///   Machine   ⇒ Workのみ
-    ///   File      ⇒ Env,Work
-    ///   Page      ⇒ Workのみ
-    /// </summary>
     internal class Env : TaskJob
     {
-        protected enum TargetScope
-        {
-            Process = 0,
-            User = 1,
-            Machine = 2,
-            File = 3,
-            Page = 4,
-        }
-
         [TaskParameter(Mandatory = true, Delimiter = '\n', EqualSign = '=')]
         [Keys("set", "envset", "envs", "environment", "environments")]
         protected Dictionary<string, string> _EnvSet { get; set; }

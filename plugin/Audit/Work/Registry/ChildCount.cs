@@ -63,7 +63,7 @@ namespace Audit.Work.Registry
                         {
                             using (RegistryKey childKey = parentKey.OpenSubKey(childKeyName, false))
                             {
-                                ChildCountRegistryKeyCheck(childKey, dictionary, ++count);
+                                ChildCountRegistryKeyAction(childKey, dictionary, ++count);
                             }
                         }
                     }
@@ -79,7 +79,7 @@ namespace Audit.Work.Registry
                             return;
                         }
 
-                        ChildCountRegistryKeyCheck(regKey, dictionary, ++count);
+                        ChildCountRegistryKeyAction(regKey, dictionary, ++count);
                     }
                 }
             }
@@ -87,7 +87,7 @@ namespace Audit.Work.Registry
             AddAudit(dictionary, this._Invert);
         }
 
-        private void ChildCountRegistryKeyCheck(RegistryKey target, Dictionary<string, string> dictionary, int count)
+        private void ChildCountRegistryKeyAction(RegistryKey target, Dictionary<string, string> dictionary, int count)
         {
             dictionary[$"directory_{count}"] = target.Name;
             string targetName = "registryKey";

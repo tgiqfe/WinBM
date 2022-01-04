@@ -13,6 +13,28 @@ namespace IO.Lib
         public string Name { get; set; }
         public string Domain { get; set; }
 
+        private NTAccount _ntAccount = null;
+        public NTAccount NTAccount
+        {
+            get
+            {
+                _ntAccount ??= string.IsNullOrEmpty(this.Domain) ?
+                    new NTAccount(this.Name) :
+                    new NTAccount($"{this.Domain}\\{this.Name}");
+                return _ntAccount;
+            }
+        }
+
+        public string FullName
+        {
+            get
+            {
+                return string.IsNullOrEmpty(this.Domain) ?
+                    $"{this.Domain}\\{this.Name}" :
+                    $"{Environment.MachineName}\\{this.Name}";
+            }
+        }
+
         public UserAccount(string name)
         {
             if (string.IsNullOrEmpty(name)) { return; }

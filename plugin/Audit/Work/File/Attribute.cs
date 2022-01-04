@@ -114,7 +114,7 @@ namespace Audit.Work.File
                     System.IO.Directory.GetFiles(parent).
                         Where(x => wildcard.IsMatch(x)).
                         ToList().
-                        ForEach(x => AttributeFileCheck(x, dictionary, ++count));
+                        ForEach(x => AttributeFileAction(x, dictionary, ++count));
                 }
                 else
                 {
@@ -125,14 +125,14 @@ namespace Audit.Work.File
                         return;
                     }
 
-                    AttributeFileCheck(path, dictionary, ++count);
+                    AttributeFileAction(path, dictionary, ++count);
                 }
             }
 
             AddAudit(dictionary, this._Invert);
         }
 
-        private void AttributeFileCheck(string target, Dictionary<string, string> dictionary, int count)
+        private void AttributeFileAction(string target, Dictionary<string, string> dictionary, int count)
         {
             dictionary[$"file_{count}"] = target;
 

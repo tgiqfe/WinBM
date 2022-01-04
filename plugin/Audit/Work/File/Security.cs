@@ -71,8 +71,10 @@ namespace Audit.Work.File
             }
             if ((_accessRuleSummary == null || _accessRuleSummary.Length == 0) && !string.IsNullOrEmpty(_Account))
             {
-                _Account = PredefinedAccount.Resolv(_Account);
-                _accessRuleSummary = AccessRuleSummary.FromAccessString($"{_Account};{_Rights};{_AccessControl}", PathType.File);
+                //_Account = PredefinedAccount.Resolv(_Account);
+                var userAccount = new UserAccount(_Account);
+                _accessRuleSummary = AccessRuleSummary.FromAccessString(
+                    $"{userAccount.FullName};{_Rights};{_AccessControl}", PathType.File);
             }
 
             if (_accessRuleSummary?.Length > 0)
@@ -109,7 +111,7 @@ namespace Audit.Work.File
                     System.IO.Directory.GetFiles(targetParent).
                         Where(x => wildcard.IsMatch(x)).
                         ToList().
-                        ForEach(x => SecurityFileCheck(x, dictionary, ++count));
+                        ForEach(x => SecurityFileAction(x, dictionary, ++count));
                 }
                 else
                 {
@@ -120,14 +122,14 @@ namespace Audit.Work.File
                         return;
                     }
 
-                    SecurityFileCheck(path, dictionary, ++count);
+                    SecurityFileAction(path, dictionary, ++count);
                 }
             }
 
             AddAudit(dictionary, this._Invert);
         }
 
-        private void SecurityFileCheck(string target, Dictionary<string, string> dictionary, int count)
+        private void SecurityFileAction(string target, Dictionary<string, string> dictionary, int count)
         {
             try
             {
@@ -142,7 +144,7 @@ namespace Audit.Work.File
                     string targetAccess =
                         string.Join("/", AccessRuleSummary.FromAccessRules(rules, PathType.File).Select(x => x.ToString()));
                     if (rules.Count == _accessRuleSummary.Length &&
-                        rules.OfType<AuthorizationRule>().All(x => _accessRuleSummary.Any(y => y.Compare(x))))
+                        rules.OfType<AuthorizationRule>().All(x => _accessRuleSummary.Any(y => y.IsMatch(x))))
                     {
                         dictionary[$"file_{count}_Access_Match"] = targetAccess;
                     }

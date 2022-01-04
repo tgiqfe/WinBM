@@ -74,10 +74,11 @@ namespace IO.Require.Directory
             }
             if ((_accessRuleSummary == null || _accessRuleSummary.Length == 0) && !string.IsNullOrEmpty(_Account))
             {
-                _Account = PredefinedAccount.Resolv(_Account);
+                //_Account = PredefinedAccount.Resolv(_Account);
+                var userAccount = new UserAccount(_Account);
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(
                     string.Format("{0};{1};{2};{3};{4}",
-                        _Account,
+                        userAccount.FullName,
                         _Rights,
                         _NoRecurse ? "None" : "ContainerInherit,ObjectInherit",
                         "None",
@@ -103,7 +104,7 @@ namespace IO.Require.Directory
                     string targetAccess =
                         string.Join("/", AccessRuleSummary.FromAccessRules(rules, PathType.Directory).Select(x => x.ToString()));
                     if (rules.Count == _accessRuleSummary.Length &&
-                        rules.OfType<AuthorizationRule>().All(x => _accessRuleSummary.Any(y => y.Compare(x))))
+                        rules.OfType<AuthorizationRule>().All(x => _accessRuleSummary.Any(y => y.IsMatch(x))))
                     {
                         Manager.WriteLog(LogLevel.Info, "Access match: {0}", targetAccess);
                     }

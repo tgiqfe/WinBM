@@ -10,6 +10,9 @@ using IO.Lib;
 
 namespace Audit.Work.Registry
 {
+    /// <summary>
+    /// レジストリ値の一致チェック
+    /// </summary>
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class Match : AuditTaskWork
     {
@@ -57,12 +60,12 @@ namespace Audit.Work.Registry
 
             foreach (string path in _Path)
             {
-                MatchRegistryCheck(path, dictionary, ++count);
+                MatchRegistryAction(path, dictionary, ++count);
             }
             AddAudit(dictionary, this._Invert);
         }
 
-        private void MatchRegistryCheck(string target, Dictionary<string, string> dictionary, int count)
+        private void MatchRegistryAction(string target, Dictionary<string, string> dictionary, int count)
         {
             using (var regKey = RegistryControl.GetRegistryKey(target, false, false))
             {
@@ -75,7 +78,6 @@ namespace Audit.Work.Registry
                 }
 
                 //  レジストリ名のチェック
-                
                 if (!string.IsNullOrEmpty(_Name) && 
                     !regKey.GetValueNames().Any(x => x.Equals(_Name, StringComparison.OrdinalIgnoreCase)))
                 {

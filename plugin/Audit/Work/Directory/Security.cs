@@ -75,10 +75,11 @@ namespace Audit.Work.Directory
             }
             if ((_accessRuleSummary == null || _accessRuleSummary.Length == 0) && !string.IsNullOrEmpty(_Account))
             {
-                _Account = PredefinedAccount.Resolv(_Account);
+                //_Account = PredefinedAccount.Resolv(_Account);
+                var userAccount = new UserAccount(_Account);
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(
                     string.Format("{0};{1};{2};{3};{4}",
-                        _Account,
+                        userAccount.FullName,
                         _Rights,
                         _NoRecurse ? "None" : "ContainerInherit,ObjectInherit",
                         "None",
@@ -120,7 +121,7 @@ namespace Audit.Work.Directory
                     System.IO.Directory.GetDirectories(parent).
                         Where(x => wildcard.IsMatch(x)).
                         ToList().
-                        ForEach(x => SecurityDirectoryCheck(x, dictionary, ++count));
+                        ForEach(x => SecurityDirectoryAction(x, dictionary, ++count));
                 }
                 else
                 {
@@ -131,14 +132,14 @@ namespace Audit.Work.Directory
                         return;
                     }
 
-                    SecurityDirectoryCheck(path, dictionary, ++count);
+                    SecurityDirectoryAction(path, dictionary, ++count);
                 }
             }
 
             AddAudit(dictionary, this._Invert);
         }
 
-        private void SecurityDirectoryCheck(string target, Dictionary<string, string> dictionary, int count)
+        private void SecurityDirectoryAction(string target, Dictionary<string, string> dictionary, int count)
         {
             try
             {
@@ -152,7 +153,7 @@ namespace Audit.Work.Directory
                     string targetAccess =
                         string.Join("/", AccessRuleSummary.FromAccessRules(rules, PathType.Directory).Select(x => x.ToString()));
                     if (rules.Count == _accessRuleSummary.Length &&
-                        rules.OfType<AuthorizationRule>().All(x => _accessRuleSummary.Any(y => y.Compare(x))))
+                        rules.OfType<AuthorizationRule>().All(x => _accessRuleSummary.Any(y => y.IsMatch(x))))
                     {
                         dictionary[$"directory_{count}_Access_Match"] = targetAccess;
                     }

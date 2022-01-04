@@ -30,6 +30,7 @@ output:
   - name: outputLog
     task: IO/File/Log
     param:
+      minimumLevel: debug
       path: '%LOGFILE%'
 
 ---

@@ -63,27 +63,33 @@ namespace IO.Require.Registry
         protected bool _Invert { get; set; }
 
         private AccessRuleSummary[] _accessRuleSummary = null;
+        private UserAccount _ownerAccount = null;
 
         public override void MainProcess()
         {
             this.Success = true;
 
+            //  Access情報セット
             if (_Access?.Length > 0)
             {
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(string.Join("/", _Access), PathType.Registry);
             }
             if ((_accessRuleSummary == null || _accessRuleSummary.Length == 0) && !string.IsNullOrEmpty(_Account))
             {
-                _Account = PredefinedAccount.Resolv(_Account);
+                //_Account = PredefinedAccount.Resolv(_Account);
+                var userAccount = new UserAccount(_Account);
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(
                     string.Format("{0};{1};{2};{3};{4}",
-                        _Account,
+                        userAccount.FullName,
                         _Rights,
                         _NoRecurse ? "None" : "ContainerInherit",
                         "None",
                         _AccessControl),
                     PathType.Registry);
             }
+
+            //  Owner情報セット
+            _ownerAccount = new UserAccount(_Owner);
 
             TargetRegistryKeyProcess(_Path, writable: false, SecurityRegistryKeyAction);
         }
@@ -100,7 +106,7 @@ namespace IO.Require.Registry
                     string targetAccess =
                         string.Join("/", AccessRuleSummary.FromAccessRules(rules, PathType.Registry).Select(x => x.ToString()));
                     if (rules.Count == _accessRuleSummary.Length &&
-                        rules.OfType<AuthorizationRule>().All(x => _accessRuleSummary.Any(y => y.Compare(x))))
+                        rules.OfType<AuthorizationRule>().All(x => _accessRuleSummary.Any(y => y.IsMatch(x))))
                     {
                         Manager.WriteLog(LogLevel.Info, "Access match: {0}", targetAccess);
                     }
@@ -120,7 +126,7 @@ namespace IO.Require.Registry
                     recurseCheck = (targetKey, targetSecurity) =>
                     {
                         string owner = targetSecurity.GetOwner(typeof(NTAccount)).Value;
-                        if (owner.Equals(_Owner, StringComparison.OrdinalIgnoreCase))
+                        if (_ownerAccount.IsMatch(owner))
                         {
                             if (!_NoRecurse)
                             {

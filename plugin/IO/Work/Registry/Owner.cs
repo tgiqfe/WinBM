@@ -28,6 +28,7 @@ namespace IO.Work.Registry
         protected bool _Recurse { get; set; }
 
         private TrustedUser _trustedUser = null;
+        private UserAccount _ownerAccount = null;
         private bool _abortRecurse = false;
 
         public override void MainProcess()
@@ -35,7 +36,8 @@ namespace IO.Work.Registry
             this.Success = true;
 
             //  事前定義アカウントチェック
-            _Account = PredefinedAccount.Resolv(_Account);
+            //_Account = PredefinedAccount.Resolv(_Account);
+            _ownerAccount = new UserAccount(_Account);
 
             TargetRegistryKeyProcess(_Path, writable: true, OwnerRegistryAction);
 
@@ -52,7 +54,7 @@ namespace IO.Work.Registry
                 Action<RegistryKey> recursiveTree = null;
                 recursiveTree = (target) =>
                 {
-                    TakeOwnerRegistryKey(target, account);
+                    TakeOwnerRegistryKey(target);
                     foreach (string child in target.GetSubKeyNames())
                     {
                         using (RegistryKey childKey = target.OpenSubKey(child, true))
@@ -66,18 +68,18 @@ namespace IO.Work.Registry
             else
             {
                 //  再起処理無し
-                TakeOwnerRegistryKey(targetKey, account);
+                TakeOwnerRegistryKey(targetKey);
             }
         }
 
-        private void TakeOwnerRegistryKey(RegistryKey targetKey, NTAccount account)
+        private void TakeOwnerRegistryKey(RegistryKey targetKey)
         {
             if (_abortRecurse) { return; }
 
             try
             {
                 RegistrySecurity security = targetKey.GetAccessControl();
-                security.SetOwner(account);
+                security.SetOwner(_ownerAccount.NTAccount);
                 targetKey.SetAccessControl(security);
             }
             catch (InvalidOperationException ioe)
@@ -96,7 +98,7 @@ namespace IO.Work.Registry
                 Manager.WriteLog(LogLevel.Info, "Get TokenManipulator SE_RESTORE_NAME.");
 
                 RegistrySecurity security = targetKey.GetAccessControl();
-                security.SetOwner(account);
+                security.SetOwner(_ownerAccount.NTAccount);
                 targetKey.SetAccessControl(security);
             }
             catch (Exception e)
