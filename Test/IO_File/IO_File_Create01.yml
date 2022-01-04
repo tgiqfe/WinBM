@@ -1,0 +1,47 @@
+---
+kind: Init
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 510
+      scope: File
+
+---
+kind: Job
+metadata:
+  description: ランダムファイル作成テストの準備
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Create01'
+  - task: IO/File/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Create01\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Create01\sample02.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Create01\sample03.txt
+
+---
+kind: Job
+metadata:
+  description: ランダムファイル作成テスト1
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/File/Create
+    description: 通常どおり作成
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Create01\sample04.txt'
+  - task: IO/File/Create
+    description: 指定フォルダー配下に作成
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Create01'
+      random: true
+  - task: IO/File/Create
+    description: 通常どおり作成
+    param:
+      path: '%TEMP%'
+      random: true
+

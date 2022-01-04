@@ -17,10 +17,19 @@ namespace IO.Work.Registry
         [Keys("path", "registrypath", "targetpath", "key", "registrykey", "targetkey", "regkey", "target")]
         protected string[] _Path { get; set; }
 
+        [TaskParameter]
+        [Keys("random", "rdm", "randam")]
+        protected bool? _Random { get; set; }
+
         public override void MainProcess()
         {
             this.Success = true;
 
+            if (_Random ?? false)
+            {
+                //  Random指定の場合、Pathをフォルダーとして解釈し、その配下にランダムファイルを作成。
+                _Path = _Path.Select(x => Path.Combine(x, Path.GetRandomFileName())).ToArray();
+            }
             _Path.ToList().ForEach(x => CreateRegistryAction(x));
         }
 
@@ -35,6 +44,7 @@ namespace IO.Work.Registry
                     return;
                 }
 
+                Manager.WriteLog(LogLevel.Debug, "Create registry key: \"{0}\"", target);
                 using (RegistryKey regKey = RegistryControl.GetRegistryKey(target, true, true)) { }
             }
             catch (Exception e)

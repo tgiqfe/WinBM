@@ -14,10 +14,19 @@ namespace IO.Work.Directory
         [Keys("path", "filepath", "target", "targetpath", "dirpath", "directorypath")]
         protected string[] _Path { get; set; }
 
+        [TaskParameter]
+        [Keys("random", "rdm", "randam")]
+        protected bool? _Random { get; set; }
+
         public override void MainProcess()
         {
             this.Success = true;
 
+            if (_Random ?? false)
+            {
+                //  Random指定の場合、Pathをフォルダーとして解釈し、その配下にランダムフォルダーを作成。
+                _Path = _Path.Select(x => Path.Combine(x, Path.GetRandomFileName())).ToArray();
+            }
             _Path.ToList().ForEach(x => CreateDirectoryAction(x));
         }
 
@@ -39,6 +48,7 @@ namespace IO.Work.Directory
                     return;
                 }
 
+                Manager.WriteLog(LogLevel.Debug, "Create directory: \"{0}\"", target);
                 System.IO.Directory.CreateDirectory(target);
             }
             catch (Exception e)

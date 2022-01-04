@@ -14,10 +14,29 @@ namespace IO.Work.File
         [Keys("path", "filepath", "target", "targetpath")]
         protected string[] _Path { get; set; }
 
+        [TaskParameter]
+        [Keys("random", "rdm", "randam")]
+        protected bool? _Random { get; set; }
+
+        [TaskParameter]
+        [Keys("envsetpath", "envset", "env")]
+        protected string _EnvSetPath { get; set; }
+
+        [TaskParameter]
+        [Keys("envsetname", "envname")]
+        protected string _EnvSetName { get; set; }
+
+        
+
         public override void MainProcess()
         {
             this.Success = true;
 
+            if (_Random ?? false)
+            {
+                //  Random指定の場合、Pathをフォルダーとして解釈し、その配下にランダムファイルを作成。
+                _Path = _Path.Select(x => Path.Combine(x, Path.GetRandomFileName())).ToArray();
+            }
             _Path.ToList().ForEach(x => CreateFileAction(x));
         }
 
@@ -47,6 +66,7 @@ namespace IO.Work.File
                     System.IO.Directory.CreateDirectory(parent);
                 }
 
+                Manager.WriteLog(LogLevel.Debug, "Create file: \"{0}\"", target);
                 System.IO.File.CreateText(target).Close();
 
             }
