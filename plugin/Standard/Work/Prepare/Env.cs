@@ -58,11 +58,11 @@ namespace Standard.Work.Prepare
 
             if (this._Scope == TargetScope.Page)
             {
-                this.IsPostSpec = true;
+                this.IsPostPage = true;
             }
             if(this._Scope == TargetScope.Process)
             {
-                this.IsPostPage = true;
+                this.IsPostRecipe = true;
             }
         }
 

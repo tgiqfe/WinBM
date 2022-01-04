@@ -59,7 +59,7 @@ namespace WinBM.Task
                     }
                     if (this._Scope == TargetScope.Process)
                     {
-                        this.IsPostPage = true;
+                        this.IsPostRecipe = true;
                     }
                 }
 

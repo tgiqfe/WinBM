@@ -11,7 +11,7 @@ namespace WinBM
     public class Rancher
     {
         private List<Type> _LoadedTypes = Assembly.GetExecutingAssembly().GetTypes().ToList();
-        private List<TaskBase> _PostPageList = new List<TaskBase>();
+        private List<TaskBase> _PostRecipeList = new List<TaskBase>();
 
         private SessionManager _Manager = null;
 
@@ -64,7 +64,7 @@ namespace WinBM
                         {
                             task.MainProcess();
 
-                            if (task.IsPostPage) { _PostPageList.Add(task); }
+                            if (task.IsPostRecipe) { _PostRecipeList.Add(task); }
                         }
                     }
                 }
@@ -137,8 +137,8 @@ namespace WinBM
                                 task.MainProcess();
                                 task.PostProcess();
 
-                                if (task.IsPostSpec) { postSpecList.Add(task); }
-                                if (task.IsPostPage) { _PostPageList.Add(task); }
+                                if (task.IsPostPage) { postSpecList.Add(task); }
+                                if (task.IsPostRecipe) { _PostRecipeList.Add(task); }
                             }
                         }
 
@@ -218,8 +218,8 @@ namespace WinBM
                                 task.PostProcess();
 
                                 if (task.Success) { _Manager.AddOutput(task); }
-                                if (task.IsPostSpec) { postSpecList.Add(task); }
-                                if (task.IsPostPage) { _PostPageList.Add(task); }
+                                if (task.IsPostPage) { postSpecList.Add(task); }
+                                if (task.IsPostRecipe) { _PostRecipeList.Add(task); }
                             }
                         }
 
@@ -255,7 +255,7 @@ namespace WinBM
                 }
 
                 bool stop = false;
-                var postSpecList = new List<TaskJob>();
+                var postPageList = new List<TaskJob>();
 
                 //  Require
                 if (page.Job.Require != null)
@@ -323,8 +323,8 @@ namespace WinBM
                                     break;
                                 }
                             }
-                            if (task.IsPostSpec) { postSpecList.Add(task); }
-                            if (task.IsPostPage) { _PostPageList.Add(task); }
+                            if (task.IsPostPage) { postPageList.Add(task); }
+                            if (task.IsPostRecipe) { _PostRecipeList.Add(task); }
                         }
 
                         if (onStep) { Console.ReadLine(); }
@@ -409,8 +409,8 @@ namespace WinBM
                                     break;
                                 }
                             }
-                            if (task.IsPostSpec) { postSpecList.Add(task); }
-                            if (task.IsPostPage) { _PostPageList.Add(task); }
+                            if (task.IsPostPage) { postPageList.Add(task); }
+                            if (task.IsPostRecipe) { _PostRecipeList.Add(task); }
                         }
 
                         if (onStep) { Console.ReadLine(); }
@@ -419,7 +419,7 @@ namespace WinBM
                 if (abort) { break; }
 
                 //  Page内の全Job実行後の処理
-                postSpecList.ForEach(x => x.PostSpec());
+                postPageList.ForEach(x => x.PostSpec());
             }
         }
 
@@ -428,9 +428,9 @@ namespace WinBM
         /// <summary>
         /// 全Page終了後の処理
         /// </summary>
-        public void PostPageProcess()
+        public void PostRecipeProcess()
         {
-            _PostPageList.ForEach(x => x.PostPage());
+            _PostRecipeList.ForEach(x => x.PostPage());
         }
 
         #region Activate
