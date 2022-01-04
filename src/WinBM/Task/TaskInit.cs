@@ -34,6 +34,24 @@ namespace WinBM.Task
         [Keys("plugindir", "plugindirectory")]
         protected string _PluginDirectory { get; set; }
 
+        //  ########################
+
+        [TaskParameter]
+        [Keys("configstep", "stepconfig")]
+        protected bool? _StepConfig { get; set; }
+
+        [TaskParameter]
+        [Keys("outputstep", "stepoutput")]
+        protected bool? _StepOutput { get; set; }
+
+        [TaskParameter]
+        [Keys("requirestep", "steprequire")]
+        protected bool? _StepRequire { get; set; }
+
+        [TaskParameter]
+        [Keys("workstep", "stepwork")]
+        protected bool? _StepWork { get; set; }
+
         public override void MainProcess()
         {
             this.Success = true;
@@ -41,7 +59,7 @@ namespace WinBM.Task
             try
             {
                 //  環境変数のセット
-                if(_EnvSet?.Count > 0)
+                if (_EnvSet?.Count > 0)
                 {
                     foreach (KeyValuePair<string, string> pair in _EnvSet)
                     {
@@ -74,6 +92,12 @@ namespace WinBM.Task
                 {
                     Manager.PluginDirectory = this._PluginDirectory;
                 }
+
+                //  Step設定のセット
+                if (_StepConfig != null) { Manager.StepConfig = (bool)_StepConfig; }
+                if (_StepOutput != null) { Manager.StepOutput = (bool)_StepOutput; }
+                if (_StepRequire != null) { Manager.StepRequire = (bool)_StepRequire; }
+                if (_StepWork != null) { Manager.StepWork = (bool)_StepWork; }
             }
             catch (Exception e)
             {
