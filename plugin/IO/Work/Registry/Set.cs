@@ -30,7 +30,7 @@ namespace IO.Work.Registry
         protected string[] _ValueMulti { get; set; }
 
         [TaskParameter(MandatoryAny = 3)]
-        [Keys("valueexpand", "valexpand", "valuenotresolvenv", "valnotresolvenv", "valuenotresolv", "valnotresolv")]
+        [Keys("valueexpand", "valexpand", "valuenotresolvenv", "valnotresolvenv", "valuenotresolv", "valnotresolv", "valuenotresolve", "valnotresolve")]
         protected string _ValueExpand { get; set; }
 
         [TaskParameter]

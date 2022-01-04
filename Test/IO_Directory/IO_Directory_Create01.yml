@@ -1,0 +1,94 @@
+---
+kind: Init
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 510
+      scope: File
+
+---
+kind: Job
+metadata:
+  name: TestAttribute
+  description: IO/File/Attributeテスト [準備]
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Create01'
+  - task: IO/File/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Create01\Exsample01\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Create01\Exsample02\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Create01\Exsample03\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Create01\Exsample04\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Create01\Exsample05\sample01.txt
+
+---
+kind: Job
+metadata:
+  description: ランダムファイル作成1
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: Audit/Directory/Watch
+    param:
+      id: create01
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Create01\Exsample01'
+      childCount: true
+      begin: true
+  - task: IO/Directory/Create
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Create01\Exsample01'
+      random: true
+  - task: Audit/Directory/Watch
+    param:
+      id: create01
+
+---
+kind: Job
+metadata:
+  description: ランダムファイル作成2
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Directory/Create
+    param:
+      path: '%TEMP%'
+      random: true
+
+---
+kind: Job
+metadata:
+  description: ランダムファイル作成3
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Directory/Create
+    param:
+      path: '%TEMP%\%RECIPE_DIRECTORY_NAME%'
+      random: true
+      envSetPath: RANDOM_PATH
+      envSetName: RANDOM_NAME
+      # scope: Page
+      scope: File
+  - task: Standard/Message/StdOut
+    param:
+      messageResolve: '%RANDOM_PATH% / %RANDOM_NAME%'
+
+---
+kind: Job
+metadata:
+  description: ランダムファイル作成4
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      messageResolve: '%RANDOM_PATH% / %RANDOM_NAME%'
+
+
+
+

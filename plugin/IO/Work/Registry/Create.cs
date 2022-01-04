@@ -61,6 +61,8 @@ namespace IO.Work.Registry
 
         private void CreateRegistryAction(string target)
         {
+            SetEnv(target);
+
             try
             {
                 //  ワイルドカード指定は対応しない方針

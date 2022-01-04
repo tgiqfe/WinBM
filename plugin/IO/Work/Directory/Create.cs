@@ -59,6 +59,8 @@ namespace IO.Work.Directory
 
         private void CreateDirectoryAction(string target)
         {
+            SetEnv(target);
+
             try
             {
                 //  ワイルドカード指定は対応しない方針
