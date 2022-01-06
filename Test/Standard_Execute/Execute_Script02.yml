@@ -47,15 +47,33 @@ job:
   - task: IO/File/Write
     param:
       path: '%script02%'
+      encoding: Shift_JIS
       text: |-
         Option Explicit
-        dim fso, shell, text
-        set fso = CreateObject("Scripting.FileSystemObject")
+        dim fso, shell, text, path
         set shell = CreateObject("WScript.Shell")
-        
-        set text = fso.OpenTextFile()
-
-
+        path = shell.ExpandEnvironmentStrings("%outputDir%") & "\test02.txt"
+        set fso = CreateObject("Scripting.FileSystemObject")
+        set text = fso.OpenTextFile(path, 2, true)
+        text.WriteLine("test02")
+        text.Close
+  - task: IO/File/Write
+    param:
+      path: '%script03%'
+      encoding: Shift_JIS
+      text: |-
+        var shell = WScript.CreateObject("WScript.Shell");
+        var path = shell.ExpandEnvironmentStrings("%outputDir%") + "\\test03.txt";
+        var fso = WScript.CreateObject("Scripting.FileSystemObject")
+        var text = fso.OpenTextFile(path, 2, true);
+        text.WriteLine("test03");
+        text.Close();
+  - task: IO/File/Write
+    param:
+      path: '%script04%'
+      text: |-
+        $path = ${env:outputDir} + "\test04.txt"
+        "test04" | Out-File -FilePath $path
 
 ---
 kind: Job
@@ -66,4 +84,4 @@ job:
   work:
   - task: Standard/Execute/Script
     param:
-      path: 
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Script02'

@@ -22,13 +22,30 @@ namespace Standard.Work.Execute
 
             foreach (string path in _Path)
             {
-                using (Process proc = collection.GetProcess(path))
+                if (System.IO.File.Exists(path))
                 {
-                    proc.StartInfo.CreateNoWindow = true;
-                    proc.StartInfo.UseShellExecute = true;
-                    proc.Start();
-                    proc.WaitForExit();
+                    using (Process proc = collection.GetProcess(path))
+                    {
+                        proc.StartInfo.CreateNoWindow = true;
+                        proc.StartInfo.UseShellExecute = false;
+                        proc.Start();
+                        proc.WaitForExit();
+                    }
                 }
+                if (System.IO.Directory.Exists(path))
+                {
+                    foreach (string child in System.IO.Directory.GetFiles(path))
+                    {
+                        using (Process proc = collection.GetProcess(child))
+                        {
+                            proc.StartInfo.CreateNoWindow = true;
+                            proc.StartInfo.UseShellExecute = false;
+                            proc.Start();
+                            proc.WaitForExit();
+                        }
+                    }
+                }
+
             }
         }
     }
