@@ -13,26 +13,27 @@ metadata:
 job:
   work:
   - task: Standard/Execute/Sleep
+    progress: true
     param:
-      seconds: 1
+      milliseconds: 300
   - task: Standard/Execute/Sleep
     param:
-      seconds: 1
+      milliseconds: 300
   - task: Standard/Execute/Sleep
     param:
-      seconds: 1
+      milliseconds: 300
   - task: Standard/Execute/Sleep
     param:
-      seconds: 1
+      milliseconds: 300
   - task: Standard/Execute/Sleep
     param:
-      seconds: 1
+      milliseconds: 300
   - task: Standard/Execute/Sleep
     param:
-      seconds: 1
+      milliseconds: 300
   - task: Standard/Execute/Sleep
     param:
-      seconds: 1
+      milliseconds: 300
 
 ---
 kind: Job

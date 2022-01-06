@@ -105,7 +105,6 @@ namespace WinBM
                             continue;
                         }
 
-                        //bool onStep = _Manager.Stepable && (page.Metadata.Step ?? false);
                         bool onStep =
                             _Manager.Stepable && (_Manager.StepConfig || (page.Metadata.Step ?? false));
 
@@ -188,7 +187,6 @@ namespace WinBM
                             continue;
                         }
 
-                        //bool onStep = _Manager.Stepable && (page.Metadata.Step ?? false);
                         bool onStep =
                             _Manager.Stepable && (_Manager.StepOutput || (page.Metadata.Step ?? false));
 
@@ -272,7 +270,6 @@ namespace WinBM
                             continue;
                         }
 
-                        //bool onStep = _Manager.Stepable && (page.Metadata.Step ?? false);
                         bool onStep =
                             _Manager.Stepable && (_Manager.StepRequire || (page.Metadata.Step ?? false));
 
@@ -374,7 +371,6 @@ namespace WinBM
                             continue;
                         }
 
-                        //bool onStep = _Manager.Stepable && (page.Metadata.Step ?? false);
                         bool onStep =
                             _Manager.Stepable && (_Manager.StepWork || (page.Metadata.Step ?? false));
 

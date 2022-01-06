@@ -20,7 +20,6 @@ namespace Standard.Output.Console
         public override void Write(int line, int max, int cursor, string description)
         {
             int percent = (int)(100.0 / max * cursor);
-
             var record = new ProgressRecord(
                 line,
                 line switch
@@ -29,7 +28,7 @@ namespace Standard.Output.Console
                     2 => "Work",
                     _ => "",
                 },
-                string.Format("{0} % : {1}", percent, description));
+                string.Format(" {0}%: {1}", percent, description));
             record.PercentComplete = percent;
 
             Manager.Cmdlet.WriteProgress(record);
