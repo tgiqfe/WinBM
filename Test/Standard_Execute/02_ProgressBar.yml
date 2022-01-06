@@ -1,0 +1,14 @@
+---
+kind: Output
+metadata:
+  name: OutputProgressBar
+  description: プログレスバー表示
+  priority: -99
+output:
+  spec:
+  - task: Standard/Console/ProgressBar
+  - name: outputLog
+    task: IO/File/Log
+    param:
+      path: '%LOGFILE%'
+
