@@ -143,7 +143,6 @@ namespace WinBM
         /// </summary>
         public void WriteProgressBar(int line, int max, int cursor, string description)
         {
-            //_ProgressBarOutputList?.ForEach(x => x.Write());
             _ProgressBarOutputList?.ForEach(x => x.Write(line, max, cursor, description));
         }
 

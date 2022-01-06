@@ -29,15 +29,19 @@ namespace Standard.Work.Prepare
             {
                 foreach (KeyValuePair<string, string> pair in _EnvSet)
                 {
+                    string val = ExpandEnvironment(pair.Value);
+
                     if (this._Scope == TargetScope.File)
                     {
-                        WinBM.Lib.FileScope.Add(this.FilePath, pair.Key, pair.Value);
+                        //WinBM.Lib.FileScope.Add(this.FilePath, pair.Key, pair.Value);
+                        WinBM.Lib.FileScope.Add(this.FilePath, pair.Key, val);
                     }
                     else
                     {
                         Environment.SetEnvironmentVariable(
                             pair.Key,
-                            pair.Value,
+                            //pair.Value,
+                            val,
                             _Scope switch
                             {
                                 TargetScope.Process => EnvironmentVariableTarget.Process,
