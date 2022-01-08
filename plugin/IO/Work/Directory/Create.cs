@@ -59,6 +59,8 @@ namespace IO.Work.Directory
 
         private void CreateDirectoryAction(string target)
         {
+            SetEnv(target);
+
             try
             {
                 //  ワイルドカード指定は対応しない方針
@@ -103,12 +105,12 @@ namespace IO.Work.Directory
                         break;
                     case TargetScope.Page:
                         Environment.SetEnvironmentVariable(envKey, envVal, EnvironmentVariableTarget.Process);
-                        this.IsPostSpec = true;
+                        this.IsPostPage = true;
                         break;
                     case TargetScope.Process:
                     default:
                         Environment.SetEnvironmentVariable(envKey, envVal, EnvironmentVariableTarget.Process);
-                        this.IsPostPage = true;
+                        this.IsPostRecipe = true;
                         break;
                 }
             }
@@ -123,12 +125,12 @@ namespace IO.Work.Directory
                         break;
                     case TargetScope.Page:
                         Environment.SetEnvironmentVariable(envKey, envVal, EnvironmentVariableTarget.Process);
-                        this.IsPostSpec = true;
+                        this.IsPostPage = true;
                         break;
                     case TargetScope.Process:
                     default:
                         Environment.SetEnvironmentVariable(envKey, envVal, EnvironmentVariableTarget.Process);
-                        this.IsPostPage = true;
+                        this.IsPostRecipe = true;
                         break;
                 }
             }

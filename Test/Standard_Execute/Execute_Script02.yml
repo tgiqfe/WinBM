@@ -1,0 +1,87 @@
+---
+kind: Init
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 110
+
+---
+kind: Job
+metadata:
+  description: スクリプトファイルのパスを環境変数セット
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: Standard/Prepare/Env
+    param:
+      set: |-
+        script01 = %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Script02\test01.bat
+        script02 = %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Script02\test02.vbs
+        script03 = %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Script02\test03.js
+        script04 = %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Script02\test04.ps1
+        outputDir = %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Script02\Output
+
+---
+kind: Job
+metadata:
+  description: スクリプト作成
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Script02'
+  - task: IO/File/Create
+    param:
+      path: '%script01%;%script02%;%script03%;%script04%'
+  - task: IO/Directory/Create
+    param:
+      path: '%outputDir%'
+  - task: IO/File/Write
+    param:
+      path: '%script01%'
+      text: |-
+        @echo off
+        pushd %~dp0
+        echo test01 > %outputDir%\test01.txt
+  - task: IO/File/Write
+    param:
+      path: '%script02%'
+      encoding: Shift_JIS
+      text: |-
+        Option Explicit
+        dim fso, shell, text, path
+        set shell = CreateObject("WScript.Shell")
+        path = shell.ExpandEnvironmentStrings("%outputDir%") & "\test02.txt"
+        set fso = CreateObject("Scripting.FileSystemObject")
+        set text = fso.OpenTextFile(path, 2, true)
+        text.WriteLine("test02")
+        text.Close
+  - task: IO/File/Write
+    param:
+      path: '%script03%'
+      encoding: Shift_JIS
+      text: |-
+        var shell = WScript.CreateObject("WScript.Shell");
+        var path = shell.ExpandEnvironmentStrings("%outputDir%") + "\\test03.txt";
+        var fso = WScript.CreateObject("Scripting.FileSystemObject")
+        var text = fso.OpenTextFile(path, 2, true);
+        text.WriteLine("test03");
+        text.Close();
+  - task: IO/File/Write
+    param:
+      path: '%script04%'
+      text: |-
+        $path = ${env:outputDir} + "\test04.txt"
+        "test04" | Out-File -FilePath $path
+
+---
+kind: Job
+metadata:
+  description: スクリプト実行
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: Standard/Execute/Script
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Script02'

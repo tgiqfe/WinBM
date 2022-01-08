@@ -77,7 +77,7 @@ namespace WinBM.PowerShell.Cmdlet
                         Where(x => x.Kind == WinBM.Recipe.Page.EnumKind.Output).ToList());
                     rancher.JobProcess(list.
                         Where(x => x.Kind == WinBM.Recipe.Page.EnumKind.Job).ToList());
-                    rancher.PostPageProcess();
+                    rancher.PostRecipeProcess();
                 }
             }
         }

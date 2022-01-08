@@ -95,7 +95,7 @@ namespace WinBM.Task
         /// <summary>
         /// PostPageするかどうかの判定
         /// </summary>
-        public bool IsPostPage { get; set; }
+        public bool IsPostRecipe { get; set; }
 
         /// <summary>
         /// Page内の全Specが完了した後に実行する。Job実行後の掃除等
@@ -105,7 +105,7 @@ namespace WinBM.Task
         /// <summary>
         /// PostSpecするかどうかの判定
         /// </summary>
-        public bool IsPostSpec { get; set; }
+        public bool IsPostPage { get; set; }
 
         #endregion
         #region Set Parameter

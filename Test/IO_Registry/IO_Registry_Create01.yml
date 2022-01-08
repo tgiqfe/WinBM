@@ -1,0 +1,81 @@
+---
+kind: Init
+metadata:
+  description: ファイル内環境変数
+init:
+  spec:
+  - param:
+      env: |-
+        FILE_WAIT = 520
+      scope: File
+
+---
+kind: Job
+metadata:
+  description: レジストリキー作成テスト1
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Registry/Delete
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Create01'
+  - task: IO/Registry/Create
+    param:
+      path: |-
+        HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Create01\Sample01
+        HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Create01\Sample02
+        HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Create01\Sample03
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Create01\Sample01\aaaa\bbbb\cccc'
+      name: TestTest1
+      value: This is a test
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Create01\Sample02\aaaa\bbbb\cccc'
+      name: TestTest2
+      value: This is a test
+      type: REG_SZ
+
+---
+kind: Job
+metadata:
+  description: レジストリキー作成テスト2
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: Audit/Registry/Watch
+    param:
+      id: registry_create01
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Create01\Sample03'
+      begin: true
+      childCount: true
+  - task: IO/Registry/Create
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Create01\Sample03'
+      random: true
+  - task: Audit/Registry/Watch
+    param:
+      id: registry_create01
+
+---
+kind: Job
+metadata:
+  description: レジストリキー作成テスト3
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Registry/Create
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\Create01\Sample04'
+      random: true
+      envSetPath: RANDOM_REG_PATH
+      envSetName: RANDOM_REG_NAME
+      scope: Page
+  - task: Standard/Message/StdOut
+    param:
+      messageResolv: '%RANDOM_REG_PATH% / %RANDOM_REG_NAME%'
+
+
+

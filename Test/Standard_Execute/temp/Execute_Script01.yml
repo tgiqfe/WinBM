@@ -1,0 +1,70 @@
+---
+kind: Init
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 100
+
+---
+kind: Job
+metadata:
+  description: プログレスバー確認
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: Standard/Execute/Sleep
+    progress: true
+    param:
+      milliseconds: 300
+  - task: Standard/Execute/Sleep
+    param:
+      milliseconds: 300
+  - task: Standard/Execute/Sleep
+    param:
+      milliseconds: 300
+  - task: Standard/Execute/Sleep
+    param:
+      milliseconds: 300
+  - task: Standard/Execute/Sleep
+    param:
+      milliseconds: 300
+  - task: Standard/Execute/Sleep
+    param:
+      milliseconds: 300
+  - task: Standard/Execute/Sleep
+    param:
+      milliseconds: 300
+
+---
+kind: Job
+metadata:
+  description: プログレスバー確認
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: Standard/Execute/Sleep
+    description: これは説明1
+    param:
+      seconds: 1
+  - task: Standard/Execute/Sleep
+    description: これは説明2
+    param:
+      seconds: 1
+  - task: Standard/Execute/Sleep
+    description: これは説明3
+    param:
+      seconds: 1
+  - task: Standard/Execute/Sleep
+    param:
+      seconds: 1
+
+---
+kind: Job
+metadata:
+  description: プログレスバー確認
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: Standard/Execute/Sleep
+    param:
+      seconds: 1

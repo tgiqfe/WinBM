@@ -114,12 +114,12 @@ namespace IO.Work.File
                         break;
                     case TargetScope.Page:
                         Environment.SetEnvironmentVariable(envKey, envVal, EnvironmentVariableTarget.Process);
-                        this.IsPostSpec = true;
+                        this.IsPostPage = true;
                         break;
                     case TargetScope.Process:
                     default:
                         Environment.SetEnvironmentVariable(envKey, envVal, EnvironmentVariableTarget.Process);
-                        this.IsPostPage = true;
+                        this.IsPostRecipe = true;
                         break;
                 }
             }
@@ -134,12 +134,12 @@ namespace IO.Work.File
                         break;
                     case TargetScope.Page:
                         Environment.SetEnvironmentVariable(envKey, envVal, EnvironmentVariableTarget.Process);
-                        this.IsPostSpec = true;
+                        this.IsPostPage = true;
                         break;
                     case TargetScope.Process:
                     default:
                         Environment.SetEnvironmentVariable(envKey, envVal, EnvironmentVariableTarget.Process);
-                        this.IsPostPage = true;
+                        this.IsPostRecipe = true;
                         break;
                 }
             }

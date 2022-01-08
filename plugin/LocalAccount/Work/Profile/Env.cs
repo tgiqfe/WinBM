@@ -76,7 +76,7 @@ namespace LocalAccount.Work.Profile
 
                 if (this._Scope == TargetScope.Process)
                 {
-                    this.IsPostPage = true;
+                    this.IsPostRecipe = true;
                 }
             }
             catch (Exception e)

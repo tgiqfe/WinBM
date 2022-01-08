@@ -33,7 +33,7 @@ namespace Audit.Work.Registry
         protected string[] _ValueMulti { get; set; }
 
         [TaskParameter]
-        [Keys("valueexpand", "valexpand", "valuenotresolvenv", "valnotresolvenv", "valuenotresolv", "valnotresolv")]
+        [Keys("valueexpand", "valexpand", "valuenotresolvenv", "valnotresolvenv", "valuenotresolv", "valnotresolv", "valuenotresolve", "valnotresolve")]
         protected string _ValueExpand { get; set; }
 
         [TaskParameter]
