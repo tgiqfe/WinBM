@@ -9,7 +9,7 @@ using Standard.Lib;
 
 namespace Standard.Work.Prepare
 {
-    internal class Env : TaskJob
+    internal class Env: TaskJob
     {
         [TaskParameter(Mandatory = true, Delimiter = '\n', EqualSign = '=')]
         [Keys("set", "envset", "envs", "environment", "environments")]

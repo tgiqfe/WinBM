@@ -63,15 +63,19 @@ namespace WinBM.Task
                 {
                     foreach (KeyValuePair<string, string> pair in _EnvSet)
                     {
+                        string val = ExpandEnvironment(pair.Value);
+
                         if (this._Scope == TargetScope.File)
                         {
-                            FileScope.Add(this.FilePath, pair.Key, pair.Value);
+                            //FileScope.Add(this.FilePath, pair.Key, pair.Value);
+                            WinBM.Lib.FileScope.Add(this.FilePath, pair.Key, val);
                         }
                         else
                         {
                             Environment.SetEnvironmentVariable(
                                 pair.Key,
-                                pair.Value,
+                                //pair.Value,
+                                val,
                                 EnvironmentVariableTarget.Process);
                         }
                     }
