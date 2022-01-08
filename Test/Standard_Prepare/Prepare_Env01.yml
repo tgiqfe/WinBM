@@ -1,0 +1,25 @@
+---
+kind: Init
+init:
+  spec:
+  - param:
+      env: File_Wait = 300
+      scope: file
+
+---
+kind: Job
+metadata:
+  description: 環境変数セット済みチェック
+  priority: '%File_Wait% + %PAGE_INDEX%'
+job:
+  require:
+  - task: Standard/Prepare/Env
+    param:
+      key: File_Wait
+      value: 300
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      message: '環境変数セット済みOK'
+
+

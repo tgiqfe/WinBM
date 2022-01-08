@@ -33,14 +33,12 @@ namespace Standard.Work.Prepare
 
                     if (this._Scope == TargetScope.File)
                     {
-                        //WinBM.Lib.FileScope.Add(this.FilePath, pair.Key, pair.Value);
                         WinBM.Lib.FileScope.Add(this.FilePath, pair.Key, val);
                     }
                     else
                     {
                         Environment.SetEnvironmentVariable(
                             pair.Key,
-                            //pair.Value,
                             val,
                             _Scope switch
                             {
