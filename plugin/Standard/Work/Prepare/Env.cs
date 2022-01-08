@@ -9,7 +9,7 @@ using Standard.Lib;
 
 namespace Standard.Work.Prepare
 {
-    internal class Env : TaskJob
+    internal class Env: TaskJob
     {
         [TaskParameter(Mandatory = true, Delimiter = '\n', EqualSign = '=')]
         [Keys("set", "envset", "envs", "environment", "environments")]
@@ -33,14 +33,12 @@ namespace Standard.Work.Prepare
 
                     if (this._Scope == TargetScope.File)
                     {
-                        //WinBM.Lib.FileScope.Add(this.FilePath, pair.Key, pair.Value);
                         WinBM.Lib.FileScope.Add(this.FilePath, pair.Key, val);
                     }
                     else
                     {
                         Environment.SetEnvironmentVariable(
                             pair.Key,
-                            //pair.Value,
                             val,
                             _Scope switch
                             {

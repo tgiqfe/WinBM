@@ -20,5 +20,16 @@ namespace WinBM.Lib
                 Value = val
             });
         }
+
+        public static string GetValue(string name)
+        {
+            string checkName = "%" + name + "%";
+            return FileScopeList.FirstOrDefault(x => x.Name.Equals(checkName, StringComparison.OrdinalIgnoreCase))?.Value;
+        }
+
+        public static bool ContainsName(string name)
+        {
+            return FileScopeList.Any(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+        }
     }
 }
