@@ -248,7 +248,7 @@ namespace WinBM
             int jobIndex = 0;
             foreach (Page page in list.OrderBy(x => x.Metadata.GetPriority()))
             {
-                _Manager.WriteProgressBar(1, list.Count, jobIndex++, page.Metadata.Name);
+                _Manager.WriteProgressBar(1, null, list.Count, jobIndex++, page.Metadata.Name);
 
                 if (page.Metadata.Skip ?? false)
                 {

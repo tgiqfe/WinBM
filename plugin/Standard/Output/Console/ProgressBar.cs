@@ -12,14 +12,24 @@ namespace Standard.Output.Console
     {
         public override OutputType Type { get { return OutputType.ProgressBar; } }
 
+        [TaskParameter]
+        [Keys("activity", "title")]
+        protected string _Activity { get; set; }
+
         public override void MainProcess()
         {
             this.Success = Manager.Cmdlet != null;
+
+            if (string.IsNullOrEmpty(_Activity))
+            {
+                _Activity = "Job";
+            }
         }
 
-        public override void Write(int line, int max, int cursor, string description)
+        public override void Write(int line, string activity, int max, int cursor, string description)
         {
             int percent = (int)(100.0 / max * cursor);
+            /*
             var record = new ProgressRecord(
                 line,
                 line switch
@@ -29,9 +39,17 @@ namespace Standard.Output.Console
                     _ => "",
                 },
                 string.Format(" {0}%: {1}", percent, description));
+            */
+            var record = new ProgressRecord(
+                line,
+                activity ?? _Activity,
+                string.Format(" {0}%: {1}", percent, description));
+
             record.PercentComplete = percent;
 
             Manager.Cmdlet.WriteProgress(record);
         }
+
+        
     }
 }

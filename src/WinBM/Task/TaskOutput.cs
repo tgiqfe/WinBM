@@ -26,6 +26,6 @@ namespace WinBM.Task
 
         public virtual void Write(TaskBase taskBase) { }
 
-        public virtual void Write(int line, int max, int cursor, string description) { }
+        public virtual void Write(int line, string activity, int max, int cursor, string description) { }
     }
 }
