@@ -148,7 +148,7 @@ namespace WinBM
                 }
 
                 //  Page内の全Config実行後の処理
-                postPageList.ForEach(x => x.PostSpec());
+                postPageList.ForEach(x => x.PostPage());
             }
         }
 
@@ -230,7 +230,7 @@ namespace WinBM
                 }
 
                 //  Page内の全Output実行後の処理
-                postPageList.ForEach(x => x.PostSpec());
+                postPageList.ForEach(x => x.PostPage());
             }
         }
 
@@ -457,7 +457,7 @@ namespace WinBM
                 if (abort) { break; }
 
                 //  Page内の全Job実行後の処理
-                postPageList.ForEach(x => x.PostSpec());
+                postPageList.ForEach(x => x.PostPage());
             }
         }
 
@@ -468,7 +468,7 @@ namespace WinBM
         /// </summary>
         public void PostRecipeProcess()
         {
-            _PostRecipeList.ForEach(x => x.PostPage());
+            _PostRecipeList.ForEach(x => x.PostRecipe());
         }
 
         #region Activate

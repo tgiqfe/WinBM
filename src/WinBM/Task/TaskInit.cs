@@ -113,7 +113,7 @@ namespace WinBM.Task
         /// <summary>
         /// 全Page終了後の処理で削除
         /// </summary>
-        public override void PostPage()
+        public override void PostRecipe()
         {
             foreach (string key in _EnvSet.Keys)
             {
