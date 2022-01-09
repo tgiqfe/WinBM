@@ -12,7 +12,7 @@ namespace Standard.Output.Console
     {
         public override OutputType Type { get { return OutputType.ProgressBar; } }
 
-        [TaskParameter]
+        [TaskParameter(Resolv = true)]
         [Keys("activity", "title")]
         protected string _Activity { get; set; }
 
