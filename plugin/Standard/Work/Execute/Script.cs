@@ -78,35 +78,6 @@ namespace Standard.Work.Execute
                     System.Threading.Thread.Sleep(interval);
                 }
             }
-
-            /*
-            foreach (string path in _Path)
-            {
-                if (System.IO.File.Exists(path))
-                {
-                    using (Process proc = collection.GetProcess(path))
-                    {
-                        proc.StartInfo.CreateNoWindow = true;
-                        proc.StartInfo.UseShellExecute = false;
-                        proc.Start();
-                        proc.WaitForExit();
-                    }
-                }
-                if (System.IO.Directory.Exists(path))
-                {
-                    foreach (string child in System.IO.Directory.GetFiles(path))
-                    {
-                        using (Process proc = collection.GetProcess(child))
-                        {
-                            proc.StartInfo.CreateNoWindow = true;
-                            proc.StartInfo.UseShellExecute = false;
-                            proc.Start();
-                            proc.WaitForExit();
-                        }
-                    }
-                }
-            }
-            */
         }
     }
 }

@@ -29,17 +29,6 @@ namespace Standard.Output.Console
         public override void Write(int line, string activity, int max, int cursor, string description)
         {
             int percent = (int)(100.0 / max * cursor);
-            /*
-            var record = new ProgressRecord(
-                line,
-                line switch
-                {
-                    1 => "Job",
-                    2 => "Work",
-                    _ => "",
-                },
-                string.Format(" {0}%: {1}", percent, description));
-            */
             var record = new ProgressRecord(
                 line,
                 activity ?? _Activity,
