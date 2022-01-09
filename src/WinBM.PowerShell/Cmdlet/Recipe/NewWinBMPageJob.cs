@@ -31,8 +31,10 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
         [Parameter]
         public WinBM.Recipe.SpecJob.FailedAction? Failed { get; set; }
 
+        /*
         [Parameter]
         public SwitchParameter Progress { get; set; }
+        */
 
         protected override void ProcessRecord()
         {
@@ -44,7 +46,7 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
                 Task = this.Task,
                 Param = this.Param.ToDictionary(),
                 Failed = this.Failed,
-                Progress = this.Progress,
+                //Progress = this.Progress,
             };
 
             WriteObject(spec);

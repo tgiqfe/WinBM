@@ -22,8 +22,5 @@ namespace WinBM.Recipe
         /// </summary>
         [YamlMember(Alias = "failed")]
         public FailedAction? Failed { get; set; }
-
-        [YamlMember(Alias = "progress")]
-        public bool? Progress { get; set; }
     }
 }

@@ -354,17 +354,21 @@ namespace WinBM
                 //  Work
                 if (page.Job.Work != null)
                 {
+                    /*
                     //  workのどれか一つでProgress=trueの場合、work単位でプログレスバー表示
                     bool viewProgress = page.Job.Work.Any(x => x.Progress ?? false);
                     int workIndex = 0;
+                    */
 
                     foreach (SpecJob spec in page.Job.Work)
                     {
+                        /*
                         if (viewProgress)
                         {
                             _Manager.WriteProgressBar(2, page.Job.Work.Length, workIndex++, spec.Name);
                             System.Threading.Thread.Sleep(100);
                         }
+                        */
                         if (spec.Skip ?? false)
                         {
                             GlobalLog.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);

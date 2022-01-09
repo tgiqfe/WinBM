@@ -297,10 +297,12 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
             {
                 sb.Append($" -Failed {spec.Failed}");
             }
+            /*
             if (spec.Progress ?? false)
             {
                 sb.Append(" -Progress");
             }
+            */
 
             return sb.ToString();
         }
