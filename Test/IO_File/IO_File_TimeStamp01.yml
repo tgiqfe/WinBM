@@ -1,50 +1,24 @@
 ---
-kind: Job
-metadata:
-  name: TestAttribute
-  description: IO/File/Attributeテスト [準備]
-  priority: 201
-job:
-  work:
-  - task: IO/Directory/Delete
-    param:
-      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01'
-  - task: IO/File/Create
-    param:
-      path: |-
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Sample01.txt
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Sample02.txt
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Sample03.txt
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Sample04.txt
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Sample05.txt
+kind: Init
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 520
+      seopc: File
 
 ---
 kind: Job
 metadata:
-  description: タイムスタンプ変更
-  priority: 202
+  description: ファイルロック確認
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
+  require:
+  - task: IO/File/ReadWriteLock
+    param:
+      #path: '%USERPROFILE%\NTUSER.DA%'
+      path: C:\Users\User\Documents\Work\WinBM\Test\IO_File\IO_File_TimeStamp01.yml
+      invert: true
   work:
-  - task: Audit/File/Watch
+  - task: Standard/Message/StdOut
     param:
-      id: io_file_timestamp_01
-      path: |-
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Sample01.txt
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Sample02.txt
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Sample03.txt
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Sample04.txt
-        %USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Sample05.txt
-      begin: true
-      creation: true
-      lastwrite: true
-      lastaccess: true
-  - task: IO/File/TimeStamp
-    param:
-      path: '%USERPROFILE%\Desktop\WinBMTest\%TestDir%\TimeStamp01\Sample01.txt'
-      creation: '2020/12/01'
-      lastwrite: '2020/12/02 00:00:01'
-      lastaccess: '2020/12/03 00:00:02'
-  - task: Audit/File/Watch
-    param:
-      id: io_file_timestamp_01
-
+      message: ロックされていることを確認。

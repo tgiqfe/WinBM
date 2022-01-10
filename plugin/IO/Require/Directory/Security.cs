@@ -90,6 +90,8 @@ namespace IO.Require.Directory
             _ownerAccount = new UserAccount(_Owner);
 
             TargetDirectoryProcess(_Path, SecurityDirectoryAction);
+
+            this.Success ^= this._Invert;
         }
 
         private void SecurityDirectoryAction(string target)
