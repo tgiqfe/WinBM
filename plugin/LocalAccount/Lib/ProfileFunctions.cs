@@ -82,6 +82,35 @@ namespace LocalAccount.Lib
         }
 
         /// <summary>
+        /// 除外対象のユーザーとシステムアカウント以外の全プロファイルを削除
+        /// </summary>
+        /// <param name="exclude"></param>
+        public static void DeleteProfileAll(string[] exclude)
+        {
+            string[] excludeSIDs = exclude.
+                Select(x => new NTAccount(x).Translate(typeof(SecurityIdentifier))?.Value).
+                Where(x => !string.IsNullOrEmpty(x)).
+                ToArray();
+            string[] sysSIDs = new ManagementClass("Win32_SystemAccount").
+                GetInstances().
+                OfType<ManagementObject>().
+                Select(x => x["SID"] as string).
+                ToArray();
+
+            foreach (var profile in new ManagementClass("Win32_UserProfile").
+                GetInstances().
+                OfType<ManagementObject>())
+            {
+                string sid = profile["SID"] as string;
+                if (excludeSIDs.All(x => x != sid) && sysSIDs.All(x => x != sid))
+                {
+                    profile.Delete();
+                }
+            }
+        }
+
+
+        /// <summary>
         /// 現在ログオン中のユーザー一覧を取得
         /// </summary>
         /// <returns></returns>
@@ -92,8 +121,16 @@ namespace LocalAccount.Lib
                 GetInstances().
                 OfType<ManagementObject>())
             {
-                ManagementObject moA = new ManagementObject(mo["Antecedent"] as string);
-                userList.Add(moA["Name"] as string);
+                //  DWM-*やUMFD-*という名前のユーザーが取得できるけれど、
+                //  NameプロパティにアクセスしようとするだけでManagementExceptionする。
+                //  Nameプロパティのアクセスより前に判別する手段が見つからないので、
+                //  try～catchで囲うだけにしておく。
+                try
+                {
+                    ManagementObject moA = new ManagementObject(mo["Antecedent"] as string);
+                    userList.Add(moA["Name"] as string);
+                }
+                catch { }
             }
             return userList;
         }
