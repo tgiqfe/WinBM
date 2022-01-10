@@ -1,0 +1,43 @@
+---
+kind: Init
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 520
+      seopc: File
+
+---
+kind: Job
+metadata:
+  description: ファイルアクセス可否チェック
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  require:
+  - task: IO/File/ReadWriteAble
+    param:
+      path: |-
+        %USERPROFILE%\NTUSER.DAT
+        C:\Users\Default\NTUSER.DAT
+      read: true
+  work:
+  - task: Standard/Message/StdOut
+    param:
+      message: アクセス可能なことを確認。
+
+---
+kind: Job
+metadata:
+  description: ファイルアクセス可否チェック2
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: Audit/File/ReadWriteAble
+    param:
+      path: |-
+        %USERPROFILE%\NTUSER.DAT
+        C:\Users\Default\NTUSER.DAT
+      read: true
+    failed: stop
+  - task: Standard/Message/StdOut
+    param:
+      message: アクセス可能なことを確認2。
