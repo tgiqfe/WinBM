@@ -49,8 +49,8 @@ namespace IO.Require.Directory
         //  ########################
 
         [TaskParameter]
-        [Keys("norecursive", "norec", "norecurs", "norecurse")]
-        protected bool _NoRecurse { get; set; }
+        [Keys("sealed", "seal", "shield")]
+        protected bool _Sealed { get; set; }
 
         [TaskParameter]
         [Keys("accessallmatch", "aclallmatch", "aclall")]
@@ -80,7 +80,7 @@ namespace IO.Require.Directory
                     string.Format("{0};{1};{2};{3};{4}",
                         userAccount.FullName,
                         _Rights,
-                        _NoRecurse ? "None" : "ContainerInherit,ObjectInherit",
+                        _Sealed ? "None" : "ContainerInherit,ObjectInherit",
                         "None",
                         _AccessControl),
                     PathType.Directory);
@@ -126,7 +126,7 @@ namespace IO.Require.Directory
                         string owner = targetSecurity.GetOwner(typeof(NTAccount)).Value;
                         if (_ownerAccount.IsMatch(owner))
                         {
-                            if (!_NoRecurse)
+                            if (!_Sealed)
                             {
                                 foreach (string child in System.IO.Directory.GetFiles(targetPath, "*", SearchOption.AllDirectories))
                                 {

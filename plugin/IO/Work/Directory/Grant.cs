@@ -45,8 +45,8 @@ namespace IO.Work.Directory
         protected InheritedAction? _Inherited { get; set; }
 
         [TaskParameter]
-        [Keys("norecursive", "norec", "norecurs", "norecurse")]
-        protected bool _NoRecurse { get; set; }
+        [Keys("sealed", "seal", "shield")]
+        protected bool _Sealed { get; set; }
 
         private AccessRuleSummary[] _accessRuleSummary = null;
 
@@ -62,13 +62,12 @@ namespace IO.Work.Directory
             }
             if ((_accessRuleSummary == null || _accessRuleSummary.Length == 0) && !string.IsNullOrEmpty(_Account))
             {
-                //_Account = PredefinedAccount.Resolv(_Account);
                 var userAccount = new UserAccount(_Account);
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(
                     string.Format("{0};{1};{2};{3};{4}",
                         userAccount.FullName,
                         _Rights,
-                        _NoRecurse ? "None" : "ContainerInherit,ObjectInherit",
+                        _Sealed ? "None" : "ContainerInherit,ObjectInherit",
                         "None",
                         _AccessControl),
                     PathType.Directory);
