@@ -141,9 +141,9 @@ namespace WinBM
         /// <summary>
         /// PowerShellのRunSpace上にプログレスバーを出力
         /// </summary>
-        public void WriteProgressBar(int line, int max, int cursor, string description)
+        public void WriteProgressBar(int line, string activity, int max, int cursor, string description)
         {
-            _ProgressBarOutputList?.ForEach(x => x.Write(line, max, cursor, description));
+            _ProgressBarOutputList?.ForEach(x => x.Write(line, activity, max, cursor, description));
         }
 
         #endregion

@@ -88,9 +88,9 @@ namespace WinBM.Task
         #region Post methods
 
         /// <summary>
-        /// 全Pageが終了した後に実行する。環境の掃除等
+        /// Recipe内の全Pageが終了した後に実行する。環境の掃除等
         /// </summary>
-        public virtual void PostPage() { }
+        public virtual void PostRecipe() { }
 
         /// <summary>
         /// PostPageするかどうかの判定
@@ -100,7 +100,7 @@ namespace WinBM.Task
         /// <summary>
         /// Page内の全Specが完了した後に実行する。Job実行後の掃除等
         /// </summary>
-        public virtual void PostSpec() { }
+        public virtual void PostPage() { }
 
         /// <summary>
         /// PostSpecするかどうかの判定

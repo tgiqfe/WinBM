@@ -148,7 +148,7 @@ namespace WinBM
                 }
 
                 //  Page内の全Config実行後の処理
-                postPageList.ForEach(x => x.PostSpec());
+                postPageList.ForEach(x => x.PostPage());
             }
         }
 
@@ -230,7 +230,7 @@ namespace WinBM
                 }
 
                 //  Page内の全Output実行後の処理
-                postPageList.ForEach(x => x.PostSpec());
+                postPageList.ForEach(x => x.PostPage());
             }
         }
 
@@ -248,7 +248,7 @@ namespace WinBM
             int jobIndex = 0;
             foreach (Page page in list.OrderBy(x => x.Metadata.GetPriority()))
             {
-                _Manager.WriteProgressBar(1, list.Count, jobIndex++, page.Metadata.Name);
+                _Manager.WriteProgressBar(1, null, list.Count, jobIndex++, page.Metadata.Name);
 
                 if (page.Metadata.Skip ?? false)
                 {
@@ -354,17 +354,21 @@ namespace WinBM
                 //  Work
                 if (page.Job.Work != null)
                 {
+                    /*
                     //  workのどれか一つでProgress=trueの場合、work単位でプログレスバー表示
                     bool viewProgress = page.Job.Work.Any(x => x.Progress ?? false);
                     int workIndex = 0;
+                    */
 
                     foreach (SpecJob spec in page.Job.Work)
                     {
+                        /*
                         if (viewProgress)
                         {
                             _Manager.WriteProgressBar(2, page.Job.Work.Length, workIndex++, spec.Name);
                             System.Threading.Thread.Sleep(100);
                         }
+                        */
                         if (spec.Skip ?? false)
                         {
                             GlobalLog.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
@@ -453,7 +457,7 @@ namespace WinBM
                 if (abort) { break; }
 
                 //  Page内の全Job実行後の処理
-                postPageList.ForEach(x => x.PostSpec());
+                postPageList.ForEach(x => x.PostPage());
             }
         }
 
@@ -464,7 +468,7 @@ namespace WinBM
         /// </summary>
         public void PostRecipeProcess()
         {
-            _PostRecipeList.ForEach(x => x.PostPage());
+            _PostRecipeList.ForEach(x => x.PostRecipe());
         }
 
         #region Activate

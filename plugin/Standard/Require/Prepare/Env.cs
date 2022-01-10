@@ -18,7 +18,7 @@ namespace Standard.Require.Prepare
         [Keys("set", "envset", "envs", "environment", "environments", "name", "key")]
         protected string[] _Key { get; set; }
 
-        [TaskParameter(MandatoryAny = 1, Resolv = true)]
+        [TaskParameter(Resolv = true)]
         [Keys("value", "val", "valu", "registryvalue", "regvalue")]
         protected string _Value { get; set; }
 
@@ -39,11 +39,13 @@ namespace Standard.Require.Prepare
                 foreach (string key in _Key)
                 {
                     //  環境変数を取得
-                    string val = Environment.GetEnvironmentVariable(key);
-                    if (string.IsNullOrEmpty(val))
+                    string val = _Scope switch
                     {
-                        val = WinBM.Lib.FileScope.GetValue(key);
-                    }
+                        TargetScope.File => WinBM.Lib.FileScope.GetValue(key),
+                        TargetScope.User => Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.User),
+                        TargetScope.Machine => Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Machine),
+                        _ => Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Process),
+                    };
 
                     if (string.IsNullOrEmpty(val))
                     {

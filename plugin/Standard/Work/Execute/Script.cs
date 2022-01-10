@@ -16,36 +16,67 @@ namespace Standard.Work.Execute
         [Keys("path", "target", "targetpath", "script", "scriptpath")]
         protected string[] _Path { get; set; }
 
+        [TaskParameter]
+        [Keys("progress", "prog", "progressbar")]
+        protected bool _ProgressBar { get; set; }
+
+        [TaskParameter(Resolv = true)]
+        [Keys("activity", "title")]
+        protected string _Activity { get; set; }
+
+        [TaskParameter(Unsigned = true)]
+        [Keys("interval", "intervalmilliseconds", "intervalmillisecond", "intervalmsec")]
+        protected int? _Interval { get; set; }
+
+        [TaskParameter(Unsigned = true)]
+        [Keys("intervalseconds", "intervalsecond", "intervalsec")]
+        protected int? _IntervalSecond { get; set; }
+
         public override void MainProcess()
         {
             var collection = LanguageCollection.Load(Item.GetScriptLanguageDBFile());
 
-            foreach (string path in _Path)
+            List<string> scriptList = new List<string>();
+            _Path.ToList().ForEach(x =>
             {
-                if (System.IO.File.Exists(path))
+                if (System.IO.File.Exists(x))
                 {
-                    using (Process proc = collection.GetProcess(path))
-                    {
-                        proc.StartInfo.CreateNoWindow = true;
-                        proc.StartInfo.UseShellExecute = false;
-                        proc.Start();
-                        proc.WaitForExit();
-                    }
+                    scriptList.Add(x);
                 }
-                if (System.IO.Directory.Exists(path))
+                else if (System.IO.Directory.Exists(x))
                 {
-                    foreach (string child in System.IO.Directory.GetFiles(path))
-                    {
-                        using (Process proc = collection.GetProcess(child))
-                        {
-                            proc.StartInfo.CreateNoWindow = true;
-                            proc.StartInfo.UseShellExecute = false;
-                            proc.Start();
-                            proc.WaitForExit();
-                        }
-                    }
+                    scriptList.AddRange(Directory.GetFiles(x));
                 }
+            });
+            scriptList.Sort();
 
+            //  スクリプト実行間の待ち時間
+            int interval = ((_Interval ?? 0) > 0 ? (int)_Interval : 0) +
+                ((_IntervalSecond ?? 0) > 0 ? (int)_IntervalSecond * 1000 : 0);
+            
+            int cursor = 0;
+            foreach (var path in scriptList)
+            {
+                if (_ProgressBar)
+                {
+                    Manager.WriteProgressBar(
+                        2,
+                        _Activity ?? this.SpecName,
+                        scriptList.Count,
+                        cursor++,
+                        System.IO.Path.GetFileName(path));
+                }
+                using (Process proc = collection.GetProcess(path))
+                {
+                    proc.StartInfo.CreateNoWindow = true;
+                    proc.StartInfo.UseShellExecute = false;
+                    proc.Start();
+                    proc.WaitForExit();
+                }
+                if (interval > 0)
+                {
+                    System.Threading.Thread.Sleep(interval);
+                }
             }
         }
     }

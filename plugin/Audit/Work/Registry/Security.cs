@@ -51,8 +51,8 @@ namespace Audit.Work.Registry
         //  ########################
 
         [TaskParameter]
-        [Keys("norecursive", "norec", "norecurs", "norecurse")]
-        protected bool _NoRecurse { get; set; }
+        [Keys("sealed", "seal", "shield")]
+        protected bool _Sealed { get; set; }
 
         [TaskParameter]
         [Keys("accessallmatch", "aclallmatch", "aclall")]
@@ -77,13 +77,12 @@ namespace Audit.Work.Registry
             }
             if ((_accessRuleSummary == null || _accessRuleSummary.Length == 0) && !string.IsNullOrEmpty(_Account))
             {
-                //_Account = PredefinedAccount.Resolv(_Account);
                 var userAccount = new UserAccount(_Account);
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(
                     string.Format("{0};{1};{2};{3};{4}",
                         userAccount.FullName,
                         _Rights,
-                        _NoRecurse ? "None" : "ContainerInherit",
+                        _Sealed ? "None" : "ContainerInherit",
                         "None",
                         _AccessControl),
                     PathType.Registry);
@@ -96,7 +95,6 @@ namespace Audit.Work.Registry
             }
             if (!string.IsNullOrEmpty(_Owner))
             {
-                //_Owner = PredefinedAccount.Resolv(_Owner);
                 _ownerAccount = new UserAccount(_Owner);
                 dictionary["Check_Owner"] = _ownerAccount.ToString();
             }
@@ -187,7 +185,7 @@ namespace Audit.Work.Registry
                         string owner = targetSecurity.GetOwner(typeof(NTAccount)).Value;
                         if (_ownerAccount.IsMatch(owner))
                         {
-                            if (!_NoRecurse)
+                            if (!_Sealed)
                             {
                                 foreach (string child in targetKey.GetSubKeyNames())
                                 {

@@ -148,7 +148,7 @@ namespace IO.Work.File
         /// <summary>
         /// スコープ[Page]でセットした場合、Page内の処理終了後に削除
         /// </summary>
-        public override void PostSpec()
+        public override void PostPage()
         {
             if (!string.IsNullOrEmpty(_EnvSetPath))
             {
@@ -163,7 +163,7 @@ namespace IO.Work.File
         /// <summary>
         /// スコープ[Process]でセットした場合、全Page終了後に削除
         /// </summary>
-        public override void PostPage()
+        public override void PostRecipe()
         {
             if (!string.IsNullOrEmpty(_EnvSetPath))
             {
