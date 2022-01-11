@@ -1,0 +1,19 @@
+﻿---
+kind: Init
+init:
+  spec:
+  - param:
+      env: 'FILE_WAIT = 530'
+      scope: File
+
+---
+kind: Job
+metadata:
+  description: プロファイル削除テスト
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: LocalAccount/Profile/Delete
+    param:
+      all: true
+

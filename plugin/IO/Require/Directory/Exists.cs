@@ -25,6 +25,8 @@ namespace IO.Require.Directory
             {
                 Manager.WriteLog(WinBM.LogLevel.Attention, "Directory is missing. \"{0}\"", _Path);
             }
+
+            this.Success ^= this._Invert;
         }
     }
 }

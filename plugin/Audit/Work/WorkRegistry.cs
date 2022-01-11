@@ -4,32 +4,39 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Win32;
-using IO.Lib;
 using WinBM;
 using WinBM.Task;
+using IO.Lib;
 
-namespace IO.Work
+namespace Audit.Work
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class IOTaskWorkRegistry : TaskJob
+    internal class WorkRegistry : AuditTaskWork
     {
-        protected delegate void TargetRegistryKeyAction(RegistryKey key);
+        protected delegate void TargetRegistryKeyAction(
+            RegistryKey key, Dictionary<string, string> dictaionry, int count);
 
-        protected delegate void TargetRegistryValueAction(RegistryKey key, string name);
+        protected delegate void TargetRegistryValueAction(
+            RegistryKey key, string name, Dictionary<string, string> dictaionry, int count);
 
-        protected delegate void SrcDstRegistryKeyAction(RegistryKey sourceKey, RegistryKey destinationKey);
+        protected delegate void SrcDstRegistryKeyAction(
+            RegistryKey sourceKey, RegistryKey destinationKey, Dictionary<string, string> dictaionry, int count);
 
-        protected delegate void SrcDstRegistryValueAction(RegistryKey sourceKey, RegistryKey destinationKey, string sourceName, string destinationName);
-
-        #region Sequential RegistryKey
+        protected delegate void SrcDstRegistryValueAction(
+            RegistryKey sourceKey, RegistryKey destinationKey, string sourceName, string destinationName, Dictionary<string, string> dictaionry, int count);
 
         /// <summary>
-        /// 対象レジストリキーに対するシーケンシャル処理
+        /// レジストリキーに対するシーケンシャル処理
         /// </summary>
         /// <param name="paths"></param>
+        /// <param name="writable"></param>
+        /// <param name="dictionary"></param>
         /// <param name="targetRegistryKeyAction"></param>
-        protected void TargetRegistryKeyProcess(string[] paths, bool writable, TargetRegistryKeyAction targetRegistryKeyAction)
+        protected void TargetKeySequence(
+            string[] paths, bool writable, Dictionary<string, string> dictionary, TargetRegistryKeyAction targetRegistryKeyAction)
         {
+            int count = 0;
+
             foreach (string path in paths)
             {
                 string keyName = System.IO.Path.GetFileName(path);
@@ -44,7 +51,6 @@ namespace IO.Work
                             Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", parent);
                             Success = false;
                             continue;
-                            //  ↑returnにするかを検討中。恐らくこのままだが、一応変更する可能性があるのでコメントだけ残す。
                         }
 
                         //  ワイルドカード指定
@@ -54,7 +60,7 @@ namespace IO.Work
                         {
                             using (RegistryKey childKey = parentKey.OpenSubKey(childKeyName, writable))
                             {
-                                targetRegistryKeyAction(childKey);
+                                targetRegistryKeyAction(childKey, dictionary, ++count);
                             }
                         }
                     }
@@ -69,24 +75,27 @@ namespace IO.Work
                             Manager.WriteLog(LogLevel.Warn, "Target is Missing. \"{0}\"", path);
                             Success = false;
                             continue;
-                            //  ↑returnにするかを検討中。恐らくこのままだが、一応変更する可能性があるのでコメントだけ残す。
                         }
 
-                        targetRegistryKeyAction(regKey);
+                        targetRegistryKeyAction(regKey, dictionary, ++count);
                     }
                 }
             }
         }
 
         /// <summary>
-        /// 対象レジストリキーに対するシーケンシャル処理。src/dst指定
+        /// レジストリキーに対するシーケンシャル処理。src/dst指定
         /// </summary>
         /// <param name="sourcePaths"></param>
         /// <param name="destinationPath"></param>
         /// <param name="writable"></param>
+        /// <param name="dictionary"></param>
         /// <param name="srcDstRegistryKeyAction"></param>
-        protected void SrcDstRegistryKeyProcess(string[] sourcePaths, string destinationPath, bool writable, SrcDstRegistryKeyAction srcDstRegistryKeyAction)
+        protected void SrcDstKeySequence(
+            string[] sourcePaths, string destinationPath, bool writable, Dictionary<string, string> dictionary, SrcDstRegistryKeyAction srcDstRegistryKeyAction)
         {
+            int count = 0;
+
             foreach (string source in sourcePaths)
             {
                 string sourceKeyName = Path.GetFileName(source);
@@ -103,7 +112,6 @@ namespace IO.Work
                             Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", parent);
                             Success = false;
                             continue;
-                            //  ↑returnにするかを検討中。恐らくこのままだが、一応変更する可能性があるのでコメントだけ残す。
                         }
 
                         System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(sourceKeyName);
@@ -112,13 +120,13 @@ namespace IO.Work
                         {
                             using (RegistryKey destinationKey = RegistryControl.GetRegistryKey(destinationPath, true, true))
                             {
-                                matchItems.ForEach(x =>
+                                foreach(var item in matchItems)
                                 {
-                                    using (RegistryKey sourceKey = parentKey.OpenSubKey(x, writable))
+                                    using (RegistryKey sourceKey = parentKey.OpenSubKey(item, writable))
                                     {
-                                        srcDstRegistryKeyAction(sourceKey, destinationKey);
+                                        srcDstRegistryKeyAction(sourceKey, destinationKey, dictionary, ++count);
                                     }
-                                });
+                                }
                             }
                         }
                     }
@@ -133,32 +141,32 @@ namespace IO.Work
                             Manager.WriteLog(LogLevel.Error, "Source target is Missing. \"{0}\"", source);
                             Success = false;
                             continue;
-                            //  ↑returnにするかを検討中。恐らくこのままだが、一応変更する可能性があるのでコメントだけ残す。
                         }
 
                         using (RegistryKey destinationKey = RegistryControl.GetRegistryKey(destinationPath, true, true))
                         {
-                            srcDstRegistryKeyAction(sourceKey, destinationKey);
+                            srcDstRegistryKeyAction(sourceKey, destinationKey, dictionary, ++count);
                         }
                     }
                 }
             }
         }
 
-        #endregion
-        #region Sequential RegistryValue
-
         /// <summary>
-        /// 対象のレジストリ値に対するシーケンシャル処理
+        /// レジストリ値に対するシーケンシャル処理
         /// </summary>
         /// <param name="path"></param>
         /// <param name="names"></param>
         /// <param name="writable"></param>
+        /// <param name="dictionary"></param>
         /// <param name="targetRegistryValueAction"></param>
-        protected void TargetRegistryValueProcess(string path, string[] names, bool writable, TargetRegistryValueAction targetRegistryValueAction)
+        protected void TargetValueSequence(
+            string path, string[] names, bool writable, Dictionary<string, string> dictionary, TargetRegistryValueAction targetRegistryValueAction)
         {
             using (RegistryKey parentKey = RegistryControl.GetRegistryKey(path, false, writable))
             {
+                int count = 0;
+
                 //  対象キーが存在しない場合
                 if (parentKey == null)
                 {
@@ -175,27 +183,32 @@ namespace IO.Work
                         System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(name);
                         foreach (var valueName in parentKey.GetValueNames().Where(x => wildcard.IsMatch(x)))
                         {
-                            targetRegistryValueAction(parentKey, valueName);
+                            targetRegistryValueAction(parentKey, valueName, dictionary, ++count);
                         }
                     }
                     else
                     {
-                        targetRegistryValueAction(parentKey, name);
+                        targetRegistryValueAction(parentKey, name, dictionary, ++count);
                     }
                 }
             }
         }
 
         /// <summary>
-        /// 対象のレジストリ値に対するシーケンシャル処理。src/dst指定
+        /// レジストリ値に対するシーケンシャル処理。src/dst指定
         /// </summary>
-        /// <param name="sourcePaths"></param>
+        /// <param name="sourcePath"></param>
         /// <param name="destinationPath"></param>
         /// <param name="sourceNames"></param>
         /// <param name="destinationName"></param>
+        /// <param name="writable"></param>
+        /// <param name="dictionary"></param>
         /// <param name="srcDstRegistryValueAction"></param>
-        protected void SrcDstRegistryValueProcess(string sourcePath, string destinationPath, string[] sourceNames, string destinationName, bool writable, SrcDstRegistryValueAction srcDstRegistryValueAction)
+        protected void SrcDstValueSequence(
+            string sourcePath, string destinationPath, string[] sourceNames, string destinationName, bool writable, Dictionary<string, string> dictionary, SrcDstRegistryValueAction srcDstRegistryValueAction)
         {
+            int count = 0;
+
             using (RegistryKey parentKey = RegistryControl.GetRegistryKey(sourcePath, false, writable))
             {
                 //  Sourceの所属キーが存在しない場合
@@ -220,13 +233,13 @@ namespace IO.Work
                         {
                             using (RegistryKey destinationKey = RegistryControl.GetRegistryKey(destinationPath, true, true))
                             {
-                                matchItems.ForEach(x =>
+                                foreach(var item in matchItems)
                                 {
-                                    using (RegistryKey sourceKey = parentKey.OpenSubKey(x, writable))
+                                    using (RegistryKey sourceKey = parentKey.OpenSubKey(item, writable))
                                     {
-                                        srcDstRegistryValueAction(sourceKey, destinationKey, name, destinationName);
+                                        srcDstRegistryValueAction(sourceKey, destinationKey, name, destinationName, dictionary, ++count);
                                     }
-                                });
+                                }
                             }
                         }
                     }
@@ -234,13 +247,11 @@ namespace IO.Work
                     {
                         using (RegistryKey destinationKey = RegistryControl.GetRegistryKey(destinationPath, true, true))
                         {
-                            srcDstRegistryValueAction(parentKey, destinationKey, name, destinationName);
+                            srcDstRegistryValueAction(parentKey, destinationKey, name, destinationName, dictionary, ++count);
                         }
                     }
                 }
             }
         }
-
-        #endregion
     }
 }

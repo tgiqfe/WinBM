@@ -14,7 +14,7 @@ using IO.Lib;
 namespace Audit.Work.Registry
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Security : AuditTaskWork
+    internal class Security : WorkRegistry
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "registrypath", "targetpath", "key", "registrykey", "targetkey", "regkey", "target")]
@@ -69,7 +69,7 @@ namespace Audit.Work.Registry
         {
             var dictionary = new Dictionary<string, string>();
             this.Success = true;
-            int count = 0;
+            //int count = 0;
 
             if (_Access?.Length > 0)
             {
@@ -103,6 +103,9 @@ namespace Audit.Work.Registry
                 dictionary["Check_Inherited"] = _Inherited.ToString();
             }
 
+            TargetKeySequence(_Path, false, dictionary, SecurityRegistryKeyAction);
+
+            /*
             foreach (string path in _Path)
             {
                 string keyName = System.IO.Path.GetFileName(path);
@@ -145,6 +148,7 @@ namespace Audit.Work.Registry
                     }
                 }
             }
+            */
 
             AddAudit(dictionary, this._Invert);
         }

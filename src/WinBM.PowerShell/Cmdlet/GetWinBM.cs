@@ -68,6 +68,9 @@ namespace WinBM.PowerShell.Cmdlet.Recipe
 
         protected override void EndProcessing()
         {
+            //  FileScope内の情報をクリア
+            WinBM.Lib.FileScope.Clear();
+
             Environment.CurrentDirectory = _currentDirectory;
         }
     }

@@ -25,6 +25,8 @@ namespace IO.Require.File
             {
                 Manager.WriteLog(WinBM.LogLevel.Attention, "File is missing. \"{0}\"", _Path);
             }
+
+            this.Success ^= this._Invert;
         }
     }
 }

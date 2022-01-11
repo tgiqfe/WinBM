@@ -80,6 +80,8 @@ namespace IO.Require.File
             _ownerAccount = new UserAccount(_Owner);
 
             TargetFileProcess(_Path, SecurityFileAction);
+
+            this.Success ^= this._Invert;
         }
 
         private void SecurityFileAction(string target)

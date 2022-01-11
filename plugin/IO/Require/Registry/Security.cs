@@ -92,6 +92,8 @@ namespace IO.Require.Registry
             _ownerAccount = new UserAccount(_Owner);
 
             TargetRegistryKeyProcess(_Path, writable: false, SecurityRegistryKeyAction);
+
+            this.Success ^= this._Invert;
         }
 
         private void SecurityRegistryKeyAction(RegistryKey target)

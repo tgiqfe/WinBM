@@ -13,7 +13,7 @@ using IO.Lib;
 namespace Audit.Work.Directory
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Security : AuditTaskWork
+    internal class Security : WorkDirectory
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath")]
@@ -67,7 +67,7 @@ namespace Audit.Work.Directory
         {
             var dictionary = new Dictionary<string, string>();
             this.Success = true;
-            int count = 0;
+            //int count = 0;
 
             if (_Access?.Length > 0)
             {
@@ -75,7 +75,6 @@ namespace Audit.Work.Directory
             }
             if ((_accessRuleSummary == null || _accessRuleSummary.Length == 0) && !string.IsNullOrEmpty(_Account))
             {
-                //_Account = PredefinedAccount.Resolv(_Account);
                 var userAccount = new UserAccount(_Account);
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(
                     string.Format("{0};{1};{2};{3};{4}",
@@ -102,6 +101,9 @@ namespace Audit.Work.Directory
                 dictionary["Check_Inherited"] = _Inherited.ToString();
             }
 
+            TargetSequence(_Path, dictionary, SecurityDirectoryAction);
+
+            /*
             foreach (string path in _Path)
             {
                 if (Path.GetFileName(path).Contains("*"))
@@ -135,6 +137,7 @@ namespace Audit.Work.Directory
                     SecurityDirectoryAction(path, dictionary, ++count);
                 }
             }
+            */
 
             AddAudit(dictionary, this._Invert);
         }

@@ -1,9 +1,19 @@
 ---
+kind: Init
+metadata:
+  priority: 600
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 600
+      scope: File
+
+---
 kind: Job
 metadata:
   name: RegistryCompare
   description: テスト[準備]
-  priority: 201
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: IO/Registry/Delete
@@ -60,7 +70,7 @@ job:
 kind: Job
 metadata:
   description: アクセス権、継承のWatch
-  priority: 202
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: Audit/Registry/Watch
@@ -83,7 +93,7 @@ job:
 kind: Job
 metadata:
   description: ハッシュ、レジストリ種類のWatch
-  priority: 203
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: Audit/Registry/Watch
@@ -116,7 +126,7 @@ job:
 kind: Job
 metadata:
   description: ChildCountのWatch
-  priority: 204
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: Audit/Registry/Watch
@@ -148,7 +158,7 @@ job:
 kind: Job
 metadata:
   description: Ownerのwatch
-  priority: 205
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   require:
   - task: Standard/Computer/Admin
