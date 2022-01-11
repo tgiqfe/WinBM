@@ -468,7 +468,11 @@ namespace WinBM
         /// </summary>
         public void PostRecipeProcess()
         {
+            //  PostRecipe処理
             _PostRecipeList.ForEach(x => x.PostRecipe());
+
+            //  FileScope内の情報をクリア
+            WinBM.Lib.FileScope.Clear();
         }
 
         #region Activate

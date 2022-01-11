@@ -1,9 +1,19 @@
 ---
+kind: Init
+metadata:
+  priority: 200
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 200
+      scope: File
+
+---
 kind: Job
 metadata:
   name: TestAudit_file_watch
   description: テスト[準備]
-  priority: 201
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: IO/Directory/Delete
@@ -24,7 +34,7 @@ job:
 kind: Job
 metadata:
   description: タイムスタンプをwatch
-  priority: 202
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: Audit/File/Watch
@@ -70,7 +80,7 @@ job:
 kind: Job
 metadata:
   description: アクセス権Watch
-  priority: 203
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   require:
   - task: Standard/Computer/Admin
@@ -107,7 +117,7 @@ job:
 kind: Job
 metadata:
   description: Attributes,Hash,SizeのWatch
-  priority: 204
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: Audit/File/Watch

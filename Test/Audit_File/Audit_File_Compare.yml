@@ -1,9 +1,19 @@
 ---
+kind: Init
+metadata:
+  priority: 100
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 100
+      scope: File
+
+---
 kind: Job
 metadata:
   name: TestAudit_file_compare
   description: テスト[準備]
-  priority: 101
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: IO/Directory/Delete
@@ -23,7 +33,7 @@ job:
 kind: Job
 metadata:
   description: チェックExists
-  priority: 102
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: Audit/File/Compare
@@ -58,7 +68,7 @@ job:
 kind: Job
 metadata:
   description: タイムスタンプチェック
-  priority: 103
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: Audit/File/Compare
@@ -90,7 +100,7 @@ job:
 kind: Job
 metadata:
   description: Accessチェック。所有者変更ができないので、管理者実行していない場合は実行しない
-  priority: 104
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   require:
   - task: Standard/Computer/Admin
@@ -134,7 +144,7 @@ job:
 kind: Job
 metadata:
   description: 属性とサイズ
-  priority: 105
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: Audit/File/Compare
@@ -187,7 +197,7 @@ job:
 kind: Job
 metadata:
   description: Hashチェック
-  priority: 106
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: IO/File/Write

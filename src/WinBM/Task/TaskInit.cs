@@ -67,7 +67,6 @@ namespace WinBM.Task
 
                         if (this._Scope == TargetScope.File)
                         {
-                            //FileScope.Add(this.FilePath, pair.Key, pair.Value);
                             WinBM.Lib.FileScope.Add(this.FilePath, pair.Key, val);
                         }
                         else

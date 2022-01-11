@@ -21,6 +21,15 @@ namespace WinBM.Lib
             });
         }
 
+        public static void Clear()
+        {
+            if (FileScopeList != null)
+            {
+                Console.WriteLine("クリア");
+                FileScopeList.Clear();
+            }
+        }
+
         public static string GetValue(string name)
         {
             string checkName = "%" + name + "%";
