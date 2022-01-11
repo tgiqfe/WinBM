@@ -71,12 +71,12 @@ namespace IO.Work
         /// <summary>
         /// 対象ファイルに対するシーケンス処理。src/dst指定
         /// </summary>
-        /// <param name="sourcePaths"></param>
-        /// <param name="destinationPath"></param>
+        /// <param name="sources"></param>
+        /// <param name="destination"></param>
         /// <param name="srcDstFileAction"></param>
-        protected void SrcDstFileProcess(string[] sourcePaths, string destinationPath, SrcDstFileAction srcDstFileAction)
+        protected void SrcDstFileProcess(string[] sources, string destination, SrcDstFileAction srcDstFileAction)
         {
-            foreach (string source in sourcePaths)
+            foreach (string source in sources)
             {
                 if (Path.GetFileName(source).Contains("*"))
                 {
@@ -96,7 +96,7 @@ namespace IO.Work
                     System.IO.Directory.GetFiles(parent).
                         Where(x => wildcard.IsMatch(x)).
                         ToList().
-                        ForEach(x => srcDstFileAction(x, destinationPath));
+                        ForEach(x => srcDstFileAction(x, destination));
                 }
                 else
                 {
@@ -109,7 +109,7 @@ namespace IO.Work
                         //  ↑returnにするかを検討中。恐らくこのままだが、一応変更する可能性があるのでコメントだけ残す。
                     }
 
-                    srcDstFileAction(source, destinationPath);
+                    srcDstFileAction(source, destination);
                 }
             }
         }
@@ -161,7 +161,6 @@ namespace IO.Work
                     targetDirectoryAction(path);
                 }
             }
-            return;
         }
 
         /// <summary>
