@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IO.Require
+namespace IO.Work
 {
-    internal class SequentialFile : IOTaskRequire
+    internal class WorkFile : IOTaskWork
     {
         //protected delegate void TargetFileAction(string path);
 

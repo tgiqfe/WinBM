@@ -9,7 +9,7 @@ using IO.Lib;
 namespace Audit.Work
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class SequentialRegistry : AuditTaskWork
+    internal class WorkRegistry : AuditTaskWork
     {
         protected delegate void TargetRegistryKeyAction(
             RegistryKey key, Dictionary<string, string> dictaionry, int count);

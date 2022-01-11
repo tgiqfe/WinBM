@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace IO.Work
 {
-    internal class SequentialDirectory : IOTaskWork
+    internal class WorkDirectory : IOTaskWork
     {
         //protected delegate void TargetDirectoryAction(string path);
 

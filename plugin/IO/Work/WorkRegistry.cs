@@ -8,7 +8,7 @@ using IO.Lib;
 
 namespace IO.Work
 {
-    internal class SequentialRegistry : IOTaskWork
+    internal class WorkRegistry : IOTaskWork
     {
         //protected delegate void TargetRegistryKeyAction(RegistryKey key);
 

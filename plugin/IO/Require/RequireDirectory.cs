@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IO.Work
+namespace IO.Require
 {
-    internal class SequentialFile : IOTaskWork
+    internal class RequireDirectory : IOTaskRequire
     {
-        //protected delegate void TargetFileAction(string path);
+        //protected delegate void TargetDirectoryAction(string path);
 
-        //protected delegate void SrcDstFileAction(string source, string destination);
+        //protected delegate void SrcDstDirectoryAction(string source, string destination);
 
 
         /*

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Audit.Work
 {
-    internal class SequentialDirectory : AuditTaskWork
+    internal class WorkDirectory : AuditTaskWork
     {
         protected delegate void TargetDirectoryAction(string path, Dictionary<string, string> dictaionry, int count);
 

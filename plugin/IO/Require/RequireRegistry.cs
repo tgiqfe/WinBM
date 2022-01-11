@@ -8,7 +8,7 @@ using IO.Lib;
 
 namespace IO.Require
 {
-    internal class SequentialRegistry : IOTaskRequire
+    internal class RequireRegistry : IOTaskRequire
     {
         //protected delegate void TargetRegistryKeyAction(RegistryKey key);
 

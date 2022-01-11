@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace IO.Require
 {
-    internal class SequentialDirectory : IOTaskRequire
+    internal class RequireFile : IOTaskRequire
     {
-        //protected delegate void TargetDirectoryAction(string path);
+        //protected delegate void TargetFileAction(string path);
 
-        //protected delegate void SrcDstDirectoryAction(string source, string destination);
+        //protected delegate void SrcDstFileAction(string source, string destination);
 
 
         /*
