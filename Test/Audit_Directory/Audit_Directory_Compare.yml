@@ -1,9 +1,19 @@
 ---
+kind: Init
+metadata:
+  priority: 300
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 300
+      scope: File
+
+---
 kind: Job
 metadata:
   name: ディレクトリCompare
   description: テスト[準備]
-  priority: 101
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: IO/Directory/Delete
@@ -24,7 +34,7 @@ job:
 kind: Job
 metadata:
   description: ディレクトリ存在確認
-  priority: 102
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: Audit/Directory/Compare
@@ -59,7 +69,7 @@ job:
 kind: Job
 metadata:
   description: タイムスタンプチェック
-  priority: 103
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: Audit/Directory/Compare
@@ -85,7 +95,7 @@ job:
 kind: Job
 metadata:
   description: 配下に対してタイムスタンプチェック
-  priority: 104
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: IO/File/Create
@@ -122,7 +132,7 @@ job:
 kind: Job
 metadata:
   description: Accessチェック。所有者変更を含むので、管理者実行時のみ
-  priority: 105
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   require:
   - task: Standard/Computer/Admin
@@ -168,7 +178,7 @@ job:
 kind: Job
 metadata:
   description: Accessチェック。配下も含めてチェック
-  priority: 106
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: IO/File/Create
@@ -199,7 +209,7 @@ job:
 kind: Job
 metadata:
   description: Hashチェック
-  priority: 107
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: IO/File/Create
@@ -240,7 +250,7 @@ job:
 kind: Job
 metadata:
   description: 属性チェック
-  priority: 108
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: Audit/Directory/Compare
@@ -271,7 +281,7 @@ job:
 kind: Job
 metadata:
   description: ChildCountチェック
-  priority: 109
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: Audit/Directory/Compare

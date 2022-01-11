@@ -1,9 +1,19 @@
 ---
+kind: Init
+metadata:
+  priority: 400
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 400
+      scope: File
+
+---
 kind: Job
 metadata:
   name: DirectoryCompare
   description: テスト[準備]
-  priority: 201
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: IO/Directory/Delete
@@ -24,7 +34,7 @@ job:
 kind: Job
 metadata:
   description: タイムスタンプWatch
-  priority: 202
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: Audit/Directory/Watch

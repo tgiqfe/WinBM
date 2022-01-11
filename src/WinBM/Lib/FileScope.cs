@@ -25,7 +25,6 @@ namespace WinBM.Lib
         {
             if (FileScopeList != null)
             {
-                Console.WriteLine("クリア");
                 FileScopeList.Clear();
             }
         }
