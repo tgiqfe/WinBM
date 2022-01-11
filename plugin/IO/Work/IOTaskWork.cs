@@ -20,6 +20,8 @@ namespace IO.Work
 
         protected delegate void SrcDstDirectoryAction(string source, string destination);
 
+        #region Sequential File
+
         /// <summary>
         /// 対象ファイルに対するシーケンシャル処理
         /// </summary>
@@ -111,6 +113,9 @@ namespace IO.Work
                 }
             }
         }
+
+        #endregion
+        #region Sequential Directory
 
         /// <summary>
         /// 対象フォルダーに対するシーケンシャル処理
@@ -204,5 +209,7 @@ namespace IO.Work
                 }
             }
         }
+
+        #endregion
     }
 }

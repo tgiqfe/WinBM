@@ -21,6 +21,8 @@ namespace IO.Work
 
         protected delegate void SrcDstRegistryValueAction(RegistryKey sourceKey, RegistryKey destinationKey, string sourceName, string destinationName);
 
+        #region Sequential RegistryKey
+
         /// <summary>
         /// 対象レジストリキーに対するシーケンシャル処理
         /// </summary>
@@ -71,44 +73,6 @@ namespace IO.Work
                         }
 
                         targetRegistryKeyAction(regKey);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// 対象のレジストリ値に対するシーケンシャル処理
-        /// </summary>
-        /// <param name="path"></param>
-        /// <param name="names"></param>
-        /// <param name="writable"></param>
-        /// <param name="targetRegistryValueAction"></param>
-        protected void TargetRegistryValueProcess(string path, string[] names, bool writable, TargetRegistryValueAction targetRegistryValueAction)
-        {
-            using (RegistryKey parentKey = RegistryControl.GetRegistryKey(path, false, writable))
-            {
-                //  対象キーが存在しない場合
-                if (parentKey == null)
-                {
-                    Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", parentKey.Name);
-                    Success = false;
-                    return;
-                }
-
-                foreach (string name in names)
-                {
-                    if (name.Contains("*"))
-                    {
-                        //  ワイルドカード指定
-                        System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(name);
-                        foreach (var valueName in parentKey.GetValueNames().Where(x => wildcard.IsMatch(x)))
-                        {
-                            targetRegistryValueAction(parentKey, valueName);
-                        }
-                    }
-                    else
-                    {
-                        targetRegistryValueAction(parentKey, name);
                     }
                 }
             }
@@ -181,6 +145,47 @@ namespace IO.Work
             }
         }
 
+        #endregion
+        #region Sequential RegistryValue
+
+        /// <summary>
+        /// 対象のレジストリ値に対するシーケンシャル処理
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="names"></param>
+        /// <param name="writable"></param>
+        /// <param name="targetRegistryValueAction"></param>
+        protected void TargetRegistryValueProcess(string path, string[] names, bool writable, TargetRegistryValueAction targetRegistryValueAction)
+        {
+            using (RegistryKey parentKey = RegistryControl.GetRegistryKey(path, false, writable))
+            {
+                //  対象キーが存在しない場合
+                if (parentKey == null)
+                {
+                    Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", parentKey.Name);
+                    Success = false;
+                    return;
+                }
+
+                foreach (string name in names)
+                {
+                    if (name.Contains("*"))
+                    {
+                        //  ワイルドカード指定
+                        System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(name);
+                        foreach (var valueName in parentKey.GetValueNames().Where(x => wildcard.IsMatch(x)))
+                        {
+                            targetRegistryValueAction(parentKey, valueName);
+                        }
+                    }
+                    else
+                    {
+                        targetRegistryValueAction(parentKey, name);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// 対象のレジストリ値に対するシーケンシャル処理。src/dst指定
         /// </summary>
@@ -235,5 +240,7 @@ namespace IO.Work
                 }
             }
         }
+
+        #endregion
     }
 }
