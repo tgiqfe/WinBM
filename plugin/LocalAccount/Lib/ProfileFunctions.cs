@@ -109,7 +109,6 @@ namespace LocalAccount.Lib
             }
         }
 
-
         /// <summary>
         /// 現在ログオン中のユーザー一覧を取得
         /// </summary>
