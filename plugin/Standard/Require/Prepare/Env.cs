@@ -28,7 +28,7 @@ namespace Standard.Require.Prepare
         [TaskParameter]
         [Keys("target", "envtarget", "targetenv", "scope", "targetscope", "envscope")]
         [Values("process,proc,proces", "user,usr", "machine,mashine,masin,computer", "file,recipefile", "page,pag,pege")]
-        protected TargetScope _Scope { get; set; }
+        protected TargetScope? _Scope { get; set; }
 
         public override void MainProcess()
         {
@@ -39,6 +39,7 @@ namespace Standard.Require.Prepare
                 foreach (string key in _Key)
                 {
                     //  環境変数を取得
+                    /*
                     string val = _Scope switch
                     {
                         TargetScope.File => WinBM.Lib.FileScope.GetValue(key),
@@ -46,6 +47,8 @@ namespace Standard.Require.Prepare
                         TargetScope.Machine => Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Machine),
                         _ => Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Process),
                     };
+                    */
+                    string val = GetEnvironmentValue(key);
 
                     if (string.IsNullOrEmpty(val))
                     {
@@ -67,6 +70,43 @@ namespace Standard.Require.Prepare
                 Manager.WriteLog(LogLevel.Error, "{0} {1}", this.TaskName, e.Message);
                 Manager.WriteLog(LogLevel.Debug, e.ToString());
             }
+        }
+
+        private string GetEnvironmentValue(string key)
+        {
+            if (_Scope == TargetScope.Process || _Scope == TargetScope.Page || _Scope == null)
+            {
+                string val = Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Process);
+                if (!string.IsNullOrEmpty(val))
+                {
+                    return val;
+                }
+            }
+            if (_Scope == TargetScope.User || _Scope == null)
+            {
+                string val = Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.User);
+                if (!string.IsNullOrEmpty(val))
+                {
+                    return val;
+                }
+            }
+            if (_Scope == TargetScope.Machine || _Scope == null)
+            {
+                string val = Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Machine);
+                if (!string.IsNullOrEmpty(val))
+                {
+                    return val;
+                }
+            }
+            if (_Scope == TargetScope.File || _Scope == null)
+            {
+                string val = WinBM.Lib.FileScope.GetValue(key);
+                if (!string.IsNullOrEmpty(val))
+                {
+                    return val;
+                }
+            }
+            return null;
         }
     }
 }
