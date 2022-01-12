@@ -11,7 +11,7 @@ using IO.Lib;
 namespace IO.Work.Registry
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Move : IOTaskWorkRegistry
+    internal class Move : WorkRegistry
     {
         //  SourcePath + DesrintaionPath ⇒ キーを移動
         //  SourcePath + SourceName + DestinationName ⇒ 同じキー内で値を移動

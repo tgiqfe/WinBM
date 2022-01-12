@@ -11,7 +11,7 @@ using IO.Lib;
 
 namespace IO.Work.File
 {
-    internal class Copy : IOTaskWork
+    internal class Copy : WorkFile
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("sourcepath", "srcpath", "src", "source", "sourcefile", "srcfile", "path", "filepath")]

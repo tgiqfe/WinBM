@@ -14,7 +14,7 @@ using System.Security.Cryptography;
 namespace IO.Work.File
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Get : IOTaskWork
+    internal class Get : WorkFile
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath")]

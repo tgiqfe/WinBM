@@ -13,7 +13,7 @@ using System.Security.Principal;
 namespace IO.Work.File
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Owner : IOTaskWork
+    internal class Owner : WorkFile
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath")]

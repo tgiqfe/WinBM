@@ -1,0 +1,58 @@
+---
+kind: Init
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 520
+      scope: File
+
+---
+kind: Job
+metadata:
+  description: IO/Directory/Copy [準備]
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01'
+  - task: IO/File/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01\Exsample01\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01\Exsample01\sample02.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01\Exsample01\sample03.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01\Exsample01\sample04.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01\Exsample01\sample05.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01\Exsample01\sample06.cmd
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01\Exsample01\sample07.cmd
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01\Exsample01\sample08.cmd
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01\Exsample01\sample09.cmd
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01\Exsample01\sample10.cmd
+  - task: IO/Directory/Copy
+    param:
+      src: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01\Exsample01'
+      dst: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01\Exsample02'
+  - task: IO/Directory/Copy
+    param:
+      src: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01\Exsample01'
+      dst: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01\AAAA'
+
+---
+kind: Job
+metadata:
+  description: ワイルドカードで除外コピーテスト
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Directory/Copy
+    param:
+      src: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01'
+      dst: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy02'
+      exFiles: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01\Exsample01\*.txt'
+  - task: IO/Directory/Copy
+    param:
+      src: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01'
+      dst: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy03'
+      exDirectories: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\Copy01\Exsample*'
+

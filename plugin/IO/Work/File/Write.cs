@@ -10,7 +10,7 @@ using System.IO;
 
 namespace IO.Work.File
 {
-    internal class Write : IOTaskWork
+    internal class Write : WorkFile
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath")]
