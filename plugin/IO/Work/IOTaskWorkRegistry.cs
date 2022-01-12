@@ -10,6 +10,7 @@ using WinBM.Task;
 
 namespace IO.Work
 {
+    /*
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class IOTaskWorkRegistry : TaskJob
     {
@@ -243,4 +244,5 @@ namespace IO.Work
 
         #endregion
     }
+        */
 }

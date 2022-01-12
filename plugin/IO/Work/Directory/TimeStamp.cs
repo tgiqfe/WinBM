@@ -10,7 +10,7 @@ using IO.Lib;
 
 namespace IO.Work.Directory
 {
-    internal class TimeStamp : IOTaskWork
+    internal class TimeStamp : WorkDirectory
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath", "dirpath", "directorypath")]

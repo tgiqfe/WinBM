@@ -13,7 +13,7 @@ using System.IO;
 namespace IO.Work.Directory
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Grant : IOTaskWork
+    internal class Grant : WorkDirectory
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath", "dirpath", "directorypath")]

@@ -14,7 +14,7 @@ using System.Security.Principal;
 namespace IO.Work.Registry
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Get : IOTaskWorkRegistry
+    internal class Get : WorkRegistry
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "registrypath", "targetpath", "key", "registrykey", "targetkey", "regkey", "target")]

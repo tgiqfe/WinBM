@@ -11,7 +11,7 @@ using IO.Lib;
 namespace IO.Work.Directory
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Attribute : IOTaskWork
+    internal class Attribute : WorkDirectory
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath", "dirpath", "directorypath")]

@@ -10,7 +10,7 @@ using System.IO;
 
 namespace IO.Work.Directory
 {
-    internal class GetTree : IOTaskWork
+    internal class GetTree : WorkDirectory
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath", "dirpath", "directorypath")]

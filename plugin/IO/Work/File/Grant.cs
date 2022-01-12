@@ -13,7 +13,7 @@ using IO.Lib;
 namespace IO.Work.File
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Grant : IOTaskWork
+    internal class Grant : WorkFile
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath")]

@@ -13,7 +13,7 @@ using System.Security.Principal;
 namespace IO.Work.Registry
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Revoke : IOTaskWorkRegistry
+    internal class Revoke : WorkRegistry
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "registrypath", "targetpath", "key", "registrykey", "targetkey", "regkey", "target")]

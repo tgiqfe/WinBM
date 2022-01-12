@@ -11,7 +11,7 @@ using IO.Lib;
 namespace IO.Work.Registry
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Copy : IOTaskWorkRegistry
+    internal class Copy : WorkRegistry
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("sourcepath", "srcpath", "src", "source", "sourcekey", "srckey", "path", "keypath")]

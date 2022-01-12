@@ -13,7 +13,7 @@ using System.IO;
 namespace IO.Work.Registry
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Delete : IOTaskWorkRegistry
+    internal class Delete : WorkRegistry
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "registrypath", "targetpath", "key", "registrykey", "targetkey", "regkey", "target")]

@@ -13,7 +13,7 @@ using IO.Lib;
 namespace IO.Require.Directory
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Security : IOTaskRequire
+    internal class Security : RequireDirectory
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath")]

@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 namespace IO.Work.Directory
 {
-    internal class Copy : IOTaskWork
+    internal class Copy : WorkDirectory
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("sourcepath", "srcpath", "src", "source", "sourcedirectory", "sourcefolder", "sourcedir", "srcdir", "path", "directorypath", "folderpath")]
@@ -26,11 +26,13 @@ namespace IO.Work.Directory
         protected bool _Force { get; set; }
 
         [TaskParameter(Resolv = true)]
-        [Keys("excludefile", "exfile", "xf", "xfile")]
+        [Keys("excludefile", "excludefiles", "exfile", "exfiles", "xfile", "xfiles", "xf")]
         protected string[] _ExcludeFile { get; set; }
 
         [TaskParameter(Resolv = true)]
-        [Keys("excludedirectory", "excludefolder", "excludedir", "exdirectory", "exfolder", "exdir", "xd", "xdirectory", "xfolder", "xdir")]
+        [Keys("excludedirectory", "excludedirectories", "excludefolder", "excludefolders", "excludedir", "excludedirs",
+            "exdirectory", "exdirectories", "exfolder", "exfolders", "exdir", "exdirs", 
+            "xdirectory", "xdirectories", "xfolder", "xfolders", "xdir", "xdirs", "xd")]
         protected string[] _ExcludeDirectory { get; set; }
 
         [TaskParameter]
@@ -91,12 +93,23 @@ namespace IO.Work.Directory
                         CopyMode.Merge => "/E",
                         _ => "",
                     };
+                    /*
                     string exFiles = _ExcludeFile?.Length > 0 ?
                         " /XF \"" + string.Join("\" \"", _ExcludeFile) + "\"" :
                         "";
                     string exDirs = _ExcludeDirectory?.Length > 0 ?
                         " /XD \"" + string.Join("\" \"", _ExcludeDirectory) + "\"" :
                         "";
+                    */
+                    string[] tempExFiles = Wildcard.GetPaths(_ExcludeFile, isDirectory: false);
+                    string[] tempExDirs = Wildcard.GetPaths(_ExcludeDirectory, isDirectory: true);
+                    string exFiles = tempExFiles?.Length > 0 ?
+                        " /XF \"" + string.Join("\" \"", tempExFiles) + "\"" :
+                        "";
+                    string exDirs = tempExDirs?.Length > 0 ?
+                        " /XD \"" + string.Join("\" \"", tempExDirs) + "\"" :
+                        "";
+
                     proc.StartInfo.Arguments = string.Format("\"{0}\" \"{1}\" {2} {3} /XJD /XJF /R:0 /W:0 /NP{4}{5}",
                         source,
                         destination,
@@ -110,6 +123,8 @@ namespace IO.Work.Directory
                     proc.StartInfo.CreateNoWindow = true;
                     proc.Start();
                     proc.WaitForExit();
+
+                    Console.WriteLine(proc.StartInfo.Arguments);
                 }
             }
             catch (Exception e)

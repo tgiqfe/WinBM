@@ -13,7 +13,7 @@ using IO.Lib;
 namespace IO.Require.File
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Security : IOTaskRequire
+    internal class Security : RequireFile
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath")]
@@ -70,7 +70,6 @@ namespace IO.Require.File
             }
             if ((_accessRuleSummary == null || _accessRuleSummary.Length == 0) && !string.IsNullOrEmpty(_Account))
             {
-                //_Account = PredefinedAccount.Resolv(_Account);
                 var userAccount = new UserAccount(_Account);
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(
                     $"{userAccount.FullName};{_Rights};{_AccessControl}", PathType.File);

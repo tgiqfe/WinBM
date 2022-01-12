@@ -14,7 +14,7 @@ using IO.Lib;
 namespace IO.Require.Registry
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Security : IOTaskRequireRegistry
+    internal class Security : RequireRegistry
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "registrypath", "targetpath", "key", "registrykey", "targetkey", "regkey", "target")]

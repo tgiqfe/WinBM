@@ -13,7 +13,7 @@ namespace IO.Work.File
     /// <summary>
     /// ファイルのタイムスタンプを変更
     /// </summary>
-    internal class TimeStamp : IOTaskWork
+    internal class TimeStamp : WorkFile
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath")]

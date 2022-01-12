@@ -19,7 +19,7 @@ namespace IO.Work.File
     /// 削除処理に失敗(例外発生)でfalse
     /// 指定したファイルパスが存在しない場合はtrue
     /// </summary>
-    internal class Delete : IOTaskWork
+    internal class Delete : WorkFile
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath")]
