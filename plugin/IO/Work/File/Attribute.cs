@@ -11,7 +11,7 @@ using System.IO;
 namespace IO.Work.File
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Attribute : IOTaskWork
+    internal class Attribute : WorkFile
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath")]

@@ -11,7 +11,7 @@ using Microsoft.VisualBasic.FileIO;
 
 namespace IO.Work.File
 {
-    internal class Move : IOTaskWork
+    internal class Move : WorkFile
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("sourcepath", "srcpath", "src", "source", "sourcefile", "srcfile", "path", "filepath")]

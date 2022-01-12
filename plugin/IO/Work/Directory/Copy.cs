@@ -11,7 +11,7 @@ using System.Diagnostics;
 
 namespace IO.Work.Directory
 {
-    internal class Copy : IOTaskWork
+    internal class Copy : WorkDirectory
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("sourcepath", "srcpath", "src", "source", "sourcedirectory", "sourcefolder", "sourcedir", "srcdir", "path", "directorypath", "folderpath")]

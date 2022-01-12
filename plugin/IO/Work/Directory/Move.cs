@@ -11,7 +11,7 @@ using Microsoft.VisualBasic.FileIO;
 
 namespace IO.Work.Directory
 {
-    internal class Move : IOTaskWork
+    internal class Move : WorkDirectory
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("sourcepath", "srcpath", "src", "source", "sourcedirectory", "sourcefolder", "sourcedir", "srcdir", "path", "directorypath", "folderpath")]

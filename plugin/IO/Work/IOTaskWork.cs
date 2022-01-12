@@ -12,6 +12,7 @@ namespace IO.Work
 {
     internal class IOTaskWork : TaskJob
     {
+        /*
         protected delegate void TargetFileAction(string path);
 
         protected delegate void SrcDstFileAction(string source, string destination);
@@ -210,5 +211,6 @@ namespace IO.Work
         }
 
         #endregion
+        */
     }
 }

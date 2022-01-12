@@ -13,7 +13,7 @@ using System.Security.AccessControl;
 namespace IO.Work.File
 {
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-    internal class Revoke : IOTaskWork
+    internal class Revoke : WorkFile
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath")]

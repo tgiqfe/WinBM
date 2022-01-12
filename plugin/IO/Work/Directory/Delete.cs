@@ -12,7 +12,7 @@ using IO.Lib;
 
 namespace IO.Work.Directory
 {
-    internal class Delete : IOTaskWork
+    internal class Delete : WorkDirectory
     {
         [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath", "dirpath", "directorypath")]
