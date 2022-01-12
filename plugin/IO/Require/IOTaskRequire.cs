@@ -11,6 +11,7 @@ namespace IO.Require
 {
     internal class IOTaskRequire : TaskJob
     {
+        /*
         protected delegate void TargetFileAction(string path);
 
         protected delegate void TargetDirectoryAction(string path);
@@ -103,5 +104,6 @@ namespace IO.Require
             }
             return;
         }
+        */
     }
 }

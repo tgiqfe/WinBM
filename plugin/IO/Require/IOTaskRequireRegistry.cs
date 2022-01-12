@@ -10,6 +10,7 @@ using WinBM.Task;
 
 namespace IO.Require
 {
+    /*
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
     internal class IOTaskRequireRegistry : TaskJob
     {
@@ -108,4 +109,5 @@ namespace IO.Require
             }
         }
     }
+        */
 }
