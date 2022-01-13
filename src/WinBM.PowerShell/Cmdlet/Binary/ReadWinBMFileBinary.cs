@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Management.Automation;
 using System.IO;
+using System.IO.Compression;
 
 namespace WinBM.PowerShell.Cmdlet.Binary
 {
@@ -21,7 +22,6 @@ namespace WinBM.PowerShell.Cmdlet.Binary
         public int TextBlock { get; set; }
 
         private string _currentDirectory = null;
-
         const int BUFF_SIZE = 4096;
 
         protected override void BeginProcessing()

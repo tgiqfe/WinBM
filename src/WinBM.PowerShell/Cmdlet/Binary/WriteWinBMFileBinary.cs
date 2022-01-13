@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Management.Automation;
 using System.Text.RegularExpressions;
+using System.IO.Compression;
 
 namespace WinBM.PowerShell.Cmdlet.Binary
 {
@@ -22,6 +23,7 @@ namespace WinBM.PowerShell.Cmdlet.Binary
         public string OutputFile { get; set; }
 
         private string _currentDirectory = null;
+        const int BUFF_SIZE = 4096;
 
         protected override void BeginProcessing()
         {
@@ -59,8 +61,8 @@ namespace WinBM.PowerShell.Cmdlet.Binary
                 bytes = tempBytes.ToArray();
             }
 
-            using (var fw = new FileStream(OutputFile, FileMode.Create, FileAccess.Write))
-            using (var bw = new BinaryWriter(fw))
+            using (var fs = new FileStream(OutputFile, FileMode.Create, FileAccess.Write))
+            using (var bw = new BinaryWriter(fs))
             {
                 bw.Write(bytes);
             }
