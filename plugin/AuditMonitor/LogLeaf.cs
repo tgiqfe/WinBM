@@ -62,10 +62,14 @@ namespace AuditMonitor
         {
             try
             {
-                string json = JsonSerializer.Serialize(this);
+                string json = JsonSerializer.Serialize(this, new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                });
                 using (var sw = new StreamWriter(auditMonitorFile, true, Encoding.UTF8))
                 {
-                    sw.WriteLine(json);
+                    sw.WriteLine(json + ";");
                 }
             }
             catch { }

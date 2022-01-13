@@ -1,9 +1,17 @@
 ---
+kind: Init
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 540
+      scope: File
+
+---
 kind: Job
 metadata:
   name: TestCopy01
   description: IO/File/Copyテスト [準備]
-  priority: 111
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: IO/Directory/Delete
@@ -30,7 +38,7 @@ job:
 kind: Job
 metadata:
   description: 通常コピー
-  priority: 112
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: IO/File/Copy
@@ -70,7 +78,7 @@ job:
 kind: Job
 metadata:
   description: 新規フォルダー配下へコピー
-  priority: 113
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: IO/File/Copy
@@ -102,7 +110,7 @@ job:
 kind: Job
 metadata:
   description: ワイルドカード指定してのコピー
-  priority: 114
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
 job:
   work:
   - task: IO/File/Copy

@@ -74,11 +74,30 @@ namespace AuditMonitor
                 using (var sr = new StreamReader(fs, Encoding.UTF8))
                 {
                     string readLine = "";
+                    StringBuilder sb = new StringBuilder();
                     while ((readLine = sr.ReadLine()) != null)
                     {
                         count++;
                         if (count <= _Position) { continue; }
-                        _Manager.AddAndView(readLine);
+
+                        /*
+                         * AuditMonitorデータベースファイルをJsonIndentedで出力する為の記述
+                         */
+                        if (readLine.EndsWith("};"))
+                        {
+                            sb.AppendLine(readLine.TrimEnd(';'));
+                            _Manager.AddAndView(sb.ToString());
+                            sb.Clear();
+                        }
+                        else
+                        {
+                            sb.AppendLine(readLine);
+                        }
+
+                        /*
+                         * AuditMonitorデータベースファイルを1行ずつ出力する場合は↓の記述。
+                         */
+                        //_Manager.AddAndView(readLine);
                     }
                 }
                 this._Position = count;
