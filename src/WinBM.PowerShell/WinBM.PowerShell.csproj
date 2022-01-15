@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\..\plugin\IO\Lib\RegistryControl.cs" Link="Lib\IOLib\RegistryControl.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Management.Automation" Version="7.2.1" />
   </ItemGroup>
 
