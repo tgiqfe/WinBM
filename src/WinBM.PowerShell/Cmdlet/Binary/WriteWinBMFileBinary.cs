@@ -69,7 +69,7 @@ namespace WinBM.PowerShell.Cmdlet.Binary
             {
                 if (Expand)
                 {
-                    //  復号する場合
+                    //  解凍する場合
                     using (var ms = new MemoryStream(bytes))
                     using (var gs = new GZipStream(ms, CompressionMode.Decompress))
                     {
@@ -83,7 +83,7 @@ namespace WinBM.PowerShell.Cmdlet.Binary
                 }
                 else
                 {
-                    //  復号不要な場合
+                    //  解凍不要な場合
                     bw.Write(bytes);
                 }
             }
