@@ -22,6 +22,9 @@ namespace WinBM.PowerShell.Cmdlet.Binary
         [Parameter(Mandatory = true, Position = 0)]
         public string OutputFile { get; set; }
 
+        [Parameter]
+        public SwitchParameter Expand { get; set; }
+
         private string _currentDirectory = null;
         const int BUFF_SIZE = 4096;
 
@@ -64,7 +67,25 @@ namespace WinBM.PowerShell.Cmdlet.Binary
             using (var fs = new FileStream(OutputFile, FileMode.Create, FileAccess.Write))
             using (var bw = new BinaryWriter(fs))
             {
-                bw.Write(bytes);
+                if (Expand)
+                {
+                    //  復号する場合
+                    using (var ms = new MemoryStream(bytes))
+                    using (var gs = new GZipStream(ms, CompressionMode.Decompress))
+                    {
+                        byte[] buffer = new byte[BUFF_SIZE];
+                        int readed = 0;
+                        while ((readed = gs.Read(buffer, 0, BUFF_SIZE)) > 0)
+                        {
+                            bw.Write(buffer, 0, readed);
+                        }
+                    }
+                }
+                else
+                {
+                    //  復号不要な場合
+                    bw.Write(bytes);
+                }
             }
         }
 

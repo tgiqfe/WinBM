@@ -21,6 +21,9 @@ namespace WinBM.PowerShell.Cmdlet.Binary
         [Parameter]
         public int TextBlock { get; set; }
 
+        [Parameter]
+        public SwitchParameter Compress { get; set; }
+
         private string _currentDirectory = null;
         const int BUFF_SIZE = 4096;
 
@@ -47,9 +50,25 @@ namespace WinBM.PowerShell.Cmdlet.Binary
                 {
                     byte[] buffer = new byte[BUFF_SIZE];
                     int readed = 0;
-                    while ((readed = br.Read(buffer, 0, buffer.Length)) > 0)
+
+                    if (Compress)
                     {
-                        ms.Write(buffer, 0, readed);
+                        //  圧縮する場合
+                        using (var gs = new GZipStream(ms, CompressionMode.Compress))
+                        {
+                            while ((readed = br.Read(buffer, 0, buffer.Length)) > 0)
+                            {
+                                gs.Write(buffer, 0, readed);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //  非圧縮
+                        while ((readed = br.Read(buffer, 0, buffer.Length)) > 0)
+                        {
+                            ms.Write(buffer, 0, readed);
+                        }
                     }
                     retString = BitConverter.ToString(ms.ToArray()).Replace("-", "");
                 }
