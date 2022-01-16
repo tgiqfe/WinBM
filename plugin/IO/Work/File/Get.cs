@@ -10,6 +10,7 @@ using System.Security.AccessControl;
 using System.Security.Principal;
 using IO.Lib;
 using System.Security.Cryptography;
+using System.IO.Compression;
 
 namespace IO.Work.File
 {
@@ -24,8 +25,21 @@ namespace IO.Work.File
         [Keys("tolog", "log")]
         protected bool _ToLog { get; set; }
 
+        //  ########################
+
         [TaskParameter]
-        [Keys("binary", "bin")]
+        [Keys("isbinary", "binary", "bin")]
+        protected bool? _IsBinary { get; set; }
+
+        [TaskParameter]
+        [Keys("textblock", "block")]
+        protected int? _TextBlock { get; set; }
+
+        [TaskParameter]
+        [Keys("compress")]
+        protected bool? _Compress { get; set; }
+
+        const int BUFF_SIZE = 4096;
 
         public override void MainProcess()
         {
@@ -35,6 +49,27 @@ namespace IO.Work.File
         }
 
         private void GetFileAction(string target)
+        {
+            string outputText = _IsBinary ?? false ?
+                ReadFileBinary(target) :
+                GetFileInfo(target);
+
+            if (_ToLog)
+            {
+                Manager.WriteLog(LogLevel.Info, outputText);
+            }
+            else
+            {
+                Manager.WriteStandard(outputText);
+            }
+        }
+
+        /// <summary>
+        /// ファイル情報取得
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        private string GetFileInfo(string target)
         {
             FileInfo fInfo = new System.IO.FileInfo(target);
             FileSecurity security = fInfo.GetAccessControl();
@@ -79,14 +114,72 @@ namespace IO.Work.File
             sb.AppendLine($"  SecurityBlock  : {isSecurityBlock}");
             sb.Append($"  Size           : {size}");
 
-            if (_ToLog)
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// バイナリモードでの読み込み
+        /// </summary>
+        /// <param name="target"></param>
+        private string ReadFileBinary(string target)
+        {
+            string retText = "";
+
+            using (var fs = new FileStream(target, FileMode.Open, FileAccess.Read))
+            using (var br = new BinaryReader(fs))
+            using (var ms = new MemoryStream())
             {
-                Manager.WriteLog(LogLevel.Info, sb.ToString());
+                if (fs.Length < int.MaxValue)
+                {
+                    byte[] buffer = new byte[BUFF_SIZE];
+                    int readed = 0;
+
+                    if (_Compress ?? false)
+                    {
+                        //  圧縮する場合
+                        using (var gs = new GZipStream(ms, CompressionMode.Compress))
+                        {
+                            while ((readed = br.Read(buffer, 0, buffer.Length)) > 0)
+                            {
+                                gs.Write(buffer, 0, readed);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        //  非圧縮
+                        while ((readed = br.Read(buffer, 0, buffer.Length)) > 0)
+                        {
+                            ms.Write(buffer, 0, readed);
+                        }
+                    }
+                    retText = BitConverter.ToString(ms.ToArray()).Replace("-", "");
+                }
+                else
+                {
+                    Console.Error.WriteLine("Size Over.");
+                    return null;
+                }
             }
-            else
+
+            //  テキストブロック化
+            if ((this._TextBlock ?? 0) > 0)
             {
-                Manager.WriteStandard(sb.ToString());
+                int count = (int)_TextBlock;
+                StringBuilder sb = new StringBuilder();
+                using (var sr = new StringReader(retText))
+                {
+                    int readed = 0;
+                    char[] buffer = new char[count];
+                    while ((readed = sr.Read(buffer, 0, count)) > 0)
+                    {
+                        sb.AppendLine(new string(buffer, 0, readed));
+                    }
+                }
+                retText = sb.ToString();
             }
+
+            return retText;
         }
     }
 }

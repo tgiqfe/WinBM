@@ -49,18 +49,18 @@ namespace WinBM.PowerShell.Cmdlet.Binary
 
         protected override void ProcessRecord()
         {
-            string retString = "";
+            string retText = "";
 
             //  ファイルorレジストリ値からバイナリデータを取得
             if (regKeyPrefix.Any(x => TargetPath.StartsWith(x, StringComparison.OrdinalIgnoreCase)) && !string.IsNullOrEmpty(TargetName))
             {
                 //  レジストリ値
-                retString = ReadRegistryBinary(TargetPath, TargetName);
+                retText = ReadRegistryBinary(TargetPath, TargetName);
             }
             else if (File.Exists(TargetPath))
             {
                 //  バイナリファイル
-                retString = ReadFileBinary(TargetPath);
+                retText = ReadFileBinary(TargetPath);
             }
             else
             {
@@ -72,17 +72,17 @@ namespace WinBM.PowerShell.Cmdlet.Binary
             if (this.TextBlock > 0)
             {
                 int count = TextBlock;
-                using (var sr = new StringReader(retString))
+                StringBuilder sb = new StringBuilder();
+                using (var sr = new StringReader(retText))
                 {
                     int readed = 0;
-                    StringBuilder sb = new StringBuilder();
                     char[] buffer = new char[count];
                     while ((readed = sr.Read(buffer, 0, count)) > 0)
                     {
                         sb.AppendLine(new string(buffer, 0, readed));
                     }
-                    retString = sb.ToString();
                 }
+                retText = sb.ToString();
             }
 
             //  ファイルへ出力 or オブジェクトを返す
@@ -90,12 +90,12 @@ namespace WinBM.PowerShell.Cmdlet.Binary
             {
                 using (var sw = new StreamWriter(OutputFile, false, Encoding.UTF8))
                 {
-                    sw.Write(retString);
+                    sw.Write(retText);
                 }
             }
             else
             {
-                WriteObject(retString);
+                WriteObject(retText);
             }
         }
 

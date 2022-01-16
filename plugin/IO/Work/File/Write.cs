@@ -30,8 +30,10 @@ namespace IO.Work.File
         [Keys("encoding", "encode", "enc")]
         protected string _Encoding { get; set; }
 
+        //  ########################
+
         [TaskParameter]
-        [Keys("binary","bin")]
+        [Keys("isbinary", "binary","bin")]
         protected bool? _IsBinary { get; set; }
 
         [TaskParameter]
@@ -69,7 +71,7 @@ namespace IO.Work.File
             {
                 if (_IsBinary ?? false)
                 {
-                    WriteBinaryFile(target);
+                    WriteFileBinary(target);
                 }
                 else
                 {
@@ -92,7 +94,7 @@ namespace IO.Work.File
         /// バイナリモードでの書き込み
         /// </summary>
         /// <param name="target"></param>
-        private void WriteBinaryFile(string target)
+        private void WriteFileBinary(string target)
         {
             if (_bytes == null)
             {
