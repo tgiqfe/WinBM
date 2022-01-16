@@ -28,6 +28,22 @@ namespace IO.Work.Registry
         [Keys("tolog", "log")]
         protected bool _ToLog { get; set; }
 
+        //  ########################
+
+        [TaskParameter]
+        [Keys("isbinary", "binary", "bin")]
+        protected bool? _IsBinary { get; set; }
+
+        [TaskParameter]
+        [Keys("textblock", "block")]
+        protected int? _TextBlock { get; set; }
+
+        [TaskParameter]
+        [Keys("compress")]
+        protected bool? _Compress { get; set; }
+
+        const int BUFF_SIZE = 4096;
+
         public override void MainProcess()
         {
             this.Success = true;
@@ -48,29 +64,40 @@ namespace IO.Work.Registry
         {
             if (targetKey.GetValueNames().Any(x => x.Equals(targetName, StringComparison.OrdinalIgnoreCase)))
             {
-                string registryKey = targetKey.Name;
-                string registryParameterName = targetName;
-
                 RegistryValueKind valueKind = targetKey.GetValueKind(targetName);
-                string registryValue = RegistryControl.RegistryValueToString(targetKey, targetName, valueKind, false);
-                string registryValueNotExpand = RegistryControl.RegistryValueToString(targetKey, targetName, valueKind, true);
-                string registryValueKind = RegistryControl.ValueKindToString(valueKind);
 
-                var sb = new StringBuilder();
-                sb.AppendLine($"{this.TaskName} Registry parametenr name summary");
-                sb.AppendLine($"  RegistryKey            : {registryKey}");
-                sb.AppendLine($"  RegistryParameterName  : {registryParameterName}");
-                sb.AppendLine($"  RegistryValue          : {registryValue}");
-                sb.AppendLine($"  RegistryValueNotExpand : {registryValueNotExpand}");
-                sb.Append($"  RegistryValueKind      : {registryValueKind}");
-
-                if (_ToLog)
+                string outputText = "";
+                if (valueKind == RegistryValueKind.Binary && (_IsBinary ?? false))
                 {
-                    Manager.WriteLog(LogLevel.Info, sb.ToString());
+                    outputText = RegistryControl.RegistryValueToString(targetKey, targetName, valueKind, false, _Compress ?? false, _TextBlock ?? 0);
                 }
                 else
                 {
-                    Manager.WriteStandard(sb.ToString());
+                    string registryKey = targetKey.Name;
+                    string registryParameterName = targetName;
+                    string registryValue = RegistryControl.RegistryValueToString(targetKey, targetName, valueKind, false, _Compress ?? false, _TextBlock ?? 0);
+                    string registryValueNotExpand = valueKind == RegistryValueKind.ExpandString ?
+                        RegistryControl.RegistryValueToString(targetKey, targetName, valueKind, true) : "";
+                    string registryValueKind = RegistryControl.ValueKindToString(valueKind);
+
+                    var sb = new StringBuilder();
+                    sb.AppendLine($"{this.TaskName} Registry parametenr name summary");
+                    sb.AppendLine($"  RegistryKey            : {registryKey}");
+                    sb.AppendLine($"  RegistryParameterName  : {registryParameterName}");
+                    sb.AppendLine($"  RegistryValue          : {registryValue}");
+                    sb.AppendLine($"  RegistryValueNotExpand : {registryValueNotExpand}");
+                    sb.Append($"  RegistryValueKind      : {registryValueKind}");
+
+                    outputText = sb.ToString();
+                }
+
+                if (_ToLog)
+                {
+                    Manager.WriteLog(LogLevel.Info, outputText);
+                }
+                else
+                {
+                    Manager.WriteStandard(outputText);
                 }
             }
             else
@@ -88,7 +115,6 @@ namespace IO.Work.Registry
             string registryKeyName = System.IO.Path.GetFileName(target.Name);
             string registryKeyPath = target.Name;
 
-            //string access = RegistryControl.AccessRulesToString(rules);
             string access = string.Join('/',
                 AccessRuleSummary.FromAccessRules(rules, PathType.Registry).
                     Select(x => x.ToString()));

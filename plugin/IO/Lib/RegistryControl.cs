@@ -80,12 +80,6 @@ namespace IO.Lib
         /// <param name="excludeKey"></param>
         public static void CopyRegistryKey(RegistryKey sourceKey, RegistryKey destinationKey, string[] excludeKey)
         {
-            //  ↓の除外キーの為の処理の位置を変更
-            //if (excludeKey?.Any(x => x.Equals(sourceKey.Name, StringComparison.OrdinalIgnoreCase)) ?? false)
-            //{
-            //    return;
-            //}
-
             foreach (string paramName in sourceKey.GetValueNames())
             {
                 RegistryValueKind valueKind = sourceKey.GetValueKind(paramName);
@@ -179,22 +173,48 @@ namespace IO.Lib
         }
 
         /// <summary>
-        /// 文字列からbyte配列に変換 (REG_BINARY用)
+        /// 文字列からbyte配列に変換 (REG_BINARY用。解凍とテキストブロックにも対応)
         /// </summary>
-        /// <param name="val"></param>
+        /// <param name="text"></param>
         /// <returns></returns>
-        public static byte[] StringToRegBinary(string val)
+        public static byte[] StringToRegBinary(string text, bool expand)
         {
-            if (Regex.IsMatch(val, @"^[0-9a-fA-F]+$"))
+            byte[] bytes = new byte[0] { };
+            if (text.Contains("\n"))
+            {
+                text = Regex.Replace(text, "\r?\n", "");
+            }
+            if (Regex.IsMatch(text, @"^[0-9a-fA-F]+$"))
             {
                 List<byte> tempBytes = new List<byte>();
-                for (int i = 0; i < val.Length / 2; i++)
+                for (int i = 0; i < text.Length / 2; i++)
                 {
-                    tempBytes.Add(Convert.ToByte(val.Substring(i * 2, 2), 16));
+                    tempBytes.Add(Convert.ToByte(text.Substring(i * 2, 2), 16));
                 }
-                return tempBytes.ToArray();
+                bytes = tempBytes.ToArray();
             }
-            return new byte[0] { };
+
+            if (expand)
+            {
+                int BUFF_SIZE = 4096;
+
+                using (var msS = new MemoryStream(bytes))
+                using (var msD = new MemoryStream())
+                {
+                    using (var gs = new System.IO.Compression.GZipStream(msS, System.IO.Compression.CompressionMode.Decompress))
+                    {
+                        byte[] buffer = new byte[BUFF_SIZE];
+                        int readed = 0;
+                        while ((readed = gs.Read(buffer, 0, BUFF_SIZE)) > 0)
+                        {
+                            msD.Write(buffer, 0, readed);
+                        }
+                    }
+                    return msD.ToArray();
+                }
+            }
+
+            return bytes;
         }
 
         /// <summary>
@@ -272,7 +292,82 @@ namespace IO.Lib
         }
 
         /// <summary>
-        /// レジストリ値をバイト配列に変換
+        /// レジストリ値を文字列に変換
+        /// (REG_BINNARYの圧縮とテキストブロック化に対応)
+        /// </summary>
+        /// <param name="regKey"></param>
+        /// <param name="name"></param>
+        /// <param name="valueKind"></param>
+        /// <param name="noResolv"></param>
+        /// <param name="compression"></param>
+        /// <param name="textBlock"></param>
+        /// <returns></returns>
+        public static string RegistryValueToString(RegistryKey regKey, string name, RegistryValueKind valueKind, bool noResolv, bool compress, int textBlock)
+        {
+            switch (valueKind)
+            {
+                case RegistryValueKind.String:
+                    return regKey.GetValue(name) as string;
+                case RegistryValueKind.DWord:
+                case RegistryValueKind.QWord:
+                    return regKey.GetValue(name).ToString();
+                case RegistryValueKind.ExpandString:
+                    return noResolv ?
+                        regKey.GetValue(name, "", RegistryValueOptions.DoNotExpandEnvironmentNames) as string :
+                        regKey.GetValue(name) as string;
+                case RegistryValueKind.Binary:
+                    string retText = "";
+                    if (compress)
+                    {
+                        int BUFF_SIZE = 4096;
+
+                        
+                        using (var msS = new MemoryStream(regKey.GetValue(name) as byte[]))
+                        using (var msD = new MemoryStream())
+                        {
+                            using (var gs = new System.IO.Compression.GZipStream(msD, System.IO.Compression.CompressionMode.Compress))
+                            {
+                                byte[] buffer = new byte[BUFF_SIZE];
+                                int readed = 0;
+                                while ((readed = msS.Read(buffer, 0, BUFF_SIZE)) > 0)
+                                {
+                                    gs.Write(buffer, 0, readed);
+                                }
+                            }
+                            retText = BitConverter.ToString(msD.ToArray()).Replace("-", "");
+                        }
+                    }
+                    else
+                    {
+                        retText = BitConverter.ToString(regKey.GetValue(name) as byte[]).Replace("-", "").ToUpper();
+                    }
+
+                    if (textBlock > 0)
+                    {
+                        int count = textBlock;
+                        StringBuilder sb = new StringBuilder();
+                        using (var sr = new StringReader(retText))
+                        {
+                            int readed = 0;
+                            char[] buffer = new char[count];
+                            while ((readed = sr.Read(buffer, 0, count)) > 0)
+                            {
+                                sb.AppendLine(new string(buffer, 0, readed));
+                            }
+                        }
+                        retText = sb.ToString().TrimEnd('\n').TrimEnd('\r');
+                    }
+                    return retText;
+                case RegistryValueKind.MultiString:
+                    return string.Join("\\0", regKey.GetValue(name) as string[]);
+                case RegistryValueKind.None:
+                default:
+                    return null;
+            }
+        }
+
+        /// <summary>
+        /// レジストリ値をバイト配列に変換。こちらはREG_BINARYでも圧縮対応する予定は無し
         /// </summary>
         /// <param name="regKey"></param>
         /// <param name="name"></param>
