@@ -198,8 +198,8 @@ namespace IO.Lib
             {
                 int BUFF_SIZE = 4096;
 
-                using (var msS = new MemoryStream(bytes))
-                using (var msD = new MemoryStream())
+                using (var msS = new System.IO.MemoryStream(bytes))
+                using (var msD = new System.IO.MemoryStream())
                 {
                     using (var gs = new System.IO.Compression.GZipStream(msS, System.IO.Compression.CompressionMode.Decompress))
                     {
@@ -322,8 +322,8 @@ namespace IO.Lib
                         int BUFF_SIZE = 4096;
 
                         
-                        using (var msS = new MemoryStream(regKey.GetValue(name) as byte[]))
-                        using (var msD = new MemoryStream())
+                        using (var msS = new System.IO.MemoryStream(regKey.GetValue(name) as byte[]))
+                        using (var msD = new System.IO.MemoryStream())
                         {
                             using (var gs = new System.IO.Compression.GZipStream(msD, System.IO.Compression.CompressionMode.Compress))
                             {
@@ -346,7 +346,7 @@ namespace IO.Lib
                     {
                         int count = textBlock;
                         StringBuilder sb = new StringBuilder();
-                        using (var sr = new StringReader(retText))
+                        using (var sr = new System.IO.StringReader(retText))
                         {
                             int readed = 0;
                             char[] buffer = new char[count];
