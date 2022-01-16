@@ -24,6 +24,9 @@ namespace IO.Work.File
         [Keys("tolog", "log")]
         protected bool _ToLog { get; set; }
 
+        [TaskParameter]
+        [Keys("binary", "bin")]
+
         public override void MainProcess()
         {
             this.Success = true;
@@ -39,7 +42,6 @@ namespace IO.Work.File
 
             string name = Path.GetFileName(target);
             string fullPath = Path.GetFullPath(target);
-            //string access = FileControl.AccessRulesToString(rules);
 
             string access = string.Join('/',
                 AccessRuleSummary.FromAccessRules(rules, PathType.File).
@@ -57,7 +59,6 @@ namespace IO.Work.File
             string hash = "";
             using (var fs = new System.IO.FileStream(target, FileMode.Open, FileAccess.Read))
             {
-                //var sha256 = new SHA256CryptoServiceProvider();
                 var sha256 = SHA256.Create();
 
                 hash = BitConverter.ToString(sha256.ComputeHash(fs)).Replace("-", "");

@@ -33,6 +33,8 @@ namespace IO.Work.File
         [Keys("recycle", "recyclebin", "trash", "trashbox")]
         protected bool _Recycle { get; set; }
 
+
+
         public override void MainProcess()
         {
             this.Success = true;
