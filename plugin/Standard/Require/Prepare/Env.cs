@@ -15,7 +15,7 @@ namespace Standard.Require.Prepare
     internal class Env : TaskJob
     {
         [TaskParameter(Mandatory = true)]
-        [Keys("set", "envset", "envs", "environment", "environments", "name", "key")]
+        [Keys("set", "envset", "env", "envs", "environment", "environments", "name", "key")]
         protected string[] _Key { get; set; }
 
         [TaskParameter(Resolv = true)]
