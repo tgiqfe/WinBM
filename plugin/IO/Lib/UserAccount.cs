@@ -109,6 +109,7 @@ namespace IO.Lib
             {
                 { "Administrators", "BUILTIN\\Administrators" },
                 { Environment.MachineName + "\\Administrators", "BUILTIN\\Administrators" },
+                { "System", "NT Authority\\System" },
             };
 
             if (_preDefinedAccounts.ContainsKey(name))

@@ -12,7 +12,7 @@ namespace Standard.Work.Prepare
     internal class Env: TaskJob
     {
         [TaskParameter(Mandatory = true, Delimiter = '\n', EqualSign = '=')]
-        [Keys("set", "envset", "envs", "environment", "environments")]
+        [Keys("set", "envset", "env", "envs", "environment", "environments")]
         protected Dictionary<string, string> _EnvSet { get; set; }
 
         /// <summary>

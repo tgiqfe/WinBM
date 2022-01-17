@@ -30,6 +30,10 @@ namespace IO.Work.Directory
         [Keys("clear", "crear", "claer")]
         protected bool _Clear { get; set; }
 
+        [TaskParameter(Resolv = true)]
+        [Keys("exclude", "excludepath", "excludes", "excludepaths", "expath", "expaths")]
+        protected string[] _Exclude { get; set; }
+
         public override void MainProcess()
         {
             this.Success = true;
@@ -39,7 +43,19 @@ namespace IO.Work.Directory
 
         private void DeleteDirectoryAction(string target)
         {
+            //  Excludeに絶対パスorファイル名が一致していたらスキップ
+            if (_Exclude?.Length > 0)
+            {
+                if (_Exclude.Any(x =>
+                     (x.Contains("\\") && x.Equals(target, StringComparison.OrdinalIgnoreCase)) ||
+                     (!x.Contains("\\") && x.Equals(Path.GetFileName(target), StringComparison.OrdinalIgnoreCase))))
+                {
+                    return;
+                }
+            }
+
             //  削除フォルダーが存在しない場合
+            //  ★★★★★↓この処理必要???★★★★★
             if (!System.IO.Directory.Exists(target))
             {
                 Manager.WriteLog(LogLevel.Error, "Target folder is Missing. \"{0}\"", target);

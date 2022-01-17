@@ -7,6 +7,8 @@ using WinBM;
 using WinBM.Task;
 using IO.Lib;
 using System.IO;
+using System.IO.Compression;
+using System.Text.RegularExpressions;
 
 namespace IO.Work.File
 {
@@ -28,7 +30,23 @@ namespace IO.Work.File
         [Keys("encoding", "encode", "enc")]
         protected string _Encoding { get; set; }
 
+        //  ########################
+
+        [TaskParameter]
+        [Keys("isbinary", "binary","bin")]
+        protected bool? _IsBinary { get; set; }
+
+        [TaskParameter]
+        [Keys("expand")]
+        protected bool? _Expand { get; set; }
+
         private Encoding enc = null;
+
+        //  Expand用パラメータ
+        private const int BUFF_SIZE = 4096;
+        private byte[] _bytes = null;
+
+        protected enum WriteMode { Text, Binary, }
 
         public override void MainProcess()
         {
@@ -51,11 +69,18 @@ namespace IO.Work.File
 
             try
             {
-                using (var sw = new StreamWriter(target, _Append, enc))
+                if (_IsBinary ?? false)
                 {
-                    sw.WriteLine(_Text);
+                    WriteFileBinary(target);
                 }
-                this.Success = true;
+                else
+                {
+                    //  テキストモードでの書き込み
+                    using (var sw = new StreamWriter(target, _Append, enc))
+                    {
+                        sw.WriteLine(_Text);
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -64,5 +89,59 @@ namespace IO.Work.File
                 this.Success = false;
             }
         }
+
+        /// <summary>
+        /// バイナリモードでの書き込み
+        /// </summary>
+        /// <param name="target"></param>
+        private void WriteFileBinary(string target)
+        {
+            if (_bytes == null)
+            {
+                _bytes = new byte[0] { };
+                string text = _Text.Contains("\n") ? Regex.Replace(_Text, "\r?\n", "") : _Text;
+                if (Regex.IsMatch(text, @"^[0-9a-fA-F]+$"))
+                {
+                    var tempBytes = new List<byte>();
+                    for (int i = 0; i < text.Length / 2; i++)
+                    {
+                        tempBytes.Add(Convert.ToByte(text.Substring(i * 2, 2), 16));
+                    }
+                    _bytes = tempBytes.ToArray();
+                }
+            }
+
+            using (var fs = new FileStream(target, FileMode.Create, FileAccess.Write))
+            using (var bw = new BinaryWriter(fs))
+            {
+                if (_Expand ?? false)
+                {
+                    //  解凍する場合
+                    using (var ms = new MemoryStream(_bytes))
+                    using (var gs = new GZipStream(ms, CompressionMode.Decompress))
+                    {
+                        byte[] buffer = new byte[BUFF_SIZE];
+                        int readed = 0;
+                        while ((readed = gs.Read(buffer, 0, BUFF_SIZE)) > 0)
+                        {
+                            bw.Write(buffer, 0, readed);
+                        }
+                    }
+                }
+                else
+                {
+                    //  解凍不要
+                    bw.Write(_bytes);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Writeへのエイリアス
+    /// </summary>
+    internal class Set : Write
+    {
+        protected override bool IsAlias { get { return true; } }
     }
 }

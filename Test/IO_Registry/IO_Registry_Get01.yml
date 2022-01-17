@@ -1,0 +1,93 @@
+---
+kind: Init
+metadata:
+  description: ファイル内環境変数
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 570
+      scope: File
+
+---
+kind: Job
+metadata:
+  description: レジストリキー作成テスト1
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Registry/Delete
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%'
+  - task: IO/Registry/Create
+    param:
+      path: |-
+        HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample01
+        HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample02
+        HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample03
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample01\aaaa\bbbb\cccc'
+      name: TestTest1
+      value: This is a test
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample02\aaaa\bbbb\cccc'
+      name: TestTest2
+      value: This is a test
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample02\aaaa\bbbb\cccc'
+      name: TestTest3
+      value: |-
+        AA55BB44CC33DD22EE11FF00AA55BB44CC33DD22EE11FF00AA55BB44CC33DD22EE11FF00
+        AA55BB44CC33DD22EE11FF00AA55BB44CC33DD22EE11FF00AA55BB44CC33DD22EE11FF11
+        AA55BB44CC33DD22EE11FF00AA55BB44CC33DD22EE11FF00AA55BB44CC33DD22EE11FF22
+        AA55BB44CC33DD22EE11FF00AA55BB44CC33DD22EE11FF00AA55BB44CC33DD22EE11FF33
+        AA55BB44CC33DD22EE11FF00AA55BB44CC33DD22EE11FF00AA55BB44CC33DD22EE11FF44
+      type: REG_BINARY
+
+---
+kind: Job
+metadata:
+  description: レジストリ値取得確認
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Registry/Get
+    description: 通常レジストリ値取得
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample02\aaaa\bbbb\cccc'
+      name: TestTest3
+      #textBlock: 50
+      #compress: true
+  - task: IO/Registry/Get
+    description: BINARY情報を取得
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample02\aaaa\bbbb\cccc'
+      name: TestTest3
+      bin: true
+  - task: IO/Registry/Get
+    description: BINARY情報を取得(圧縮)
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample02\aaaa\bbbb\cccc'
+      name: TestTest3
+      bin: true
+      compress: true
+  - task: IO/Registry/Get
+    description: BINARY情報を取得(テキストブロック化)
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample02\aaaa\bbbb\cccc'
+      name: TestTest3
+      bin: true
+      textblock: 40
+  - task: IO/Registry/Get
+    description: BINARY情報を取得(圧縮/テキストブロック化)
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample02\aaaa\bbbb\cccc'
+      name: TestTest3
+      bin: true
+      textblock: 50
+      compress: true
+

@@ -47,6 +47,10 @@ namespace IO.Work.Registry
         [ValidateEnumSet("Unknown", "String", "DWord", "QWord", "MultiString", "ExpandString", "Binary", "None")]
         protected RegistryValueKind? _ValueKind { get; set; }
 
+        [TaskParameter]
+        [Keys("expand")]
+        protected bool? _Expand { get; set; }
+
         public override void MainProcess()
         {
             this.Success = true;
@@ -120,7 +124,7 @@ namespace IO.Work.Registry
                         Microsoft.Win32.Registry.SetValue(target, _Name, _Value ?? "", RegistryValueKind.String);
                         break;
                     case RegistryValueKind.Binary:
-                        Microsoft.Win32.Registry.SetValue(target, _Name, RegistryControl.StringToRegBinary(_Value), RegistryValueKind.Binary);
+                        Microsoft.Win32.Registry.SetValue(target, _Name, RegistryControl.StringToRegBinary(_Value, _Expand ?? false), RegistryValueKind.Binary);
                         break;
                     case RegistryValueKind.DWord:
                         Microsoft.Win32.Registry.SetValue(target, _Name, int.Parse(_Value), RegistryValueKind.DWord);
@@ -148,7 +152,14 @@ namespace IO.Work.Registry
         }
     }
 
+    /// <summary>
+    /// Setへのエイリアス
+    /// </summary>
     internal class Add : Set
+    {
+        protected override bool IsAlias { get { return true; } }
+    }
+    internal class Write : Set
     {
         protected override bool IsAlias { get { return true; } }
     }
