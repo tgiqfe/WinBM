@@ -1,0 +1,48 @@
+---
+kind: Init
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 580
+      scope: File
+
+---
+kind: Job
+metadata:
+  description: IO/Directory/Deleteテスト
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%'
+  - task: IO/File/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Exsample01\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Exsample02\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Exsample03\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Exsample04\sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Exsample05\sample01.txt
+
+---
+kind: Job
+metadata:
+  description: ディレクトリ削除テスト。ワイルドカードと除外の動作確認
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: Audit/Directory/Watch
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%'
+      id: DirectoryDelete02
+      begin: true
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Exsample*'
+      exclude: 'Exsample04, %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Exsample03'
+  - task: Audit/Directory/Watch
+    param:
+      id: DirectoryDelete02
+
+

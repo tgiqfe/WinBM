@@ -30,10 +30,11 @@ namespace IO.Work.File
         [Keys("encoding", "encode", "enc")]
         protected string _Encoding { get; set; }
 
+        //  ########################
+
         [TaskParameter]
-        [Keys("writemode", "mode")]
-        [Values("text,txt,file", "binary,bin", Default = "text")]
-        protected WriteMode _WriteMode { get; set; }
+        [Keys("isbinary", "binary","bin")]
+        protected bool? _IsBinary { get; set; }
 
         [TaskParameter]
         [Keys("expand")]
@@ -68,17 +69,17 @@ namespace IO.Work.File
 
             try
             {
-                switch (_WriteMode)
+                if (_IsBinary ?? false)
                 {
-                    case WriteMode.Text:
-                        using (var sw = new StreamWriter(target, _Append, enc))
-                        {
-                            sw.WriteLine(_Text);
-                        }
-                        break;
-                    case WriteMode.Binary:
-                        WriteBinaryFile(target);
-                        break;
+                    WriteFileBinary(target);
+                }
+                else
+                {
+                    //  テキストモードでの書き込み
+                    using (var sw = new StreamWriter(target, _Append, enc))
+                    {
+                        sw.WriteLine(_Text);
+                    }
                 }
             }
             catch (Exception e)
@@ -89,7 +90,11 @@ namespace IO.Work.File
             }
         }
 
-        private void WriteBinaryFile(string target)
+        /// <summary>
+        /// バイナリモードでの書き込み
+        /// </summary>
+        /// <param name="target"></param>
+        private void WriteFileBinary(string target)
         {
             if (_bytes == null)
             {
@@ -130,5 +135,13 @@ namespace IO.Work.File
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Writeへのエイリアス
+    /// </summary>
+    internal class Set : Write
+    {
+        protected override bool IsAlias { get { return true; } }
     }
 }

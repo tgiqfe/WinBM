@@ -33,6 +33,10 @@ namespace IO.Work.File
         [Keys("recycle", "recyclebin", "trash", "trashbox")]
         protected bool _Recycle { get; set; }
 
+        [TaskParameter(Resolv = true)]
+        [Keys("exclude", "excludepath", "excludes", "excludepaths", "expath", "expaths")]
+        protected string[] _Exclude { get; set; }
+
         public override void MainProcess()
         {
             this.Success = true;
@@ -42,9 +46,20 @@ namespace IO.Work.File
 
         private void DeleteFileAction(string target)
         {
+            //  Excludeに絶対パスorファイル名が一致していたらスキップ
+            if (_Exclude?.Length > 0)
+            {
+                if (_Exclude.Any(x =>
+                     (x.Contains("\\") && x.Equals(target, StringComparison.OrdinalIgnoreCase)) ||
+                     (!x.Contains("\\") && x.Equals(Path.GetFileName(target), StringComparison.OrdinalIgnoreCase))))
+                {
+                    return;
+                }
+            }
+
             try
             {
-                if(Manager.Interactive && _Recycle)
+                if (Manager.Interactive && _Recycle)
                 {
                     //  ゴミ箱に移動する場合。(読み取り専用でも移動可)
                     FileSystem.DeleteFile(

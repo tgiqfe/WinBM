@@ -1,0 +1,51 @@
+---
+kind: Init
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 570
+      scope: File
+
+---
+kind: Job
+metadata:
+  description: ファイル削除テスト
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%'
+  - task: IO/File/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample02.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample03.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample04.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample05.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample06.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample07.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample08.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample09.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample10.txt
+
+---
+kind: Job
+metadata:
+  description: ワイルドカード削除と除外設定
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: Audit/Directory/Watch
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%'
+      id: FileDelete02
+      begin: true
+  - task: IO/File/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\*.txt'
+      exclude: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample05.txt, Sample09.txt'
+  - task: Audit/Directory/Watch
+    param:
+      id: FileDelete02

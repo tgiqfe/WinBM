@@ -27,6 +27,10 @@ namespace IO.Work.Registry
         [Keys("clear", "crear", "claer")]
         protected bool _Clear { get; set; }
 
+        [TaskParameter(Resolv = true)]
+        [Keys("exclude", "excludepath", "excludes", "excludepaths", "expath", "expaths")]
+        protected string[] _Exclude { get; set; }
+
         public override void MainProcess()
         {
             this.Success = true;
@@ -45,6 +49,17 @@ namespace IO.Work.Registry
 
         private void DeleteRegistryKeyAction(RegistryKey target)
         {
+            //  Excludeにキーパスorキー名が一致していたらスキップ
+            if (_Exclude?.Length > 0)
+            {
+                if (_Exclude.Any(x =>
+                     (x.Contains("\\") && x.Equals(target.Name, StringComparison.OrdinalIgnoreCase)) ||
+                     (!x.Contains("\\") && x.Equals(Path.GetFileName(target.Name), StringComparison.OrdinalIgnoreCase))))
+                {
+                    return;
+                }
+            }
+
             Action<RegistryKey> deleteRegistryKey = (targetKey) =>
             {
                 try
@@ -99,6 +114,15 @@ namespace IO.Work.Registry
 
         private void DeleteRegistryValueAction(RegistryKey target, string name)
         {
+            //  Excludeにレジストリ値の名前が一致していたらスキップ
+            if (_Exclude?.Length > 0)
+            {
+                if(_Exclude.Any(x => x.Equals(name, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return;
+                }
+            }
+
             try
             {
                 target.DeleteValue(name);
