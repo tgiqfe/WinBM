@@ -1,0 +1,123 @@
+---
+kind: Init
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 590
+      scope: File
+
+---
+kind: Job
+metadata:
+  description: レジストリキー作成テスト1
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Registry/Delete
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%'
+  - task: IO/Registry/Create
+    param:
+      path: |-
+        HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample01
+        HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample02
+        HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample03
+        HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample04
+        HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample05
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample01\aaaa\bbbb\cccc'
+      name: TestTest1
+      value: This is a test
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample02\aaaa\bbbb\cccc'
+      name: TestTest2
+      value: This is a test
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample03'
+      name: aaaa01
+      value: AAAAAAAA
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample03'
+      name: aaaa02
+      value: BBBBBBBB
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample03'
+      name: aaaa03
+      value: CCCCCCCC
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample03'
+      name: aaaa04
+      value: DDDDDDDD
+      type: REG_SZ
+  - task: IO/Registry/Set
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample03'
+      name: aaaa05
+      value: EEEEEEEE
+      type: REG_SZ
+
+---
+kind: Job
+metadata:
+  description: レジストリキー削除テスト。ワイルドカードとその除外の動作確認
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: Audit/Registry/Watch
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%'
+      id: RegistryDelete01
+      begin: true
+  - task: IO/Registry/Delete
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample*'
+      exclude: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample03, Sample04'
+  - task: Audit/Registry/Watch
+    param:
+      id: RegistryDelete01
+  - task: Audit/Registry/Exists
+    param:
+      path: |-
+        HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample03
+        HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample04
+
+---
+kind: Job
+metadata:
+  description: レジストリ値削除テスト。ワイルドカードとその除外の動作確認
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: Audit/Registry/Watch
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample03'
+      id: RegistryDelete01_2
+      begin: true
+  - task: IO/Registry/Delete
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample03'
+      name: aaaa*
+      exclude: aaaa03, aaaa05
+  - task: Audit/Registry/Watch
+    param:
+      id: RegistryDelete01_2
+  - task: Audit/Registry/Exists
+    param:
+      path: 'HKEY_CURRENT_USER\SOFTWARE\Test\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample03'
+      name: |-
+        aaaa03
+        aaaa05
+
+
+

@@ -33,7 +33,7 @@ namespace IO.Work.File
         [Keys("recycle", "recyclebin", "trash", "trashbox")]
         protected bool _Recycle { get; set; }
 
-        [TaskParameter]
+        [TaskParameter(Resolv = true)]
         [Keys("exclude", "excludepath", "excludes", "excludepaths", "expath", "expaths")]
         protected string[] _Exclude { get; set; }
 
