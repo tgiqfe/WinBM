@@ -30,6 +30,11 @@ namespace IO.Work.File
         [Keys("encoding", "encode", "enc")]
         protected string _Encoding { get; set; }
 
+        [TaskParameter]
+        [Keys("linefeed", "linefeedcode", "return", "returncode", "newline", "newlinecode")]
+        [Values("crlf,lfcr", "lf", "cr")]
+        protected LFCode? _LFCode { get; set; }
+
         //  ########################
 
         [TaskParameter]
@@ -39,6 +44,11 @@ namespace IO.Work.File
         [TaskParameter]
         [Keys("expand")]
         protected bool? _Expand { get; set; }
+
+        protected enum LFCode
+        {
+            CRLF, LF, CR
+        }
 
         private Encoding enc = null;
 
@@ -51,6 +61,18 @@ namespace IO.Work.File
         public override void MainProcess()
         {
             this.Success = true;
+
+            //  改行コードをセット
+            if (_LFCode != null)
+            {
+                _Text = Regex.Replace(_Text, "\r?\n", _LFCode switch
+                {
+                    LFCode.CRLF => "\r\n",
+                    LFCode.LF => "\n",
+                    LFCode.CR => "\r",
+                    _ => "\r\n",
+                });
+            }
 
             //  文字コードセット
             enc = FileEncoding.Get(_Encoding);

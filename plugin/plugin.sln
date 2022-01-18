@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuditMonitor", "AuditMonito
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OSVersion", "OSVersion\OSVersion.csproj", "{A811ABBA-2470-4F66-BF71-C4D8E993C3A9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalAccount", "LocalAccount\LocalAccount.csproj", "{63CEAD34-AFDB-478B-A4B9-AD7E46B838DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LocalAccount", "LocalAccount\LocalAccount.csproj", "{63CEAD34-AFDB-478B-A4B9-AD7E46B838DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -30,7 +30,7 @@ namespace IO.Lib
         /// <param name="hiveName"></param>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        public static bool LoadHive2(string hiveName, string filePath)
+        public static bool LoadHive(string hiveName, string filePath)
         {
             if (hiveName.Contains("\\"))
             {
@@ -60,7 +60,7 @@ namespace IO.Lib
         /// </summary>
         /// <param name="hiveName"></param>
         /// <returns></returns>
-        public static bool UnloadHive2(string hiveName)
+        public static bool UnloadHive(string hiveName)
         {
             if (hiveName.Contains("\\"))
             {
