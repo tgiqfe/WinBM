@@ -1,0 +1,46 @@
+---
+kind: Init
+init:
+  spec:
+  - param:
+      env: FILE_WAIT = 600
+      scope: File
+
+---
+kind: Job
+metadata:
+  name: WriteTest
+  description: ファイル書き込みテスト [準備]
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/Directory/Delete
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%'
+  - task: IO/File/Create
+    param:
+      path: |-
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample01.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample02.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample03.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample04.txt
+        %USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample05.txt
+
+---
+kind: Job
+metadata:
+  description: ファイル書き込み
+  priority: '%FILE_WAIT% + %PAGE_INDEX%'
+job:
+  work:
+  - task: IO/File/Write
+    description: 改行コードと文字コード指定
+    param:
+      path: '%USERPROFILE%\Desktop\WinBMTest\%RECIPE_DIRECTORY_NAME%\%RECIPE_FILE_NAME%\Sample01.txt'
+      text: |-
+        あいうえおかきくけこさしすせそたちつてと
+        なにぬねのはひふへほまみむめもやゆよ
+        らりるれろわをん
+      encoding: UTF-16LE
+      linefeedcode: CRLF
+
