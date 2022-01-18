@@ -382,9 +382,14 @@ namespace WinBM.Task
                 ret &= mAny.Any(x => x.Value);
             }
 
-            if (!ret)
+            //  CheckParam失敗。RequireやWork以外のSpecは、GlobalLogに出力
+            if (!ret && (this.SpecType == "Require" || this.SpecType == "Work"))
             {
                 this.Manager.WriteLog(LogLevel.Warn, $"{this.TaskName} {this.SpecName} Failed parameter.");
+            }
+            else
+            {
+                GlobalLog.WriteLog(LogLevel.Warn, $"{this.TaskName} {this.SpecName} Failed parameter.");
             }
 
             return ret;
