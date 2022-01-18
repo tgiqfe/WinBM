@@ -29,7 +29,7 @@ namespace IO.Work.Registry
                 }
             }
 
-            this.Success = IO.Lib.RegistryHive.UnloadHive2(_Path);
+            this.Success = IO.Lib.RegistryHive.UnloadHive(_Path);
         }
     }
 }
