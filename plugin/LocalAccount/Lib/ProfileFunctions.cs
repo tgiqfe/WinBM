@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Management;
 using Microsoft.Win32;
 using System.Security.Principal;
+using System.IO;
 
 namespace LocalAccount.Lib
 {
@@ -111,10 +112,53 @@ namespace LocalAccount.Lib
 
         /// <summary>
         /// 現在ログオン中のユーザー一覧を取得
+        /// Win32_LoggedOnUserでは、一度ログオンしたユーザーの情報が再起動するまで残ってしまう為、
+        /// query userコマンドで確認する。
         /// </summary>
         /// <returns></returns>
         public static IEnumerable<string> GetLoggedOnUsers()
         {
+            var list = new List<string>();
+
+            string ret = "";
+            using (var proc = new Process())
+            {
+                proc.StartInfo.FileName = "query.exe";
+                proc.StartInfo.Arguments = "user";
+                proc.StartInfo.CreateNoWindow = true;
+                proc.StartInfo.UseShellExecute = false;
+                proc.StartInfo.RedirectStandardOutput = true;
+                proc.Start();
+
+                ret = proc.StandardOutput.ReadToEnd();
+                proc.WaitForExit();
+            }
+
+            using (var sr = new StringReader(ret))
+            {
+                string readLine = "";
+                bool during = false;
+                while ((readLine = sr.ReadLine()) != null)
+                {
+                    string[] fields = readLine.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                    if (fields.Length > 0)
+                    {
+                        if (during)
+                        {
+                            string account = fields[0].TrimStart('>');
+                            list.Add(account);
+                        }
+                        else if (fields[0] == "ユーザー名")
+                        {
+                            during = true;
+                        }
+                    }
+                }
+            }
+
+            return list;
+
+            /*
             List<string> userList = new List<string>();
             foreach (ManagementObject mo in new ManagementClass("Win32_LoggedOnUser").
                 GetInstances().
@@ -132,6 +176,8 @@ namespace LocalAccount.Lib
                 catch { }
             }
             return userList;
+            */
+
         }
     }
 }
