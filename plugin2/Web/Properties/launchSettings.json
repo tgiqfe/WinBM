@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "WinBM_Debug": {
+      "commandName": "Executable",
+      "executablePath": "pwsh.exe",
+      "commandLineArgs": "-ExecutionPolicy Unrestricted -NoExit -Command \"Import-Module ..\\..\\..\\..\\..\\src\\WinBM.PowerShell\\bin\\Debug\\net6.0\\WinBM.PowerShell.dll; Update-FormatData ..\\..\\..\\..\\..\\src\\WinBM.PowerShell\\bin\\Debug\\net6.0\\WinBM.PowerShell.ps1xml\""
+    }
+  }
+}
