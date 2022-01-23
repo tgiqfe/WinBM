@@ -20,9 +20,9 @@ $additionalFiles = @{
     "..\..\..\..\..\plugin\Standard\bin\Debug\net6.0\Standard.dll" = ".\plugin\Standard.dll";
     "..\..\..\..\..\plugin\IO\bin\Debug\net6.0\IO.dll" = ".\plugin\IO.dll";
     "..\..\..\..\..\plugin\Audit\bin\Debug\net6.0\Audit.dll" = ".\plugin\Audit.dll";
-    "..\..\..\..\..\plugin\Web\bin\Debug\net6.0\Web.dll" = ".\plugin\Web.dll";
     "..\..\..\..\..\plugin\OSVersion\bin\Debug\net6.0\OSVersion.dll" = ".\plugin\OSVersion.dll";
     "..\..\..\..\..\plugin\LocalAccount\bin\Debug\net6.0\LocalAccount.dll" = ".\plugin\LocalAccount.dll";
+    "..\..\..\..\..\plugin2\Web\bin\Debug\net6.0\Web.dll" = ".\plugin\Web.dll";
 }
 
 # ================================================================
