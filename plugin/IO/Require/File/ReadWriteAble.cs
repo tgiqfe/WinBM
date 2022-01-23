@@ -23,11 +23,11 @@ namespace IO.Require.File
         protected string[] _Path { get; set; }
 
         [TaskParameter]
-        [Keys("read", "reader", "readlock", "readerlock")]
+        [Keys("read", "reader", "readlock", "readerlock", "readable")]
         protected bool? _Read { get; set; }
 
         [TaskParameter]
-        [Keys("write", "writer", "writelock", "writerlock")]
+        [Keys("write", "writer", "writelock", "writerlock", "writable")]
         protected bool? _Write { get; set; }
 
         [TaskParameter]
