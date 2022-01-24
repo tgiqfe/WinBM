@@ -498,7 +498,7 @@ namespace WinBM.Task
                 }
                 if (text.Contains("%RECIPE_FILE_NAME%", StringComparison.OrdinalIgnoreCase))
                 {
-                    text = text.Replace("%RECIPE_FILE_NAME%", System.IO.Path.GetFileName(this.FilePath), StringComparison.OrdinalIgnoreCase);
+                    text = text.Replace("%RECIPE_FILE_NAME%", System.IO.Path.GetFileNameWithoutExtension(this.FilePath), StringComparison.OrdinalIgnoreCase);
                 }
                 if (text.Contains("%RECIPE_DIRECTORY_PATH%", StringComparison.OrdinalIgnoreCase))
                 {
