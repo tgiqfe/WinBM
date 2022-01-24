@@ -39,13 +39,15 @@ namespace Standard.Work.Execute
             List<string> scriptList = new List<string>();
             _Path.ToList().ForEach(x =>
             {
-                if (System.IO.File.Exists(x))
+                //  LanguageCollection内のLanguageに登録されている拡張子にマッチしたものだけ、ScriptListに追加
+                if (System.IO.File.Exists(x) && collection.ContainExtension(x))
                 {
                     scriptList.Add(x);
                 }
                 else if (System.IO.Directory.Exists(x))
                 {
-                    scriptList.AddRange(Directory.GetFiles(x));
+                    scriptList.AddRange(
+                        Directory.GetFiles(x).Where(y => collection.ContainExtension(y)));
                 }
             });
             scriptList.Sort();
@@ -53,7 +55,7 @@ namespace Standard.Work.Execute
             //  スクリプト実行間の待ち時間
             int interval = ((_Interval ?? 0) > 0 ? (int)_Interval : 0) +
                 ((_IntervalSecond ?? 0) > 0 ? (int)_IntervalSecond * 1000 : 0);
-            
+
             int cursor = 0;
             foreach (var path in scriptList)
             {

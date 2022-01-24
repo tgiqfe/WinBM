@@ -11,13 +11,9 @@ namespace Standard.Require.HostName
 {
     internal class Within : TaskJob
     {
-        [TaskParameter]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("hostname", "computername", "name", "host", "computer")]
         protected string _HostName { get; set; }
-
-        [TaskParameter]
-        [Keys("fromsetting", "setting")]
-        protected bool? _FromSetting { get; set; }
 
         [TaskParameter]
         [Keys("invert", "not", "no", "none")]

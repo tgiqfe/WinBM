@@ -54,14 +54,6 @@ namespace IO.Work.Directory
                 }
             }
 
-            //  削除フォルダーが存在しない場合
-            //  ★★★★★↓この処理必要???★★★★★
-            if (!System.IO.Directory.Exists(target))
-            {
-                Manager.WriteLog(LogLevel.Error, "Target folder is Missing. \"{0}\"", target);
-                return;
-            }
-
             if (_Force)
             {
                 Manager.WriteLog(LogLevel.Debug, "Directory delete force.");

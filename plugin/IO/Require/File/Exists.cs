@@ -19,7 +19,7 @@ namespace IO.Require.File
 
         public override void MainProcess()
         {
-            this.Success = System.IO.File.Exists(_Path) ^ _Invert;
+            this.Success = System.IO.File.Exists(_Path);
 
             if (!Success)
             {

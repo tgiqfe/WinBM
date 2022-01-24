@@ -11,13 +11,9 @@ namespace Standard.Require.Network
 {
     internal class Within : TaskJob
     {
-        [TaskParameter]
+        [TaskParameter(Mandatory = true, Resolv = true)]
         [Keys("network", "address", "networkaddress", "ipaddress", "ipaddr", "addr")]
         protected string _NetworkAddress { get; set; }
-
-        [TaskParameter]
-        [Keys("fromsetting", "setting")]
-        protected bool? _FromSetting { get; set; }
 
         [TaskParameter]
         [Keys("invert", "not", "no", "none")]

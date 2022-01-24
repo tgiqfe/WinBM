@@ -21,18 +21,20 @@ namespace LocalAccount.Lib
         /// <returns>プロファイルパス。存在しないユーザーの場合はnullを返す</returns>
         public static string GetProfilePath(string userName)
         {
-            string sid = new NTAccount(userName).Translate(typeof(SecurityIdentifier))?.Value;
-            if (sid == null)
+            try
+            {
+                string sid = new NTAccount(userName).Translate(typeof(SecurityIdentifier)).Value;
+                return new ManagementClass("Win32_UserProfile").
+                    GetInstances().
+                    OfType<ManagementObject>().
+                    Where(x => x["SID"] as string == sid).
+                    Select(x => x["LocalPath"] as string).
+                    First();
+            }
+            catch
             {
                 return null;
             }
-
-            return new ManagementClass("Win32_UserProfile").
-                GetInstances().
-                OfType<ManagementObject>().
-                Where(x => x["SID"] as string == sid).
-                Select(x => x["LocalPath"] as string).
-                First();
         }
 
         /// <summary>

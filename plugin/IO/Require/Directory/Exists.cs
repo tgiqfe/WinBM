@@ -19,7 +19,7 @@ namespace IO.Require.Directory
 
         public override void MainProcess()
         {
-            this.Success = System.IO.Directory.Exists(_Path) ^ _Invert;
+            this.Success = System.IO.Directory.Exists(_Path);
 
             if (!Success)
             {
