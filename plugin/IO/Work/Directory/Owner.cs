@@ -51,9 +51,27 @@ namespace IO.Work.Directory
             {
                 //  再帰処理有り
                 TakeOwnerDirectory(target);
+
+                //  ジャンクション(orシンボリックリンク)を除外して再帰的にディレクトリ処理
+                Action<string> recurseTakekOwn = null;
+                recurseTakekOwn = (subDir) =>
+                {
+                    if ((System.IO.File.GetAttributes(subDir) & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint)
+                    {
+                        return;
+                    }
+                    TakeOwnerDirectory(subDir);
+                    System.IO.Directory.GetDirectories(subDir).
+                        ToList().
+                        ForEach(x => recurseTakekOwn(x));
+                };
+                recurseTakekOwn(target);
+
+                /*
                 System.IO.Directory.GetDirectories(target, "*", SearchOption.AllDirectories).
                     ToList().
                     ForEach(x => TakeOwnerDirectory(x));
+                */
                 System.IO.Directory.GetFiles(target, "*", SearchOption.AllDirectories).
                     ToList().
                     ForEach(x => TakeOwnerFile(x));
