@@ -88,5 +88,13 @@ namespace Standard.Lib.ScriptLanguage
             }
             return null;
         }
+
+        public bool ContainExtension(string path)
+        {
+            string extension = Path.GetExtension(path);
+            return this.Any(x =>
+                x.Extensions.Any(y =>
+                    y.Equals(extension, StringComparison.OrdinalIgnoreCase)));
+        }
     }
 }
