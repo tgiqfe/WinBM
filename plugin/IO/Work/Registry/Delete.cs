@@ -38,12 +38,12 @@ namespace IO.Work.Registry
             if (_Name?.Length > 0)
             {
                 //  レジストリ値の削除。キーを複数指定していた場合、2つ目以降を無視
-                TargetRegistryValueProcess(_Path[0], _Name, writable: true, DeleteRegistryValueAction);
+                TargetValueSequence(_Path[0], _Name, writable: true, DeleteRegistryValueAction);
             }
             else
             {
                 //  レジストリキーの削除
-                TargetRegistryKeyProcess(_Path, writable: true, DeleteRegistryKeyAction);
+                TargetKeySequence(_Path, writable: true, DeleteRegistryKeyAction);
             }
         }
 

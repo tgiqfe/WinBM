@@ -51,12 +51,12 @@ namespace IO.Work.Registry
             if (_Name?.Length > 0)
             {
                 //  レジストリ値の情報を取得。キーを複数指定していた場合、2つ目以降を無視
-                TargetRegistryValueProcess(_Path[0], _Name, false, GetRegistryValueAction);
+                TargetValueSequence(_Path[0], _Name, false, GetRegistryValueAction);
             }
             else
             {
                 //  レジストリキーの情報を取得
-                TargetRegistryKeyProcess(_Path, writable: false, GetRegistryKeyAction);
+                TargetKeySequence(_Path, writable: false, GetRegistryKeyAction);
             }
         }
 

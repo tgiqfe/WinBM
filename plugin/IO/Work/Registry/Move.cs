@@ -59,7 +59,7 @@ namespace IO.Work.Registry
                     return;
                 }
 
-                SrcDstRegistryValueProcess(_SourcePath[0], _DestinationPath, _SourceName, _DestinationName, false, MoveRegistryValueAction);
+                SrcDstValueSequence(_SourcePath[0], _DestinationPath, _SourceName, _DestinationName, false, MoveRegistryValueAction);
             }
             else
             {
@@ -77,7 +77,7 @@ namespace IO.Work.Registry
                     return;
                 }
 
-                SrcDstRegistryKeyProcess(_SourcePath, _DestinationPath, false, MoveRegistryKeyAction);
+                SrcDstKeySequence(_SourcePath, _DestinationPath, false, MoveRegistryKeyAction);
             }
         }
 

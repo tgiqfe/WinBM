@@ -41,7 +41,7 @@ namespace IO.Work.File
         {
             this.Success = true;
 
-            TargetFileProcess(_Path, DeleteFileAction);
+            TargetSequence(_Path, DeleteFileAction);
         }
 
         private void DeleteFileAction(string target)

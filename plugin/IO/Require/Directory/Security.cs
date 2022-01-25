@@ -39,10 +39,6 @@ namespace IO.Require.Directory
         protected AccessControlType _AccessControl { get; set; }
 
         [TaskParameter(MandatoryAny = 3)]
-        [Keys("owner", "own")]
-        protected string _Owner { get; set; }
-
-        [TaskParameter(MandatoryAny = 4)]
         [Keys("inherited", "inherit", "inheritance")]
         protected bool? _Inherited { get; set; }
 
@@ -61,7 +57,6 @@ namespace IO.Require.Directory
         protected bool _Invert { get; set; }
 
         private AccessRuleSummary[] _accessRuleSummary = null;
-        private UserAccount _ownerAccount = null;
 
         public override void MainProcess()
         {
@@ -85,9 +80,6 @@ namespace IO.Require.Directory
                     PathType.Directory);
             }
 
-            //  Owner情報セット
-            _ownerAccount = new UserAccount(_Owner);
-
             TargetDirectoryProcess(_Path, SecurityDirectoryAction);
 
             this.Success ^= this._Invert;
@@ -99,6 +91,7 @@ namespace IO.Require.Directory
             {
                 var security = new System.IO.DirectoryInfo(target).GetAccessControl();
 
+                //  アクセス権チェック
                 if (_accessRuleSummary?.Length > 0)
                 {
                     AuthorizationRuleCollection rules = security.GetAccessRules(true, false, typeof(NTAccount));
@@ -116,55 +109,7 @@ namespace IO.Require.Directory
                     }
                 }
 
-                if (!string.IsNullOrEmpty(_Owner))
-                {
-                    //  必要に応じて再帰的に所有者チェック。
-                    //  不一致を確認した時点で再起チェックは終了。
-                    //  不一致の場合は所有者名を返し、一致の場合はnullを返す。
-                    Func<string, DirectorySecurity, string> recurseCheck = null;
-                    recurseCheck = (targetPath, targetSecurity) =>
-                    {
-                        string owner = targetSecurity.GetOwner(typeof(NTAccount)).Value;
-                        if (_ownerAccount.IsMatch(owner))
-                        {
-                            if (!_Sealed)
-                            {
-                                foreach (string child in System.IO.Directory.GetFiles(targetPath, "*", SearchOption.AllDirectories))
-                                {
-                                    var childSecurity = new System.IO.FileInfo(child).GetAccessControl();
-                                    string childOwner = childSecurity.GetOwner(typeof(NTAccount)).Value;
-                                    if (!_ownerAccount.IsMatch(childOwner))
-                                    {
-                                        return childOwner;
-                                    }
-                                }
-                                foreach (string child in System.IO.Directory.GetDirectories(targetPath, "*", SearchOption.AllDirectories))
-                                {
-                                    var childSecurity = new System.IO.DirectoryInfo(child).GetAccessControl();
-                                    string childOwner = childSecurity.GetOwner(typeof(NTAccount)).Value;
-                                    if (!_ownerAccount.IsMatch(childOwner))
-                                    {
-                                        return childOwner;
-                                    }
-                                }
-                            }
-                            return null;
-                        }
-                        return owner;
-                    };
-
-                    string targetOwner = recurseCheck(target, security);
-                    if (targetOwner == null)
-                    {
-                        Manager.WriteLog(LogLevel.Info, "Owner match: {0}", _ownerAccount);
-                    }
-                    else
-                    {
-                        Manager.WriteLog(LogLevel.Attention, "Owner not match: {0}", targetOwner);
-                        this.Success = false;
-                    }
-                }
-
+                //  継承有無チェック
                 if (_Inherited != null)
                 {
                     bool targetInherited = !security.AreAccessRulesProtected;

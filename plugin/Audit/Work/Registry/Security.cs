@@ -41,10 +41,6 @@ namespace Audit.Work.Registry
         protected AccessControlType _AccessControl { get; set; }
 
         [TaskParameter(MandatoryAny = 3)]
-        [Keys("owner", "own")]
-        protected string _Owner { get; set; }
-
-        [TaskParameter(MandatoryAny = 4)]
         [Keys("inherited", "inherit", "inheritance")]
         protected bool? _Inherited { get; set; }
 
@@ -63,13 +59,11 @@ namespace Audit.Work.Registry
         protected bool _Invert { get; set; }
 
         private AccessRuleSummary[] _accessRuleSummary = null;
-        private UserAccount _ownerAccount = null;
 
         public override void MainProcess()
         {
             var dictionary = new Dictionary<string, string>();
             this.Success = true;
-            //int count = 0;
 
             if (_Access?.Length > 0)
             {
@@ -93,62 +87,12 @@ namespace Audit.Work.Registry
                 dictionary["Check_Access"] =
                     string.Join("/", _accessRuleSummary.Select(x => x.ToString()));
             }
-            if (!string.IsNullOrEmpty(_Owner))
-            {
-                _ownerAccount = new UserAccount(_Owner);
-                dictionary["Check_Owner"] = _ownerAccount.ToString();
-            }
             if (_Inherited != null)
             {
                 dictionary["Check_Inherited"] = _Inherited.ToString();
             }
 
             TargetKeySequence(_Path, false, dictionary, SecurityRegistryKeyAction);
-
-            /*
-            foreach (string path in _Path)
-            {
-                string keyName = System.IO.Path.GetFileName(path);
-                if (keyName.Contains("*"))
-                {
-                    string parent = System.IO.Path.GetDirectoryName(path);
-                    using (RegistryKey parentKey = RegistryControl.GetRegistryKey(parent, false, false))
-                    {
-                        //  対象キーの親キーが存在しない場合
-                        if (parentKey == null)
-                        {
-                            Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", parent);
-                            return;
-                        }
-
-                        //  ワイルドカード指定
-                        System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(keyName);
-                        foreach (var childKeyName in
-                            parentKey.GetSubKeyNames().Where(x => wildcard.IsMatch(x)))
-                        {
-                            using (RegistryKey childKey = parentKey.OpenSubKey(childKeyName, false))
-                            {
-                                SecurityRegistryKeyAction(childKey, dictionary, ++count);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    using (RegistryKey regKey = RegistryControl.GetRegistryKey(path, false, false))
-                    {
-                        //  対象のキーが存在しない場合
-                        if (regKey == null)
-                        {
-                            Manager.WriteLog(LogLevel.Warn, "Target is Missing. \"{0}\"", path);
-                            return;
-                        }
-
-                        SecurityRegistryKeyAction(regKey, dictionary, ++count);
-                    }
-                }
-            }
-            */
 
             AddAudit(dictionary, this._Invert);
         }
@@ -161,6 +105,7 @@ namespace Audit.Work.Registry
 
                 RegistrySecurity security = target.GetAccessControl();
 
+                //  アクセス権チェック
                 if (_accessRuleSummary?.Length > 0)
                 {
                     AuthorizationRuleCollection rules = security.GetAccessRules(true, false, typeof(NTAccount));
@@ -178,48 +123,7 @@ namespace Audit.Work.Registry
                     }
                 }
 
-                if (!string.IsNullOrEmpty(_Owner))
-                {
-                    //  必要に応じて再帰的に所有者チェック。
-                    //  不一致を確認した時点で再起チェックは終了。
-                    //  不一致の場合は所有者名を返し、一致の場合はnullを返す。
-                    Func<RegistryKey, RegistrySecurity, string> recurseCheck = null;
-                    recurseCheck = (targetKey, targetSecurity) =>
-                    {
-                        string owner = targetSecurity.GetOwner(typeof(NTAccount)).Value;
-                        if (_ownerAccount.IsMatch(owner))
-                        {
-                            if (!_Sealed)
-                            {
-                                foreach (string child in targetKey.GetSubKeyNames())
-                                {
-                                    using (RegistryKey childKey = targetKey.OpenSubKey(child, false))
-                                    {
-                                        string childOwner = recurseCheck(childKey, childKey.GetAccessControl());
-                                        if (childOwner != null)
-                                        {
-                                            return childOwner;
-                                        }
-                                    }
-                                }
-                            }
-                            return null;
-                        }
-                        return owner;
-                    };
-
-                    string targetOwner = recurseCheck(target, security);
-                    if (targetOwner == null)
-                    {
-                        dictionary[$"registryKey_{count}_Owner_Match"] = _ownerAccount.ToString();
-                    }
-                    else
-                    {
-                        dictionary[$"registryKey_{count}_Owner_NotMatch"] = targetOwner;
-                        this.Success = false;
-                    }
-                }
-
+                //  継承有無チェック
                 if (_Inherited != null)
                 {
                     bool targetInherited = !security.AreAccessRulesProtected;

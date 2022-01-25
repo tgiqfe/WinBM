@@ -31,7 +31,7 @@ namespace IO.Work.Directory
             //  MaxDeepth無指定の場合は[5]をセット
             _MaxDepth ??= 5;
 
-            TargetDirectoryProcess(_Path, GetTreeDirectoryAction);
+            TargetSequence(_Path, GetTreeDirectoryAction);
         }
 
         private void GetTreeDirectoryAction(string target)

@@ -72,7 +72,7 @@ namespace IO.Work.Registry
                     PathType.Registry);
             }
 
-            TargetRegistryKeyProcess(_Path, writable: true, GrantRegistryAction);
+            TargetKeySequence(_Path, writable: true, GrantRegistryAction);
         }
 
         private void GrantRegistryAction(RegistryKey target)

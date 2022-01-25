@@ -77,7 +77,7 @@ namespace IO.Work.File
             //  文字コードセット
             enc = FileEncoding.Get(_Encoding);
 
-            TargetFileProcess(_Path, WriteFileAction);
+            TargetSequence(_Path, WriteFileAction);
         }
 
         private void WriteFileAction(string target)

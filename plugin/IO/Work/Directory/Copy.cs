@@ -60,7 +60,7 @@ namespace IO.Work.Directory
                 _DestinationPath = _DestinationPath.TrimEnd('\\') + "\\";
             }
 
-            SrcDstDirectoryProcess(_SourcePath, _DestinationPath, CopyDirectoryAction);
+            SrcDstSequence(_SourcePath, _DestinationPath, CopyDirectoryAction);
         }
 
         private void CopyDirectoryAction(string source, string destination)

@@ -65,7 +65,7 @@ namespace IO.Work.File
                     PathType.File);
             }
 
-            TargetFileProcess(_Path, GrantFileAction);
+            TargetSequence(_Path, GrantFileAction);
         }
 
         private void GrantFileAction(string target)

@@ -35,7 +35,7 @@ namespace IO.Work.Directory
                 _DestinationPath = _DestinationPath.TrimEnd('\\') + "\\";
             }
 
-            SrcDstDirectoryProcess(_SourcePath, _DestinationPath, MoveDirectoryAction);
+            SrcDstSequence(_SourcePath, _DestinationPath, MoveDirectoryAction);
         }
 
         private void MoveDirectoryAction(string source, string destination)
