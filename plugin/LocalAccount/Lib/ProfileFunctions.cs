@@ -159,27 +159,6 @@ namespace LocalAccount.Lib
             }
 
             return list;
-
-            /*
-            List<string> userList = new List<string>();
-            foreach (ManagementObject mo in new ManagementClass("Win32_LoggedOnUser").
-                GetInstances().
-                OfType<ManagementObject>())
-            {
-                //  DWM-*やUMFD-*という名前のユーザーが取得できるけれど、
-                //  NameプロパティにアクセスしようとするだけでManagementExceptionする。
-                //  Nameプロパティのアクセスより前に判別する手段が見つからないので、
-                //  try～catchで囲うだけにしておく。
-                try
-                {
-                    ManagementObject moA = new ManagementObject(mo["Antecedent"] as string);
-                    userList.Add(moA["Name"] as string);
-                }
-                catch { }
-            }
-            return userList;
-            */
-
         }
     }
 }
