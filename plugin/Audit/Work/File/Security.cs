@@ -92,42 +92,6 @@ namespace Audit.Work.File
 
             TargetSequence(_Path, dictionary, SecurityFileAction);
 
-            /*
-            foreach (string path in _Path)
-            {
-                if (Path.GetFileName(path).Contains("*"))
-                {
-                    Manager.WriteLog(LogLevel.Info, "{0} Wildcard Copy.", this.TaskName);
-
-                    //  対象ファイルの親フォルダーが存在しない場合
-                    string targetParent = Path.GetDirectoryName(path);
-                    if (!System.IO.Directory.Exists(targetParent))
-                    {
-                        Manager.WriteLog(LogLevel.Error, "Parent folder on source file is Missing. \"{0}\"", targetParent);
-                        return;
-                    }
-
-                    //  ワイルドカード指定
-                    System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(path);
-                    System.IO.Directory.GetFiles(targetParent).
-                        Where(x => wildcard.IsMatch(x)).
-                        ToList().
-                        ForEach(x => SecurityFileAction(x, dictionary, ++count));
-                }
-                else
-                {
-                    //  対象ファイルが存在しない場合
-                    if (!System.IO.File.Exists(path))
-                    {
-                        Manager.WriteLog(LogLevel.Error, "Target file is Missing. \"{0}\"", path);
-                        return;
-                    }
-
-                    SecurityFileAction(path, dictionary, ++count);
-                }
-            }
-            */
-
             AddAudit(dictionary, this._Invert);
         }
 

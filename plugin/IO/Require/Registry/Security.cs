@@ -41,10 +41,6 @@ namespace IO.Require.Registry
         protected AccessControlType _AccessControl { get; set; }
 
         [TaskParameter(MandatoryAny = 3)]
-        [Keys("owner", "own")]
-        protected string _Owner { get; set; }
-
-        [TaskParameter(MandatoryAny = 4)]
         [Keys("inherited", "inherit", "inheritance")]
         protected bool? _Inherited { get; set; }
 
@@ -63,7 +59,6 @@ namespace IO.Require.Registry
         protected bool _Invert { get; set; }
 
         private AccessRuleSummary[] _accessRuleSummary = null;
-        private UserAccount _ownerAccount = null;
 
         public override void MainProcess()
         {
@@ -87,9 +82,6 @@ namespace IO.Require.Registry
                     PathType.Registry);
             }
 
-            //  Owner情報セット
-            _ownerAccount = new UserAccount(_Owner);
-
             TargetRegistryKeyProcess(_Path, writable: false, SecurityRegistryKeyAction);
 
             this.Success ^= this._Invert;
@@ -101,6 +93,7 @@ namespace IO.Require.Registry
             {
                 RegistrySecurity security = target.GetAccessControl();
 
+                //  アクセス権チェック
                 if (_accessRuleSummary?.Length > 0)
                 {
                     AuthorizationRuleCollection rules = security.GetAccessRules(true, false, typeof(NTAccount));
@@ -118,48 +111,7 @@ namespace IO.Require.Registry
                     }
                 }
 
-                if (!string.IsNullOrEmpty(_Owner))
-                {
-                    //  必要に応じて再帰的に所有者チェック。
-                    //  不一致を確認した時点で再起チェックは終了。
-                    //  不一致の場合は所有者名を返し、一致の場合はnullを返す。
-                    Func<RegistryKey, RegistrySecurity, string> recurseCheck = null;
-                    recurseCheck = (targetKey, targetSecurity) =>
-                    {
-                        string owner = targetSecurity.GetOwner(typeof(NTAccount)).Value;
-                        if (_ownerAccount.IsMatch(owner))
-                        {
-                            if (!_Sealed)
-                            {
-                                foreach (string child in targetKey.GetSubKeyNames())
-                                {
-                                    using (RegistryKey childKey = targetKey.OpenSubKey(child, false))
-                                    {
-                                        string childOwner = recurseCheck(childKey, childKey.GetAccessControl());
-                                        if (childOwner != null)
-                                        {
-                                            return childOwner;
-                                        }
-                                    }
-                                }
-                            }
-                            return null;
-                        }
-                        return owner;
-                    };
-
-                    string targetOwner = recurseCheck(target, security);
-                    if (targetOwner == null)
-                    {
-                        Manager.WriteLog(LogLevel.Info, "Owner match: {0}", targetOwner);
-                    }
-                    else
-                    {
-                        Manager.WriteLog(LogLevel.Attention, "Owner not match: {0}", targetOwner);
-                        this.Success = false;
-                    }
-                }
-
+                //  継承有無チェック
                 if (_Inherited != null)
                 {
                     bool targetInherited = !security.AreAccessRulesProtected;

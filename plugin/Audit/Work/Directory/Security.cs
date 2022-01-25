@@ -67,8 +67,7 @@ namespace Audit.Work.Directory
         {
             var dictionary = new Dictionary<string, string>();
             this.Success = true;
-            //int count = 0;
-
+            
             if (_Access?.Length > 0)
             {
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(string.Join("/", _Access), PathType.Directory);

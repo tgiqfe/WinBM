@@ -69,7 +69,6 @@ namespace Audit.Work.Registry
         {
             var dictionary = new Dictionary<string, string>();
             this.Success = true;
-            //int count = 0;
 
             if (_Access?.Length > 0)
             {
@@ -104,51 +103,6 @@ namespace Audit.Work.Registry
             }
 
             TargetKeySequence(_Path, false, dictionary, SecurityRegistryKeyAction);
-
-            /*
-            foreach (string path in _Path)
-            {
-                string keyName = System.IO.Path.GetFileName(path);
-                if (keyName.Contains("*"))
-                {
-                    string parent = System.IO.Path.GetDirectoryName(path);
-                    using (RegistryKey parentKey = RegistryControl.GetRegistryKey(parent, false, false))
-                    {
-                        //  対象キーの親キーが存在しない場合
-                        if (parentKey == null)
-                        {
-                            Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", parent);
-                            return;
-                        }
-
-                        //  ワイルドカード指定
-                        System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(keyName);
-                        foreach (var childKeyName in
-                            parentKey.GetSubKeyNames().Where(x => wildcard.IsMatch(x)))
-                        {
-                            using (RegistryKey childKey = parentKey.OpenSubKey(childKeyName, false))
-                            {
-                                SecurityRegistryKeyAction(childKey, dictionary, ++count);
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    using (RegistryKey regKey = RegistryControl.GetRegistryKey(path, false, false))
-                    {
-                        //  対象のキーが存在しない場合
-                        if (regKey == null)
-                        {
-                            Manager.WriteLog(LogLevel.Warn, "Target is Missing. \"{0}\"", path);
-                            return;
-                        }
-
-                        SecurityRegistryKeyAction(regKey, dictionary, ++count);
-                    }
-                }
-            }
-            */
 
             AddAudit(dictionary, this._Invert);
         }

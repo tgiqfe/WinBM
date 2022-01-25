@@ -39,10 +39,6 @@ namespace IO.Require.File
         protected AccessControlType _AccessControl { get; set; }
 
         [TaskParameter(MandatoryAny = 3)]
-        [Keys("owner", "own")]
-        protected string _Owner { get; set; }
-
-        [TaskParameter(MandatoryAny = 4)]
         [Keys("inherited", "inherit", "inheritance")]
         protected bool? _Inherited { get; set; }
 
@@ -57,7 +53,6 @@ namespace IO.Require.File
         protected bool _Invert { get; set; }
 
         private AccessRuleSummary[] _accessRuleSummary = null;
-        private UserAccount _ownerAccount = null;
 
         public override void MainProcess()
         {
@@ -74,9 +69,6 @@ namespace IO.Require.File
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(
                     $"{userAccount.FullName};{_Rights};{_AccessControl}", PathType.File);
             }
-
-            //  Owner情報セット
-            _ownerAccount = new UserAccount(_Owner);
 
             TargetFileProcess(_Path, SecurityFileAction);
 
@@ -107,22 +99,7 @@ namespace IO.Require.File
                     }
                 }
 
-                //  所有者チェック
-                if (!string.IsNullOrEmpty(_Owner))
-                {
-                    string targetOwner = security.GetOwner(typeof(NTAccount)).Value;
-                    if (_ownerAccount.IsMatch(targetOwner))
-                    {
-                        Manager.WriteLog(LogLevel.Info, "Owner match: {0}", targetOwner);
-                    }
-                    else
-                    {
-                        Manager.WriteLog(LogLevel.Attention, "Owner not match: {0}", targetOwner);
-                        this.Success = false;
-                    }
-                }
-
-                //  継承設定チェック
+                //  継承有無チェック
                 if (_Inherited != null)
                 {
                     bool targetInherited = !security.AreAccessRulesProtected;
