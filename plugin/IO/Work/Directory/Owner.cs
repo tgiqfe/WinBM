@@ -52,6 +52,7 @@ namespace IO.Work.Directory
                 //  再帰処理有り
                 TakeOwnerDirectory(target);
 
+                /*
                 //  ジャンクション(orシンボリックリンク)を除外して再帰的にディレクトリ処理
                 Action<string> recurseTakekOwn = null;
                 recurseTakekOwn = (targetDir) =>
@@ -70,17 +71,10 @@ namespace IO.Work.Directory
                         ForEach(x => recurseTakekOwn(x));
                 };
                 recurseTakekOwn(target);
-
-                /*
-                System.IO.Directory.GetDirectories(target, "*", SearchOption.AllDirectories).
-                    ToList().
-                    ForEach(x => TakeOwnerDirectory(x));
                 */
-                /*
-                System.IO.Directory.GetFiles(target, "*", SearchOption.AllDirectories).
-                    ToList().
-                    ForEach(x => TakeOwnerFile(x));
-                */
+                var children = DirectoryControl.GetAllChildren(target);
+                children.Files.ToList().ForEach(x => TakeOwnerFile(x));
+                children.Directories.ToList().ForEach(x => TakeOwnerDirectory(x));
             }
             else
             {

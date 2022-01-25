@@ -59,5 +59,125 @@ namespace IO.Lib
             }
             return string.Join("/", accessRuleList);
         }
+
+        #region Get children
+
+        /// <summary>
+        /// ジャンクション(orシンボリックリンク)を除外して、配下のファイルを全取得
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetAllFiles(string path)
+        {
+            try
+            {
+                return Directory.GetFiles(path, "*", SearchOption.AllDirectories);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                var list = new List<string>();
+                Action<string> recurseDirectory = null;
+                recurseDirectory = (targetDir) =>
+                {
+                    Directory.GetFiles(targetDir).
+                        Where(x => (File.GetAttributes(x) & FileAttributes.ReparsePoint) != FileAttributes.ReparsePoint).
+                        ToList().
+                        ForEach(x => list.Add(x));
+                    Directory.GetDirectories(targetDir).
+                        Where(x => (File.GetAttributes(x) & FileAttributes.ReparsePoint) != FileAttributes.ReparsePoint).
+                        ToList().
+                        ForEach(x => recurseDirectory(x));
+                };
+                recurseDirectory(path);
+
+                return list;
+            }
+        }
+
+        /// <summary>
+        /// ジャンクション(orシンボリックリンク)を除外して、配下のフォルダーを全取得
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetAllDirectories(string path)
+        {
+            try
+            {
+                return Directory.GetDirectories(path, "*", SearchOption.AllDirectories); ;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                var list = new List<string>();
+                Action<string> recurseDirectory = null;
+                recurseDirectory = (targetDir) =>
+                {
+                    Directory.GetDirectories(targetDir).
+                        Where(x => (File.GetAttributes(x) & FileAttributes.ReparsePoint) != FileAttributes.ReparsePoint).
+                        ToList().
+                        ForEach(x =>
+                        {
+                            list.Add(x);
+                            recurseDirectory(x);
+                        });
+                };
+                recurseDirectory(path);
+
+                return list;
+            }
+        }
+
+        /// <summary>
+        /// ファイルとフォルーのリストを両方格納する為のクラス
+        /// </summary>
+        public class DirectoryChildren
+        {
+            public List<string> Files { get; set; }
+            public List<string> Directories { get; set; }
+            public DirectoryChildren()
+            {
+                this.Files = new List<string>();
+                this.Directories = new List<string>();
+            }
+        }
+
+        /// <summary>
+        /// ジャンクション(orシンボリックリンク)を除外して、配下のファイル/フォルダーを全取得
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public static DirectoryChildren GetAllChildren(string path)
+        {
+            var children = new DirectoryChildren();
+            try
+            {
+                children.Files.AddRange(
+                    Directory.GetFiles(path, "*", SearchOption.AllDirectories));
+                children.Directories.AddRange(
+                    Directory.GetDirectories(path, "*", SearchOption.AllDirectories));
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Action<string> recurseDirectory = null;
+                recurseDirectory = (targetDir) =>
+                {
+                    Directory.GetFiles(targetDir).
+                        Where(x => (File.GetAttributes(x) & FileAttributes.ReparsePoint) != FileAttributes.ReparsePoint).
+                        ToList().
+                        ForEach(x => children.Files.Add(x));
+                    Directory.GetDirectories(targetDir).
+                        Where(x => (File.GetAttributes(x) & FileAttributes.ReparsePoint) != FileAttributes.ReparsePoint).
+                        ToList().
+                        ForEach(x =>
+                        {
+                            children.Directories.Add(x);
+                            recurseDirectory(x);
+                        });
+                };
+                recurseDirectory(path);
+            }
+            return children;
+        }
+
+        #endregion
     }
 }
