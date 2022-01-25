@@ -19,7 +19,7 @@ namespace IO.Work
         /// </summary>
         /// <param name="paths"></param>
         /// <param name="targetFileAction"></param>
-        protected void TargetFileProcess(string[] paths, TargetFileAction targetFileAction)
+        protected void TargetSequence(string[] paths, TargetFileAction targetFileAction)
         {
             foreach (string path in paths)
             {
@@ -64,7 +64,7 @@ namespace IO.Work
         /// <param name="sources"></param>
         /// <param name="destination"></param>
         /// <param name="srcDstFileAction"></param>
-        protected void SrcDstFileProcess(string[] sources, string destination, SrcDstFileAction srcDstFileAction)
+        protected void SrcDstSequence(string[] sources, string destination, SrcDstFileAction srcDstFileAction)
         {
             foreach (string source in sources)
             {

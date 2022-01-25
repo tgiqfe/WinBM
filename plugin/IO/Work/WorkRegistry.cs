@@ -28,7 +28,7 @@ namespace IO.Work
         /// </summary>
         /// <param name="paths"></param>
         /// <param name="targetRegistryKeyAction"></param>
-        protected void TargetRegistryKeyProcess(string[] paths, bool writable, TargetRegistryKeyAction targetRegistryKeyAction)
+        protected void TargetKeySequence(string[] paths, bool writable, TargetRegistryKeyAction targetRegistryKeyAction)
         {
             foreach (string path in paths)
             {
@@ -83,7 +83,7 @@ namespace IO.Work
         /// <param name="destinationPath"></param>
         /// <param name="writable"></param>
         /// <param name="srcDstRegistryKeyAction"></param>
-        protected void SrcDstRegistryKeyProcess(string[] sourcePaths, string destinationPath, bool writable, SrcDstRegistryKeyAction srcDstRegistryKeyAction)
+        protected void SrcDstKeySequence(string[] sourcePaths, string destinationPath, bool writable, SrcDstRegistryKeyAction srcDstRegistryKeyAction)
         {
             foreach (string source in sourcePaths)
             {
@@ -151,7 +151,7 @@ namespace IO.Work
         /// <param name="names"></param>
         /// <param name="writable"></param>
         /// <param name="targetRegistryValueAction"></param>
-        protected void TargetRegistryValueProcess(string path, string[] names, bool writable, TargetRegistryValueAction targetRegistryValueAction)
+        protected void TargetValueSequence(string path, string[] names, bool writable, TargetRegistryValueAction targetRegistryValueAction)
         {
             using (RegistryKey parentKey = RegistryControl.GetRegistryKey(path, false, writable))
             {
@@ -190,7 +190,7 @@ namespace IO.Work
         /// <param name="sourceNames"></param>
         /// <param name="destinationName"></param>
         /// <param name="srcDstRegistryValueAction"></param>
-        protected void SrcDstRegistryValueProcess(string sourcePath, string destinationPath, string[] sourceNames, string destinationName, bool writable, SrcDstRegistryValueAction srcDstRegistryValueAction)
+        protected void SrcDstValueSequence(string sourcePath, string destinationPath, string[] sourceNames, string destinationName, bool writable, SrcDstRegistryValueAction srcDstRegistryValueAction)
         {
             using (RegistryKey parentKey = RegistryControl.GetRegistryKey(sourcePath, false, writable))
             {

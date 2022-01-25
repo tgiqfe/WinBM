@@ -80,7 +80,7 @@ namespace IO.Work.File
                 }
             }
 
-            TargetFileProcess(_Path, AttributeFileAction);
+            TargetSequence(_Path, AttributeFileAction);
         }
 
         private void AttributeFileAction(string target)

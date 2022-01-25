@@ -35,7 +35,7 @@ namespace IO.Work.File
         {
             this.Success = true;
 
-            TargetFileProcess(_Path, TimeStampFileAction);
+            TargetSequence(_Path, TimeStampFileAction);
         }
 
         private void TimeStampFileAction(string target)

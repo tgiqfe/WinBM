@@ -39,10 +39,6 @@ namespace Audit.Work.Directory
         protected AccessControlType _AccessControl { get; set; }
 
         [TaskParameter(MandatoryAny = 3)]
-        [Keys("owner", "own")]
-        protected string _Owner { get; set; }
-
-        [TaskParameter(MandatoryAny = 4)]
         [Keys("inherited", "inherit", "inheritance")]
         protected bool? _Inherited { get; set; }
 
@@ -61,14 +57,12 @@ namespace Audit.Work.Directory
         protected bool _Invert { get; set; }
 
         private AccessRuleSummary[] _accessRuleSummary = null;
-        private UserAccount _ownerAccount = null;
 
         public override void MainProcess()
         {
             var dictionary = new Dictionary<string, string>();
             this.Success = true;
-            //int count = 0;
-
+            
             if (_Access?.Length > 0)
             {
                 _accessRuleSummary = AccessRuleSummary.FromAccessString(string.Join("/", _Access), PathType.Directory);
@@ -91,53 +85,12 @@ namespace Audit.Work.Directory
                 dictionary["Check_Access"] =
                     string.Join("/", _accessRuleSummary.Select(x => x.ToString()));
             }
-            if (!string.IsNullOrEmpty(_Owner))
-            {
-                _ownerAccount = new UserAccount(_Owner);
-                dictionary["Check_Owner"] = _ownerAccount.ToString();
-            }
             if (_Inherited != null)
             {
                 dictionary["Check_Inherited"] = _Inherited.ToString();
             }
 
             TargetSequence(_Path, dictionary, SecurityDirectoryAction);
-
-            /*
-            foreach (string path in _Path)
-            {
-                if (Path.GetFileName(path).Contains("*"))
-                {
-                    Manager.WriteLog(LogLevel.Info, "{0} Wildcard Copy.", this.TaskName);
-
-                    //  対象ファイルの親フォルダーが存在しない場合
-                    string parent = Path.GetDirectoryName(path);
-                    if (!System.IO.Directory.Exists(parent))
-                    {
-                        Manager.WriteLog(LogLevel.Warn, "Parent on target is Missing. \"{0}\"", parent);
-                        return;
-                    }
-
-                    //  ワイルドカード指定
-                    System.Text.RegularExpressions.Regex wildcard = Wildcard.GetPattern(path);
-                    System.IO.Directory.GetDirectories(parent).
-                        Where(x => wildcard.IsMatch(x)).
-                        ToList().
-                        ForEach(x => SecurityDirectoryAction(x, dictionary, ++count));
-                }
-                else
-                {
-                    //  対象ファイルが存在しない場合
-                    if (!System.IO.Directory.Exists(path))
-                    {
-                        Manager.WriteLog(LogLevel.Warn, "Target is Missing. \"{0}\"", path);
-                        return;
-                    }
-
-                    SecurityDirectoryAction(path, dictionary, ++count);
-                }
-            }
-            */
 
             AddAudit(dictionary, this._Invert);
         }
@@ -150,6 +103,7 @@ namespace Audit.Work.Directory
 
                 DirectorySecurity security = new System.IO.DirectoryInfo(target).GetAccessControl();
 
+                //  アクセス権チェック
                 if (_accessRuleSummary?.Length > 0)
                 {
                     AuthorizationRuleCollection rules = security.GetAccessRules(true, false, typeof(NTAccount));
@@ -167,55 +121,7 @@ namespace Audit.Work.Directory
                     }
                 }
 
-                if (!string.IsNullOrEmpty(_Owner))
-                {
-                    //  必要に応じて再帰的に所有者チェック。
-                    //  不一致を確認した時点で再起チェックは終了。
-                    //  不一致の場合は所有者名を返し、一致の場合はnullを返す。
-                    Func<string, DirectorySecurity, string> recurseCheck = null;
-                    recurseCheck = (targetPath, targetSecurity) =>
-                    {
-                        string owner = targetSecurity.GetOwner(typeof(NTAccount)).Value;
-                        if (_ownerAccount.IsMatch(owner))
-                        {
-                            if (!_Sealed)
-                            {
-                                foreach (string child in System.IO.Directory.GetFiles(targetPath, "*", SearchOption.AllDirectories))
-                                {
-                                    var childSecurity = new System.IO.FileInfo(child).GetAccessControl();
-                                    string childOwner = childSecurity.GetOwner(typeof(NTAccount)).Value;
-                                    if (!_ownerAccount.IsMatch(childOwner))
-                                    {
-                                        return childOwner;
-                                    }
-                                }
-                                foreach (string child in System.IO.Directory.GetDirectories(targetPath, "*", SearchOption.AllDirectories))
-                                {
-                                    var childSecurity = new System.IO.DirectoryInfo(child).GetAccessControl();
-                                    string childOwner = childSecurity.GetOwner(typeof(NTAccount)).Value;
-                                    if (!_ownerAccount.IsMatch(childOwner))
-                                    {
-                                        return childOwner;
-                                    }
-                                }
-                            }
-                            return null;
-                        }
-                        return owner;
-                    };
-
-                    string targetOwner = recurseCheck(target, security);
-                    if (targetOwner == null)
-                    {
-                        dictionary[$"directory_{count}_Owner_Match"] = _ownerAccount.ToString();
-                    }
-                    else
-                    {
-                        dictionary[$"directory_{count}_Owner_NotMatch"] = targetOwner;
-                        this.Success = false;
-                    }
-                }
-
+                //  継承有無チェック
                 if (_Inherited != null)
                 {
                     bool targetInherited = !security.AreAccessRulesProtected;

@@ -73,7 +73,7 @@ namespace IO.Work.Directory
                     PathType.Directory);
             }
 
-            TargetDirectoryProcess(_Path, GrantDirectoryAction);
+            TargetSequence(_Path, GrantDirectoryAction);
         }
 
         private void GrantDirectoryAction(string target)

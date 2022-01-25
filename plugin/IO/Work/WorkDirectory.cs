@@ -19,7 +19,7 @@ namespace IO.Work
         /// </summary>
         /// <param name="paths"></param>
         /// <param name="targetDirectoryAction"></param>
-        protected void TargetDirectoryProcess(string[] paths, TargetDirectoryAction targetDirectoryAction)
+        protected void TargetSequence(string[] paths, TargetDirectoryAction targetDirectoryAction)
         {
             foreach (string path in paths)
             {
@@ -64,7 +64,7 @@ namespace IO.Work
         /// <param name="sourcePaths"></param>
         /// <param name="destinationPath"></param>
         /// <param name="srcDstDirectoryAction"></param>
-        protected void SrcDstDirectoryProcess(string[] sourcePaths, string destinationPath, SrcDstDirectoryAction srcDstDirectoryAction)
+        protected void SrcDstSequence(string[] sourcePaths, string destinationPath, SrcDstDirectoryAction srcDstDirectoryAction)
         {
             foreach (string source in sourcePaths)
             {
