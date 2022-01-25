@@ -28,7 +28,7 @@ namespace IO.Work.Directory
         {
             this.Success = true;
 
-            TargetDirectoryProcess(_Path, GetDirectoryAction);
+            TargetSequence(_Path, GetDirectoryAction);
         }
 
         private void GetDirectoryAction(string target)

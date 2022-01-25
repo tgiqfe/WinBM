@@ -38,7 +38,7 @@ namespace IO.Work.Directory
             //  事前定義アカウントチェック
             _ownerAccount = new UserAccount(_Account);
 
-            TargetDirectoryProcess(_Path, OwnerDirectoryAction);
+            TargetSequence(_Path, OwnerDirectoryAction);
 
             _trustedUser?.RemovePrivilege();
         }

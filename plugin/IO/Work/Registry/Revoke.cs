@@ -33,7 +33,7 @@ namespace IO.Work.Registry
 
             //  ドメインアカウント/ローカルアカウントの両方に対応させる為、事前定義アカウントチェックは無し。
 
-            TargetRegistryKeyProcess(_Path, writable: true, RevokeRegistryAction);
+            TargetKeySequence(_Path, writable: true, RevokeRegistryAction);
         }
 
         private void RevokeRegistryAction(RegistryKey target)

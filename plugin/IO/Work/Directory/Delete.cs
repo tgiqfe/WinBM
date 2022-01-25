@@ -38,7 +38,7 @@ namespace IO.Work.Directory
         {
             this.Success = true;
 
-            TargetDirectoryProcess(_Path, DeleteDirectoryAction);
+            TargetSequence(_Path, DeleteDirectoryAction);
         }
 
         private void DeleteDirectoryAction(string target)

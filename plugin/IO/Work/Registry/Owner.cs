@@ -39,7 +39,7 @@ namespace IO.Work.Registry
             //_Account = PredefinedAccount.Resolv(_Account);
             _ownerAccount = new UserAccount(_Account);
 
-            TargetRegistryKeyProcess(_Path, writable: true, OwnerRegistryAction);
+            TargetKeySequence(_Path, writable: true, OwnerRegistryAction);
 
             _trustedUser?.RemovePrivilege();
         }

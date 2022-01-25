@@ -32,7 +32,7 @@ namespace IO.Work.Directory
         {
             this.Success = true;
 
-            TargetDirectoryProcess(_Path, TimeStampDirectoryAction);
+            TargetSequence(_Path, TimeStampDirectoryAction);
         }
 
         private void TimeStampDirectoryAction(string target)

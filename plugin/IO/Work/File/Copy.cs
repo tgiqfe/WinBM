@@ -34,7 +34,7 @@ namespace IO.Work.File
                 _DestinationPath = _DestinationPath.TrimEnd('\\') + "\\";
             }
 
-            SrcDstFileProcess(_SourcePath, _DestinationPath, CopyFileAction);
+            SrcDstSequence(_SourcePath, _DestinationPath, CopyFileAction);
         }
 
         private void CopyFileAction(string source, string destination)

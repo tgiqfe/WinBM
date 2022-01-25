@@ -84,7 +84,7 @@ namespace IO.Work.Directory
                 }
             }
 
-            TargetDirectoryProcess(_Path, AttributeDirectoryAction);
+            TargetSequence(_Path, AttributeDirectoryAction);
         }
 
         private void AttributeDirectoryAction(string target)

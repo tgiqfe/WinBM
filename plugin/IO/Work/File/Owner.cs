@@ -34,7 +34,7 @@ namespace IO.Work.File
             //  事前定義アカウントチェック
             _ownerAccount = new UserAccount(_Account);
 
-            TargetFileProcess(_Path, OwnerFileAction);
+            TargetSequence(_Path, OwnerFileAction);
             
             _trustedUser?.RemovePrivilege();
         }

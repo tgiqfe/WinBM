@@ -33,7 +33,7 @@ namespace IO.Work.Directory
 
             //  ドメインアカウント/ローカルアカウントの両方に対応させる為、事前定義アカウントチェックは無し。
 
-            TargetDirectoryProcess(_Path, RevokeDirectoryAction);
+            TargetSequence(_Path, RevokeDirectoryAction);
         }
 
         private void RevokeDirectoryAction(string target)

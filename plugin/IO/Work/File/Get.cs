@@ -45,7 +45,7 @@ namespace IO.Work.File
         {
             this.Success = true;
 
-            TargetFileProcess(_Path, GetFileAction);
+            TargetSequence(_Path, GetFileAction);
         }
 
         private void GetFileAction(string target)

@@ -33,7 +33,7 @@ namespace IO.Work.File
 
             //  ドメインアカウント/ローカルアカウントの両方に対応させる為、事前定義アカウントチェックは無し。
 
-            TargetFileProcess(_Path, RevokeFileAction);
+            TargetSequence(_Path, RevokeFileAction);
         }
 
         private void RevokeFileAction(string target)
