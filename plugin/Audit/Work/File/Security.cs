@@ -39,10 +39,6 @@ namespace Audit.Work.File
         protected AccessControlType _AccessControl { get; set; }
 
         [TaskParameter(MandatoryAny = 3)]
-        [Keys("owner", "own")]
-        protected string _Owner { get; set; }
-
-        [TaskParameter(MandatoryAny = 4)]
         [Keys("inherited", "inherit", "inheritance")]
         protected bool? _Inherited { get; set; }
 
@@ -57,7 +53,6 @@ namespace Audit.Work.File
         protected bool _Invert { get; set; }
 
         private AccessRuleSummary[] _accessRuleSummary = null;
-        private UserAccount _ownerAccount = null;
 
         public override void MainProcess()
         {
@@ -79,11 +74,6 @@ namespace Audit.Work.File
             {
                 dictionary["Check_Access"] =
                     string.Join("/", _accessRuleSummary.Select(x => x.ToString()));
-            }
-            if (!string.IsNullOrEmpty(_Owner))
-            {
-                _ownerAccount = new UserAccount(_Owner);
-                dictionary["Check_Owner"] = _ownerAccount.ToString();
             }
             if (_Inherited != null)
             {
@@ -121,22 +111,7 @@ namespace Audit.Work.File
                     }
                 }
 
-                //  所有者チェック
-                if (!string.IsNullOrEmpty(_Owner))
-                {
-                    string targetOwner = security.GetOwner(typeof(NTAccount)).Value;
-                    if (_ownerAccount.IsMatch(targetOwner))
-                    {
-                        dictionary[$"file_{count}_Owner_Match"] = targetOwner;
-                    }
-                    else
-                    {
-                        dictionary[$"file_{count}_Owner_NoMatch"] = targetOwner;
-                        this.Success = false;
-                    }
-                }
-
-                //  継承設定チェック
+                //  継承有無チェック
                 if (_Inherited != null)
                 {
                     bool targetInherited = !security.AreAccessRulesProtected;
