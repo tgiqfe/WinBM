@@ -62,7 +62,10 @@ namespace IO.Require.Directory
                     {
                         if (_Recurse)
                         {
-                            foreach (string child in System.IO.Directory.GetFiles(targetPath, "*", SearchOption.AllDirectories))
+                            var children = DirectoryControl.GetAllChildren(targetPath);
+
+                            //foreach (string child in System.IO.Directory.GetFiles(targetPath, "*", SearchOption.AllDirectories))
+                            foreach (string child in children.Files)
                             {
                                 var childSecurity = new System.IO.FileInfo(child).GetAccessControl();
                                 string childOwner = childSecurity.GetOwner(typeof(NTAccount)).Value;
@@ -71,7 +74,8 @@ namespace IO.Require.Directory
                                     return childOwner;
                                 }
                             }
-                            foreach (string child in System.IO.Directory.GetDirectories(targetPath, "*", SearchOption.AllDirectories))
+                            //foreach (string child in System.IO.Directory.GetDirectories(targetPath, "*", SearchOption.AllDirectories))
+                            foreach (string child in children.Directories)
                             {
                                 var childSecurity = new System.IO.DirectoryInfo(child).GetAccessControl();
                                 string childOwner = childSecurity.GetOwner(typeof(NTAccount)).Value;

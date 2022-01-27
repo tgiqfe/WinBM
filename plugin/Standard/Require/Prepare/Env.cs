@@ -39,15 +39,6 @@ namespace Standard.Require.Prepare
                 foreach (string key in _Key)
                 {
                     //  環境変数を取得
-                    /*
-                    string val = _Scope switch
-                    {
-                        TargetScope.File => WinBM.Lib.FileScope.GetValue(key),
-                        TargetScope.User => Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.User),
-                        TargetScope.Machine => Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Machine),
-                        _ => Environment.GetEnvironmentVariable(key, EnvironmentVariableTarget.Process),
-                    };
-                    */
                     string val = GetEnvironmentValue(key);
 
                     if (string.IsNullOrEmpty(val))

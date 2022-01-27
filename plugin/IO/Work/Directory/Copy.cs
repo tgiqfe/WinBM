@@ -93,14 +93,6 @@ namespace IO.Work.Directory
                         CopyMode.Merge => "/E",
                         _ => "",
                     };
-                    /*
-                    string exFiles = _ExcludeFile?.Length > 0 ?
-                        " /XF \"" + string.Join("\" \"", _ExcludeFile) + "\"" :
-                        "";
-                    string exDirs = _ExcludeDirectory?.Length > 0 ?
-                        " /XD \"" + string.Join("\" \"", _ExcludeDirectory) + "\"" :
-                        "";
-                    */
                     string[] tempExFiles = Wildcard.GetPaths(_ExcludeFile, isDirectory: false);
                     string[] tempExDirs = Wildcard.GetPaths(_ExcludeDirectory, isDirectory: true);
                     string exFiles = tempExFiles?.Length > 0 ?
@@ -118,13 +110,11 @@ namespace IO.Work.Directory
                         exFiles,
                         exDirs);
 
-                    proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                    proc.StartInfo.UseShellExecute = true;
+                    //proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    proc.StartInfo.UseShellExecute = false;
                     proc.StartInfo.CreateNoWindow = true;
                     proc.Start();
                     proc.WaitForExit();
-
-                    Console.WriteLine(proc.StartInfo.Arguments);
                 }
             }
             catch (Exception e)
