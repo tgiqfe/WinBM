@@ -22,7 +22,7 @@ namespace IO.Work.Directory
         protected string[] _Path { get; set; }
 
         [TaskParameter]
-        [Keys("random", "rdm", "randam")]
+        [Keys("random", "rdm", "randam", "randomName")]
         protected bool? _Random { get; set; }
 
         [TaskParameter]
