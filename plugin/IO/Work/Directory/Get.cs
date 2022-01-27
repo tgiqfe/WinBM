@@ -56,8 +56,15 @@ namespace IO.Work.Directory
             long size = dInfo.GetFiles("*", SearchOption.AllDirectories).
                 Select(x => x.Length).
                 Sum();
+
+            var children = DirectoryControl.GetAllChildren(target);
+            int directoryCount = children.Directories.Count;
+            int fileCount = children.Files.Count;
+
+            /*
             int fileCount = dInfo.GetFiles("*", SearchOption.AllDirectories).Length;
             int directoryCount = dInfo.GetDirectories("*", SearchOption.AllDirectories).Length;
+            */
 
             var sb = new StringBuilder();
             sb.AppendLine($"{this.TaskName} Directory summary");

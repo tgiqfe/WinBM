@@ -9,9 +9,9 @@ namespace IO.Require.Directory
 {
     internal class Exists : TaskJob
     {
-        [TaskParameter(Mandatory = true, Resolv = true)]
+        [TaskParameter(Mandatory = true, Resolv = true, Delimiter = ';')]
         [Keys("path", "filepath", "target", "targetpath", "dirpath", "directorypath")]
-        protected string _Path { get; set; }
+        protected string[] _Path { get; set; }
 
         [TaskParameter]
         [Keys("invert", "not", "no", "none")]
@@ -19,11 +19,17 @@ namespace IO.Require.Directory
 
         public override void MainProcess()
         {
-            this.Success = System.IO.Directory.Exists(_Path);
+            this.Success = true;
 
-            if (!Success)
+            foreach(var path in _Path)
             {
-                Manager.WriteLog(WinBM.LogLevel.Attention, "Directory is missing. \"{0}\"", _Path);
+                bool ret = System.IO.Directory.Exists(path);
+                if (!ret)
+                {
+                    Manager.WriteLog(WinBM.LogLevel.Attention, "Directory is missing. \"{0}\"", _Path);
+                }
+
+                Success &= ret;
             }
 
             this.Success ^= this._Invert;
