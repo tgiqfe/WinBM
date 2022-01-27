@@ -252,7 +252,7 @@ namespace WinBM
 
                 if (page.Metadata.Skip ?? false)
                 {
-                    GlobalLog.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
+                    _Manager.WriteLog(LogLevel.Info, "Skip. MetadataName={0}", page.Metadata.Name);
                     continue;
                 }
 
@@ -266,7 +266,7 @@ namespace WinBM
                     {
                         if (spec.Skip ?? false)
                         {
-                            GlobalLog.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
+                            _Manager.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
                             continue;
                         }
 
@@ -279,13 +279,13 @@ namespace WinBM
                             //  Requireでは、Failedがnullの場合はStop
                             if (spec.Failed == SpecJob.FailedAction.Stop || spec.Failed == null)
                             {
-                                GlobalLog.WriteLog(LogLevel.Debug, "Require stop. task name missing. \"{0}\"", spec.Task);
+                                _Manager.WriteLog(LogLevel.Debug, "Require stop. task name missing. \"{0}\"", spec.Task);
                                 stop = true;
                                 break;
                             }
                             else if (spec.Failed == SpecJob.FailedAction.Abort)
                             {
-                                GlobalLog.WriteLog(LogLevel.Debug, "Require abort. task name missing. \"{0}\"", spec.Task);
+                                _Manager.WriteLog(LogLevel.Debug, "Require abort. task name missing. \"{0}\"", spec.Task);
                                 abort = true;
                                 break;
                             }
@@ -371,7 +371,7 @@ namespace WinBM
                         */
                         if (spec.Skip ?? false)
                         {
-                            GlobalLog.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
+                            _Manager.WriteLog(LogLevel.Info, "Skip. SpecName={0}", spec.Name);
                             continue;
                         }
 
@@ -384,13 +384,13 @@ namespace WinBM
                             //  Workでは、Failedがnullの場合はContinue;
                             if (spec.Failed == SpecJob.FailedAction.Stop)
                             {
-                                GlobalLog.WriteLog(LogLevel.Debug, "Work stop. task name missing. \"{0}\"", spec.Task);
+                                _Manager.WriteLog(LogLevel.Debug, "Work stop. task name missing. \"{0}\"", spec.Task);
                                 stop = true;
                                 break;
                             }
                             else if (spec.Failed == SpecJob.FailedAction.Abort)
                             {
-                                GlobalLog.WriteLog(LogLevel.Debug, "Work stop. task name missing. \"{0}\"", spec.Task);
+                                _Manager.WriteLog(LogLevel.Debug, "Work stop. task name missing. \"{0}\"", spec.Task);
                                 abort = true;
                                 break;
                             }
