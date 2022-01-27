@@ -39,11 +39,17 @@ namespace Audit.Lib.Monitor
 
         public static int[] GetDirectoryChildCount(string path)
         {
+            var children = DirectoryControl.GetAllChildren(path);
+            int directoryCount = children.Directories.Count;
+            int fileCount = children.Files.Count;
+
             return new int[2]
             {
-                Directory.GetDirectories(path, "*", SearchOption.AllDirectories).Length,
-                Directory.GetFiles(path, "*", SearchOption.AllDirectories).Length
-            };
+                children.Directories.Count,
+                children.Files.Count,
+                //Directory.GetDirectories(path, "*", SearchOption.AllDirectories).Length,
+                //Directory.GetFiles(path, "*", SearchOption.AllDirectories).Length
+        };
         }
 
         public static int[] GetRegistryKeyChildCount(RegistryKey regKey)
