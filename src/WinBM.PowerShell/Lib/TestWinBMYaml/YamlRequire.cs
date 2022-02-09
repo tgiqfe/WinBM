@@ -15,8 +15,7 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
         public string Task { get; set; }
         public Dictionary<string, string> Param { get; set; }
         public string Failed { get; set; }
-        //public bool? Progress { get; set; }
-
+        
         public IllegalParamCollection Illegals { get; set; }
 
         public static List<YamlRequire> Create(string content)
@@ -81,11 +80,6 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
                         case "failed":
                             spec.SetFailed(node);
                             break;
-                            /*
-                        case "progress":
-                            spec.SetProgress(node);
-                            break;
-                            */
                         default:
                             spec.Illegals ??= new IllegalParamCollection();
                             spec.Illegals.AddIllegalKey(node);
@@ -163,20 +157,5 @@ namespace WinBM.PowerShell.Lib.TestWinBMYaml
                 Illegals.AddIllegalValue(node);
             }
         }
-
-        /*
-        public void SetProgress(YamlNode node)
-        {
-            if (bool.TryParse(node.Value, out bool progress))
-            {
-                this.Progress = progress;
-            }
-            else
-            {
-                this.Illegals ??= new IllegalParamCollection();
-                Illegals.AddIllegalValue(node);
-            }
-        }
-        */
     }
 }
