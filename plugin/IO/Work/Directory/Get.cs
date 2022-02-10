@@ -61,11 +61,6 @@ namespace IO.Work.Directory
             int directoryCount = children.Directories.Count;
             int fileCount = children.Files.Count;
 
-            /*
-            int fileCount = dInfo.GetFiles("*", SearchOption.AllDirectories).Length;
-            int directoryCount = dInfo.GetDirectories("*", SearchOption.AllDirectories).Length;
-            */
-
             var sb = new StringBuilder();
             sb.AppendLine($"{this.TaskName} Directory summary");
             sb.AppendLine($"  Name           : {name}");

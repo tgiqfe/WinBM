@@ -64,16 +64,6 @@ namespace IO.Work.Directory
                             security.RemoveAccessRule(rule);
                             isChange = true;
                         }
-
-
-                        /*
-                        if (_Account.Contains("\\") && targetAccount.Equals(_Account, StringComparison.OrdinalIgnoreCase) ||
-                            !_Account.Contains("\\") && targetAccount.EndsWith("\\" + _Account, StringComparison.OrdinalIgnoreCase))
-                        {
-                            security.RemoveAccessRule(rule);
-                            isChange = true;
-                        }
-                        */
                     }
                 }
 

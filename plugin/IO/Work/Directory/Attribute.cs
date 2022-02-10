@@ -154,15 +154,6 @@ namespace IO.Work.Directory
                         var children = DirectoryControl.GetAllChildren(target);
                         children.Directories.ForEach(x => setAttribute(x));
                         children.Files.ForEach(x => setAttribute(x));
-
-                        /*
-                        System.IO.Directory.GetDirectories(target, "*", SearchOption.AllDirectories).
-                            ToList().
-                            ForEach(x => setAttribute(x));
-                        System.IO.Directory.GetFiles(target, "*", SearchOption.AllDirectories).
-                            ToList().
-                            ForEach(x => setAttribute(x));
-                        */
                     }
                     else
                     {
