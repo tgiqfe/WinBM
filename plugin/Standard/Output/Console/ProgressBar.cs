@@ -33,6 +33,10 @@ namespace Standard.Output.Console
                 line,
                 activity ?? _Activity,
                 string.Format(" {0}%: {1}", percent, description));
+            if (percent == 0)
+            {
+                record.RecordType = ProgressRecordType.Completed;
+            }
 
             record.PercentComplete = percent;
 
